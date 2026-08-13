@@ -1,0 +1,7 @@
+<a *ngIf="href" [href]="href" [target]="target" class="btn" [class.btn-primary]="variant === 'primary'">Conversar com um
+  atendente
+  <ng-content></ng-content>
+</a>
+<button *ngIf="!href" class="btn" [class.btn-primary]="variant === 'primary'">
+  <ng-content></ng-content>
+</button>

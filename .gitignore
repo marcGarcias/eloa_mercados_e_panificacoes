@@ -7,8 +7,10 @@
 # BUILD / GENERATED FILES
 # ============================================================
 
+dist/*
+!dist/browser/
+!dist/browser/**
 build/
-dist/
 target/
 out/
 tmp/

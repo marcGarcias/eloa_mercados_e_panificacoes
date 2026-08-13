@@ -1,0 +1,11 @@
+<div class="card">
+  <div class="photo">
+    <img *ngIf="product.imagem" [src]="product.imagem" [alt]="product.nome">
+    <span *ngIf="!product.imagem" class="no-image" [innerHTML]="noImageIcon"></span>
+  </div>
+  <div class="info">
+    <div class="category">{{ product.categoria }}</div>
+    <h3>{{ product.nome }}</h3>
+    <div class="weight">{{ product.peso }}</div>
+  </div>
+</div>

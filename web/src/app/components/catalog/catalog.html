@@ -1,0 +1,33 @@
+<section id="catalogo">
+  <div class="container">
+    <h2 class="title">Nosso Cardápio</h2>
+    <p class="subtitle">Feito todo dia, fresquinho pra você.</p>
+
+    <div class="filters" [class.open]="filtersOpen">
+      <button
+        *ngFor="let cat of categories"
+        class="filter"
+        [class.active]="activeCategory === cat"
+        (click)="selectCategory(cat)">
+        {{ cat }}
+      </button>
+    </div>
+
+    <div class="search">
+      <input
+        id="catalog-search"
+        type="text"
+        placeholder="O que você está procurando hoje?"
+        [(ngModel)]="searchQuery"
+        (input)="filter()">
+    </div>
+
+    <div class="grid" *ngIf="filteredProducts.length > 0">
+      <app-product-card *ngFor="let p of filteredProducts" [product]="p"></app-product-card>
+    </div>
+
+    <div class="empty" *ngIf="filteredProducts.length === 0">
+      Nenhum produto encontrado para sua busca. 🍞
+    </div>
+  </div>
+</section>

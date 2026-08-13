@@ -1,0 +1,135 @@
+section {
+  padding: var(--spacing-lg) 0;
+}
+
+.title {
+  font-family: var(--font-title);
+  font-size: 42px;
+  margin-bottom: 10px;
+  color: var(--color-dark-premium);
+}
+
+.subtitle {
+  color: var(--color-gray);
+  margin-bottom: 35px;
+}
+
+.filters {
+  display: block;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .04);
+  margin-bottom: var(--spacing-lg);
+}
+
+.filters .filter {
+  display: none;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.filters .filter.active {
+  display: flex;
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.filters .filter.active::after {
+  content: "▾";
+  font-size: 12px;
+  line-height: 1;
+  transition: transform .2s ease;
+}
+
+.filters.open .filter {
+  display: flex;
+  background: var(--color-white);
+  color: var(--color-dark);
+}
+
+.filters.open .filter.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.filters.open .filter.active::after {
+  transform: rotate(180deg);
+}
+
+.filter {
+  padding: 14px 16px;
+  background: var(--color-white);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+  transition: .2s;
+  color: var(--color-dark);
+}
+
+.filter:hover,
+.filter.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.search {
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+}
+
+.search input {
+  flex: 1;
+  padding: 16px 28px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: 16px;
+  font-family: var(--font-body);
+  outline: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, .04);
+  transition: .3s;
+}
+
+.search input:focus {
+  border-color: var(--color-tan);
+  background: #fff;
+  box-shadow: 0 5px 20px rgba(204, 145, 72, .15);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--color-gray);
+  font-size: 18px;
+}
+
+@media (min-width: 900px) {
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--color-border);
+  }
+
+  .filters .filter {
+    display: flex;
+    width: auto;
+  }
+
+  .filters .filter.active::after {
+    content: none;
+  }
+}

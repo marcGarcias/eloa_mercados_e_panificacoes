@@ -13,4 +13,5 @@ public record CreateUserRequest(
 
         UserStatus status
 
-) {}
+) {
+}

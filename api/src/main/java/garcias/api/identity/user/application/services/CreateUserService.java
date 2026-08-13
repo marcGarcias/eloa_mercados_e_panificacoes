@@ -29,7 +29,7 @@ public class CreateUserService
             UserRepository userRepository,
             UserCodeProvider userCodeProvider,
             PasswordHasher passwordHasher
-    ){
+    ) {
         this.userRepository = userRepository;
         this.userCodeProvider = userCodeProvider;
         this.passwordHasher = passwordHasher;
@@ -53,14 +53,12 @@ public class CreateUserService
         );
 
 
-
         Password password =
                 Password.fromHash(
                         passwordHasher.hash(
                                 request.password()
                         )
                 );
-
 
 
         User user =

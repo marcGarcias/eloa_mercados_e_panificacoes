@@ -3,8 +3,6 @@ package garcias.api.shared.validations;
 import garcias.api.shared.exceptions.InvalidImageException;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 

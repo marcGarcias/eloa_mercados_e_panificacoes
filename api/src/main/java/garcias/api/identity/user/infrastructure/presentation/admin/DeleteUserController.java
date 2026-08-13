@@ -2,14 +2,15 @@ package garcias.api.identity.user.infrastructure.presentation.admin;
 
 
 import garcias.api.identity.user.application.usecases.DeleteUserUseCase;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ import java.util.UUID;
         description = """
                 Administrative endpoints responsible for
                 permanently removing users from the system.
-
+                
                 These operations require SUPER_ADMIN permission.
                 """
 )
@@ -38,18 +39,17 @@ public class DeleteUserController {
     }
 
 
-
     @DeleteMapping("/{userId}")
     @Operation(
             summary = "Delete user permanently",
             description = """
                     Permanently removes a user from the database.
-
+                    
                     This operation cannot be undone.
-
+                    
                     Only authenticated SUPER_ADMIN users
                     are allowed to perform this action.
-
+                    
                     Before deletion, the system verifies
                     if the user exists.
                     """,

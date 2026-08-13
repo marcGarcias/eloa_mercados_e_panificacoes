@@ -60,7 +60,9 @@ public class UserJpaEntity {
         this.name = name;
     }
 
-    public String getUserCode() { return userCode; }
+    public String getUserCode() {
+        return userCode;
+    }
 
     public void setUserCode(String userCode) {
         this.userCode = userCode;

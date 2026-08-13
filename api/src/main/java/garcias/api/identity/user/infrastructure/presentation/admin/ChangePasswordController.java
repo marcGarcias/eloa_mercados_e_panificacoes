@@ -22,7 +22,7 @@ import java.util.UUID;
         description = """
                 Administrative endpoints responsible for
                 changing user passwords.
-
+                
                 Password changes are restricted to authenticated
                 SUPER_ADMIN users.
                 """
@@ -40,20 +40,19 @@ public class ChangePasswordController {
     }
 
 
-
     @PutMapping("/{userId}/password")
     @Operation(
             summary = "Change user password",
             description = """
                     Changes the password of an existing user.
-
+                    
                     This operation is only available for SUPER_ADMIN users.
-
+                    
                     The new password:
                     - Is validated against the current password
                     - Cannot be equal to the previous password
                     - Is encrypted using Argon2 before being stored
-
+                    
                     Users cannot change their own passwords.
                     """,
             responses = {

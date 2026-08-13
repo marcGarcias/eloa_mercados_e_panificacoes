@@ -1,10 +1,11 @@
 package garcias.api.identity.authentication.application.services;
 
 import garcias.api.identity.authentication.application.dto.requests.LoginRequest;
-import garcias.api.identity.authentication.application.dto.responses.LoginResponse;
+import garcias.api.identity.authentication.application.dto.results.LoginResult;
+import garcias.api.identity.authentication.application.security.RefreshTokenProvider;
 import garcias.api.identity.authentication.application.usecases.LoginUseCase;
 import garcias.api.identity.authentication.domain.exceptions.InvalidCredentialsException;
-import garcias.api.identity.authentication.infrastructure.security.jwt.JwtTokenService;
+import garcias.api.identity.authentication.application.security.AccessTokenProvider;
 import garcias.api.identity.user.application.security.PasswordHasher;
 import garcias.api.identity.user.domain.entities.User;
 import garcias.api.identity.user.domain.enums.UserStatus;
@@ -17,18 +18,21 @@ public class LoginService implements LoginUseCase {
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
-    private final JwtTokenService  jwtTokenService;
+    private final AccessTokenProvider accessTokenProvider;
+    private final RefreshTokenProvider refreshTokenProvider;
 
     public LoginService(
             UserRepository userRepository,
-            PasswordHasher passwordHasher, JwtTokenService jwtTokenService
+            PasswordHasher passwordHasher,
+            AccessTokenProvider accessTokenProvider, RefreshTokenProvider refreshTokenProvider
     ) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
-        this.jwtTokenService = jwtTokenService;
+        this.accessTokenProvider = accessTokenProvider;
+        this.refreshTokenProvider = refreshTokenProvider;
     }
 
-    public LoginResponse execute(LoginRequest request) {
+    public LoginResult execute(LoginRequest request) {
 
         UserCode userCode = new UserCode(
                 request.userCode()
@@ -57,14 +61,18 @@ public class LoginService implements LoginUseCase {
 
         userRepository.save(user);
 
-        String accessToken = jwtTokenService.generateAccessToken(
+        String accessToken = accessTokenProvider.generate(
                 user.getUserCode().value(),
                 user.getRole().name()
         );
 
-        return new LoginResponse(
+        String refreshToken = refreshTokenProvider.generate(
+                user.getUserCode().value()
+        );
+
+        return new LoginResult(
                 accessToken,
-                null
+                refreshToken
         );
     }
 }

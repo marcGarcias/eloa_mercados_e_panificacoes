@@ -2,24 +2,18 @@ package garcias.api.shared.exceptions;
 
 
 import jakarta.servlet.http.HttpServletRequest;
-
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
 
     @ExceptionHandler(NotFoundException.class)
@@ -42,9 +36,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
-
-
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflictException(
             ConflictException exception,
@@ -63,9 +54,6 @@ public class GlobalExceptionHandler {
                         )
                 );
     }
-
-
-
 
 
     @ExceptionHandler(DomainException.class)
@@ -88,9 +76,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
-
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException exception,
@@ -111,7 +96,6 @@ public class GlobalExceptionHandler {
                         .collect(Collectors.joining(", "));
 
 
-
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(
@@ -123,9 +107,6 @@ public class GlobalExceptionHandler {
                         )
                 );
     }
-
-
-
 
 
     @ExceptionHandler(Exception.class)

@@ -5,7 +5,7 @@ public record Password(String value) {
 
     public Password(String value) {
 
-        if(value == null || value.isBlank()) {
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(
                     "Password cannot be empty"
             );
@@ -15,7 +15,7 @@ public record Password(String value) {
     }
 
 
-    public static Password fromHash(String hash){
+    public static Password fromHash(String hash) {
 
         return new Password(hash);
     }

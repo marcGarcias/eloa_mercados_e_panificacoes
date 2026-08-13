@@ -1,0 +1,19 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Configurações adicionais
+/dataSources/
+/dataSources.local.xml
+/sqlDataSources.xml
+/dynamic.xml
+/uiDesigner.xml
+/dbnavigator.xml
+/httpRequests/
+/caches/
+/gradle.xml
+/libraries/
+/replstate.xml
+/sonarlint/
+/sonarIssues.xml
+/aws.xml

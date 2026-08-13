@@ -1,5 +1,6 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
+import garcias.api.identity.authentication.application.security.AccessTokenProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -9,12 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
-public class JwtTokenService {
+public class AccessTokenProviderImpl implements AccessTokenProvider {
 
     private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
-    public JwtTokenService(JwtProperties jwtProperties) {
+    public AccessTokenProviderImpl(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
 
         this.secretKey = Keys.hmacShaKeyFor(
@@ -22,7 +23,8 @@ public class JwtTokenService {
         );
     }
 
-    public String generateAccessToken(String userCode, String role) {
+    @Override
+    public String generate(String userCode, String role) {
 
         Date issuedAt = new Date();
 
@@ -63,7 +65,6 @@ public class JwtTokenService {
                 .getPayload()
                 .getSubject();
     }
-
 
     public String extractRole(String token) {
 

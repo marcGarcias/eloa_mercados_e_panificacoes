@@ -3,16 +3,16 @@ package garcias.api.identity.user.infrastructure.presentation.admin;
 
 import garcias.api.identity.user.application.dto.requests.CreateUserRequest;
 import garcias.api.identity.user.application.usecases.CreateUserUseCase;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-
 
 
 @RestController
@@ -22,7 +22,7 @@ import java.net.URI;
         description = """
                 Administrative endpoints responsible for
                 creating new users.
-
+                
                 User creation is restricted to authenticated
                 SUPER_ADMIN users.
                 """
@@ -40,18 +40,17 @@ public class CreateUserController {
     }
 
 
-
     @PostMapping
     @Operation(
             summary = "Create user",
             description = """
                     Creates a new user account.
-
+                    
                     The user code must be unique.
-
+                    
                     The password will be encrypted using Argon2
                     before being persisted.
-
+                    
                     Only SUPER_ADMIN users can create accounts.
                     """,
             responses = {

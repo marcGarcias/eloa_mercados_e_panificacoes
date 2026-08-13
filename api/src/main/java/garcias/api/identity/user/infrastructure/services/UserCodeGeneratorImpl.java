@@ -23,7 +23,6 @@ public class UserCodeGeneratorImpl
     }
 
 
-
     @Override
     public UserCode generate() {
 

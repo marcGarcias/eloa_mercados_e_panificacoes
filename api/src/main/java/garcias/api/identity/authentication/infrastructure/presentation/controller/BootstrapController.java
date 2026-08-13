@@ -39,15 +39,15 @@ public class BootstrapController {
             summary = "Create initial administrator",
             description = """
                     Creates the first user of the system.
-
+                    
                     This endpoint is only available while the system
                     does not contain any users.
-
+                    
                     The first user is automatically created with:
-
+                    
                     - Role: SUPER_ADMIN
                     - Status: ACTIVE
-
+                    
                     After the first user is created, this endpoint
                     can no longer be used.
                     """

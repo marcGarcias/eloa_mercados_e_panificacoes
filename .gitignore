@@ -1,0 +1,270 @@
+# ============================================================
+# Angular | Java | Maven | Redis | IntelliJ | Docker
+# ============================================================
+
+
+# ============================================================
+# BUILD / GENERATED FILES
+# ============================================================
+
+build/
+dist/
+target/
+out/
+tmp/
+
+*.class
+*.log
+
+coverage/
+.coverage/
+.jacoco/
+*.exec
+
+
+# ============================================================
+# JAVA / MAVEN
+# ============================================================
+
+# Maven build
+target/
+
+# Maven generated files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Java temporary files
+.mtj.tmp/
+*.ctxt
+
+# Java archives
+*.jar
+*.war
+*.ear
+*.nar
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+
+# ============================================================
+# ANGULAR / NODE
+# ============================================================
+
+# Node dependencies
+node_modules/
+bower_components/
+
+# Angular
+.angular/
+.angular/cache/
+
+# Angular build
+dist/
+
+# Angular temporary files
+tmp/
+
+# Sass
+.sass-cache/
+
+# Angular / Node logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Angular test
+testem.log
+
+# E2E generated files
+e2e/*.js
+e2e/*.map
+
+# Generated JavaScript
+app/**/*.js
+app/**/*.js.map
+
+# TypeScript incremental build
+*.tsbuildinfo
+
+# Typings
+typings/
+
+
+# ============================================================
+# IDE / EDITORS
+# ============================================================
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# IntelliJ user-specific files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries/
+.idea/**/shelf/
+
+# IntelliJ generated files
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/**/httpRequests/
+.idea/**/caches/
+.idea/**/gradle.xml
+.idea/**/libraries/
+.idea/**/replstate.xml
+.idea/**/sonarlint/
+.idea/**/sonarIssues.xml
+.idea/**/markdown-navigator/
+.idea/**/codestream.xml
+.idea/**/aws.xml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+.history/
+
+
+# ============================================================
+# ENVIRONMENT / SECRETS
+# ============================================================
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Spring Boot local configuration
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# Local secrets
+secrets/
+*.secret
+*.pem
+*.key
+
+# Credentials
+credentials.json
+service-account.json
+
+
+# ============================================================
+# SPRING BOOT
+# ============================================================
+
+spring-boot-devtools.properties
+
+
+# ============================================================
+# DOCKER
+# ============================================================
+
+# Local Docker Compose overrides
+docker-compose.override.yml
+
+
+# ============================================================
+# REDIS
+# ============================================================
+
+# Redis database dump
+*.rdb
+
+
+# ============================================================
+# OPERATING SYSTEM
+# ============================================================
+
+# ----------------------------
+# Windows
+# ----------------------------
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Windows installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+
+# ----------------------------
+# macOS
+# ----------------------------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+*.icloud
+
+# macOS network / temporary files
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+# ----------------------------
+# Linux
+# ----------------------------
+
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+
+# ============================================================
+# TEMPORARY / EDITOR FILES
+# ============================================================
+
+*.tmp
+*.temp
+*.swp
+*.swo

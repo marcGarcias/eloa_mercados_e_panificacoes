@@ -1,0 +1,70 @@
+.numeros {
+  padding: 70px 0;
+  background: var(--dark-premium);
+}
+
+.numeros-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.numero-item {
+  text-align: center;
+  color: white;
+  padding: 20px;
+  border-right: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.numero-item:nth-child(odd) {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.numero-item:last-child {
+  border-right: none;
+  border-bottom: none;
+}
+
+.numero-val {
+  font-family: var(--font-title);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.numero-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+@media (min-width: 900px) {
+  .numeros-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .numero-item {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+  }
+
+  .numero-item:nth-child(odd) {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .numero-item:last-child {
+    border-right: none;
+  }
+
+  .numero-val {
+    font-size: 48px;
+  }
+
+  .numero-label {
+    font-size: 14px;
+  }
+}

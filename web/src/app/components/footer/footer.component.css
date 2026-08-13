@@ -1,0 +1,144 @@
+footer {
+  padding: 80px 0 40px;
+  background: white;
+  border-top: 1px solid rgba(184, 125, 52, 0.15);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 35px;
+  padding-bottom: 50px;
+  border-bottom: 1px solid #EEE5DA;
+  text-align: center;
+}
+
+.footer-col .logo {
+  margin-bottom: 16px;
+  font-family: var(--font-logo);
+  font-size: 52px;
+  font-weight: 400;
+  color: var(--green);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.footer-col .logo span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.footer-desc {
+  font-size: 14px;
+  color: #777;
+  line-height: 1.7;
+  max-width: 290px;
+  margin: 0 auto;
+}
+
+.footer-heading {
+  font-family: var(--font-title);
+  font-size: 18px;
+  color: var(--dark-premium);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a {
+  font-size: 14px;
+  color: #666;
+  transition: .2s;
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+  padding-left: 0;
+}
+
+.footer-info {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-info li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  justify-content: center;
+  text-align: left;
+}
+
+.footer-info svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--primary);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.footer-contact-txt {
+  font-size: 14px;
+  color: #777;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.footer-btn {
+  padding: 12px 22px;
+  font-size: 14px;
+}
+
+.copy {
+  padding-top: 30px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+@media (min-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1.4fr 0.8fr 1.2fr 1.2fr;
+    gap: 40px;
+    text-align: unset;
+  }
+
+  .footer-col .logo {
+    justify-content: flex-start;
+  }
+
+  .footer-desc {
+    margin: unset;
+  }
+
+  .footer-info li {
+    justify-content: flex-start;
+  }
+
+  .footer-links a:hover {
+    padding-left: 4px;
+  }
+}

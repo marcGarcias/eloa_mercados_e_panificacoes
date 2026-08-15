@@ -53,7 +53,8 @@ public class RefreshTokenService implements RefreshTokenUseCase {
 
         String accessToken = accessTokenManager.generate(
                 user.getUserCode().value(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.getStatus().name()
         );
 
         String newRefreshToken = refreshTokenManager.generate(

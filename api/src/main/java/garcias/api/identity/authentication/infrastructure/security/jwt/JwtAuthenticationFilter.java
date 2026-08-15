@@ -44,6 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        String status = accessTokenManager.extractStatus(token);
+
+        if (!"ACTIVE".equals(status)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String userCode = accessTokenManager.extractUserCode(token);
 
         String role = accessTokenManager.extractRole(token);

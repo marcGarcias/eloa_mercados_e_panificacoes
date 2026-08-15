@@ -1,8 +1,8 @@
 package garcias.api.identity.authentication.application.services;
 
 import garcias.api.identity.authentication.application.dto.results.LoginResult;
-import garcias.api.identity.authentication.application.security.AccessTokenProvider;
-import garcias.api.identity.authentication.application.security.RefreshTokenProvider;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
+import garcias.api.identity.authentication.application.security.RefreshTokenManager;
 import garcias.api.identity.authentication.application.usecases.RefreshTokenUseCase;
 import garcias.api.identity.authentication.domain.exceptions.InvalidCredentialsException;
 import garcias.api.identity.user.domain.entities.User;
@@ -14,15 +14,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class RefreshTokenService implements RefreshTokenUseCase {
 
-    private final RefreshTokenProvider refreshTokenProvider;
-    private final AccessTokenProvider accessTokenProvider;
+    private final RefreshTokenManager refreshTokenManager;
+    private final AccessTokenManager accessTokenManager;
 
-    public RefreshTokenService(RefreshTokenProvider refreshTokenProvider,
-                               AccessTokenProvider accessTokenProvider,
+    public RefreshTokenService(RefreshTokenManager refreshTokenManager,
+                               AccessTokenManager accessTokenManager,
                                UserRepository userRepository)
     {
-        this.refreshTokenProvider = refreshTokenProvider;
-        this.accessTokenProvider = accessTokenProvider;
+        this.refreshTokenManager = refreshTokenManager;
+        this.accessTokenManager = accessTokenManager;
         this.userRepository = userRepository;
     }
 
@@ -31,7 +31,7 @@ public class RefreshTokenService implements RefreshTokenUseCase {
     @Override
     public LoginResult execute(String refreshToken) {
 
-        String userCode = refreshTokenProvider
+        String userCode = refreshTokenManager
                 .findUserCode(refreshToken)
                 .orElseThrow(
                         InvalidCredentialsException::new
@@ -49,14 +49,14 @@ public class RefreshTokenService implements RefreshTokenUseCase {
             throw new InvalidCredentialsException();
         }
 
-        refreshTokenProvider.revoke(refreshToken);
+        refreshTokenManager.revoke(refreshToken);
 
-        String accessToken = accessTokenProvider.generate(
+        String accessToken = accessTokenManager.generate(
                 user.getUserCode().value(),
                 user.getRole().name()
         );
 
-        String newRefreshToken = refreshTokenProvider.generate(
+        String newRefreshToken = refreshTokenManager.generate(
                 user.getUserCode().value()
         );
 

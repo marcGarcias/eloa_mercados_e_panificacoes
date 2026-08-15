@@ -1,6 +1,6 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
-import garcias.api.identity.authentication.application.security.AccessTokenProvider;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -10,12 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
-public class AccessTokenProviderImpl implements AccessTokenProvider {
+public class AccessTokenManagerImpl implements AccessTokenManager {
 
     private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
-    public AccessTokenProviderImpl(JwtProperties jwtProperties) {
+    public AccessTokenManagerImpl(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
 
         this.secretKey = Keys.hmacShaKeyFor(
@@ -24,7 +24,7 @@ public class AccessTokenProviderImpl implements AccessTokenProvider {
     }
 
     @Override
-    public String generate(String userCode, String role) {
+    public String generate(String userCode, String role, String status) {
 
         Date issuedAt = new Date();
 
@@ -35,6 +35,7 @@ public class AccessTokenProviderImpl implements AccessTokenProvider {
         return Jwts.builder()
                 .subject(userCode)
                 .claim("role", role)
+                .claim("status", status)
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(issuedAt)
                 .expiration(expiration)
@@ -77,5 +78,16 @@ public class AccessTokenProviderImpl implements AccessTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
+    }
+
+    @Override
+    public String extractStatus(String token) {
+
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("status", String.class);
     }
 }

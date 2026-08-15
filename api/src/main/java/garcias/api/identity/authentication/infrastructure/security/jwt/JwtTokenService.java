@@ -22,7 +22,7 @@ public class JwtTokenService {
         );
     }
 
-    public String generateAccessToken(String userCode, String role) {
+    public String generateAccessToken(String userCode, String role, String status) {
 
         Date issuedAt = new Date();
 
@@ -33,6 +33,7 @@ public class JwtTokenService {
         return Jwts.builder()
                 .subject(userCode)
                 .claim("role", role)
+                .claim("status", status)
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(issuedAt)
                 .expiration(expiration)

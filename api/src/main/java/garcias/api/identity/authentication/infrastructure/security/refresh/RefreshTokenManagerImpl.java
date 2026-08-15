@@ -2,6 +2,7 @@ package garcias.api.identity.authentication.infrastructure.security.refresh;
 
 import garcias.api.identity.authentication.application.security.RefreshTokenManager;
 import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
+import garcias.api.identity.authentication.infrastructure.security.exceptions.TokenGenerationException;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties;
 import org.springframework.stereotype.Service;
 
@@ -83,7 +84,7 @@ public class RefreshTokenManagerImpl implements RefreshTokenManager {
 
         } catch (NoSuchAlgorithmException exception) {
 
-            throw new IllegalStateException(
+            throw new TokenGenerationException(
                     "Hashing algorithm is not available.",
                     exception
             );

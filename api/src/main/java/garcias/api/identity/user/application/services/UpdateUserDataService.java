@@ -3,6 +3,7 @@ package garcias.api.identity.user.application.services;
 import garcias.api.identity.user.application.dto.requests.UpdateUserDataRequest;
 import garcias.api.identity.user.application.usecases.UpdateUserDataUseCase;
 import garcias.api.identity.user.domain.entities.User;
+import garcias.api.identity.user.domain.exceptions.UserNotFoundException;
 import garcias.api.identity.user.domain.repositories.UserRepository;
 import garcias.api.identity.user.domain.valueobjects.UserName;
 
@@ -32,7 +33,7 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        UserNotFoundException::new
                 );
 
 

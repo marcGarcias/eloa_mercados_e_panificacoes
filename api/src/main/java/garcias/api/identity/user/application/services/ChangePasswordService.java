@@ -4,6 +4,8 @@ import garcias.api.identity.user.application.dto.requests.ChangePasswordRequest;
 
 import garcias.api.identity.user.application.usecases.ChangePasswordUseCase;
 import garcias.api.identity.user.domain.entities.User;
+import garcias.api.identity.user.domain.exceptions.InvalidUserPasswordException;
+import garcias.api.identity.user.domain.exceptions.UserNotFoundException;
 import garcias.api.identity.user.domain.repositories.UserRepository;
 import garcias.api.identity.user.domain.valueobjects.Password;
 
@@ -42,9 +44,7 @@ public class ChangePasswordService
 
         User user = userRepository.findById(userId)
                 .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
+                        UserNotFoundException::new
                 );
 
 
@@ -57,9 +57,7 @@ public class ChangePasswordService
 
         if (samePassword) {
 
-            throw new IllegalArgumentException(
-                    "New password cannot be the same as current password"
-            );
+            throw new InvalidUserPasswordException();
         }
 
 

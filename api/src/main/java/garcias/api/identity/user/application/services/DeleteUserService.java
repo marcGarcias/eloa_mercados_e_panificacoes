@@ -2,6 +2,7 @@ package garcias.api.identity.user.application.services;
 
 import garcias.api.identity.user.application.usecases.DeleteUserUseCase;
 import garcias.api.identity.user.domain.entities.User;
+import garcias.api.identity.user.domain.exceptions.UserNotFoundException;
 import garcias.api.identity.user.domain.repositories.UserRepository;
 
 import org.springframework.stereotype.Service;
@@ -28,11 +29,7 @@ public class DeleteUserService implements DeleteUserUseCase {
     public void execute(UUID userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
-                );
+                .orElseThrow(UserNotFoundException::new);
 
 
         userRepository.delete(user);

@@ -1,5 +1,6 @@
 package garcias.api.catalog.category.infrastructure.persistence;
 
+import garcias.api.catalog.category.infrastructure.exceptions.InvalidCategoryEntityStateException;
 import jakarta.persistence.*;
 
 @Entity
@@ -39,16 +40,12 @@ public class CategoryJpaEntity {
         return entity;
     }
 
-    /**
-     * Utilizado quando apenas o ID da categoria é necessário
-     * para criar um relacionamento.
-     */
     public static CategoryJpaEntity reference(
             Long id
     ) {
 
         if (id == null) {
-            throw new IllegalArgumentException(
+            throw new InvalidCategoryEntityStateException(
                     "ID cannot be null"
             );
         }
@@ -67,7 +64,7 @@ public class CategoryJpaEntity {
     ) {
 
         if (id == null) {
-            throw new IllegalArgumentException(
+            throw new InvalidCategoryEntityStateException(
                     "ID cannot be null for update"
             );
         }

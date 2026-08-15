@@ -1,5 +1,6 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
+import garcias.api.identity.authentication.infrastructure.security.exceptions.TokenGenerationException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;

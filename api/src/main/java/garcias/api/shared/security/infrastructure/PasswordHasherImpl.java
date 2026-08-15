@@ -1,6 +1,6 @@
-package garcias.api.identity.user.infrastructure.security;
+package garcias.api.shared.security.infrastructure;
 
-import garcias.api.identity.user.application.security.PasswordHasher;
+import garcias.api.shared.security.application.PasswordHasher;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Component;
 

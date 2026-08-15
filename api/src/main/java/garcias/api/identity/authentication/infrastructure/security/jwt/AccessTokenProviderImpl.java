@@ -42,6 +42,7 @@ public class AccessTokenProviderImpl implements AccessTokenProvider {
                 .compact();
     }
 
+    @Override
     public boolean isValid(String token) {
         try {
             Jwts.parser()
@@ -56,6 +57,7 @@ public class AccessTokenProviderImpl implements AccessTokenProvider {
         }
     }
 
+    @Override
     public String extractUserCode(String token) {
 
         return Jwts.parser()
@@ -66,6 +68,7 @@ public class AccessTokenProviderImpl implements AccessTokenProvider {
                 .getSubject();
     }
 
+    @Override
     public String extractRole(String token) {
 
         return Jwts.parser()

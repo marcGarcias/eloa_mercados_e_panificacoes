@@ -1,6 +1,6 @@
 package garcias.api.identity.authentication.infrastructure.security.refresh;
 
-import garcias.api.identity.authentication.application.security.RefreshTokenProvider;
+import garcias.api.identity.authentication.application.security.RefreshTokenManager;
 import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties;
 import org.springframework.stereotype.Service;
@@ -13,13 +13,13 @@ import java.util.Base64;
 import java.util.Optional;
 
 @Service
-public class RefreshTokenProviderImpl implements RefreshTokenProvider {
+public class RefreshTokenManagerImpl implements RefreshTokenManager {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProperties jwtProperties;
     private final SecureRandom secureRandom;
 
-    public RefreshTokenProviderImpl(
+    public RefreshTokenManagerImpl(
             RefreshTokenRepository refreshTokenRepository,
             JwtProperties jwtProperties
     ) {

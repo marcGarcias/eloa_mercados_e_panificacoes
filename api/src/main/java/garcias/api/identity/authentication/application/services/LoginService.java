@@ -2,10 +2,10 @@ package garcias.api.identity.authentication.application.services;
 
 import garcias.api.identity.authentication.application.dto.requests.LoginRequest;
 import garcias.api.identity.authentication.application.dto.results.LoginResult;
-import garcias.api.identity.authentication.application.security.RefreshTokenProvider;
+import garcias.api.identity.authentication.application.security.RefreshTokenManager;
 import garcias.api.identity.authentication.application.usecases.LoginUseCase;
 import garcias.api.identity.authentication.domain.exceptions.InvalidCredentialsException;
-import garcias.api.identity.authentication.application.security.AccessTokenProvider;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
 import garcias.api.identity.user.application.security.PasswordHasher;
 import garcias.api.identity.user.domain.entities.User;
 import garcias.api.identity.user.domain.enums.UserStatus;
@@ -18,18 +18,18 @@ public class LoginService implements LoginUseCase {
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
-    private final AccessTokenProvider accessTokenProvider;
-    private final RefreshTokenProvider refreshTokenProvider;
+    private final AccessTokenManager accessTokenManager;
+    private final RefreshTokenManager refreshTokenManager;
 
     public LoginService(
             UserRepository userRepository,
             PasswordHasher passwordHasher,
-            AccessTokenProvider accessTokenProvider, RefreshTokenProvider refreshTokenProvider
+            AccessTokenManager accessTokenManager, RefreshTokenManager refreshTokenManager
     ) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
-        this.accessTokenProvider = accessTokenProvider;
-        this.refreshTokenProvider = refreshTokenProvider;
+        this.accessTokenManager = accessTokenManager;
+        this.refreshTokenManager = refreshTokenManager;
     }
 
     public LoginResult execute(LoginRequest request) {
@@ -61,12 +61,13 @@ public class LoginService implements LoginUseCase {
 
         userRepository.save(user);
 
-        String accessToken = accessTokenProvider.generate(
+        String accessToken = accessTokenManager.generate(
                 user.getUserCode().value(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.getStatus().name()
         );
 
-        String refreshToken = refreshTokenProvider.generate(
+        String refreshToken = refreshTokenManager.generate(
                 user.getUserCode().value()
         );
 

@@ -1,6 +1,6 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
-import garcias.api.identity.authentication.application.security.AccessTokenProvider;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +17,10 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final AccessTokenProvider accessTokenProvider;
+    private final AccessTokenManager accessTokenManager;
 
-    public JwtAuthenticationFilter(AccessTokenProvider accessTokenProvider) {
-        this.accessTokenProvider = accessTokenProvider;
+    public JwtAuthenticationFilter(AccessTokenManager accessTokenManager) {
+        this.accessTokenManager = accessTokenManager;
     }
 
     @Override
@@ -39,16 +39,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authorizationHeader.substring(7);
 
-        if (!accessTokenProvider.isValid(token)) {
+        if (!accessTokenManager.isValid(token)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String userCode = accessTokenProvider.extractUserCode(token);
+        String userCode = accessTokenManager.extractUserCode(token);
 
-
-
-        String role = accessTokenProvider.extractRole(token);
+        String role = accessTokenManager.extractRole(token);
 
         var authority = new SimpleGrantedAuthority("ROLE_" + role);
 

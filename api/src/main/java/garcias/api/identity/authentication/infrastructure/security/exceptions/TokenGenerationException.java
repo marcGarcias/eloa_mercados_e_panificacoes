@@ -1,6 +1,8 @@
 package garcias.api.identity.authentication.infrastructure.security.exceptions;
 
-public class TokenGenerationException extends RuntimeException {
+import garcias.api.shared.exceptions.InternalServerException;
+
+public class TokenGenerationException extends InternalServerException {
     public TokenGenerationException(String message, Throwable cause) {
         super(message, cause);
     }

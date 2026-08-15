@@ -1,6 +1,8 @@
 package garcias.api.catalog.product.infrastructure.exceptions;
 
-public class InvalidProductEntityStateException extends RuntimeException {
+import garcias.api.shared.exceptions.DomainException;
+
+public class InvalidProductEntityStateException extends DomainException {
     public InvalidProductEntityStateException(String message) {
         super(message);
     }

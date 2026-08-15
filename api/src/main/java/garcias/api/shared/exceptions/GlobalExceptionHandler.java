@@ -11,11 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-import garcias.api.catalog.product.infrastructure.exceptions.ImageStorageException;
-import garcias.api.catalog.product.infrastructure.exceptions.InvalidProductEntityStateException;
-import garcias.api.catalog.category.infrastructure.exceptions.InvalidCategoryEntityStateException;
-import garcias.api.identity.authentication.infrastructure.security.exceptions.TokenGenerationException;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -150,60 +145,9 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(ImageStorageException.class)
-    public ResponseEntity<ErrorResponse> handleImageStorageException(
-            ImageStorageException exception,
-            HttpServletRequest request
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                exception.getMessage(),
-                                request.getRequestURI(),
-                                LocalDateTime.now()
-                        )
-                );
-    }
-
-    @ExceptionHandler(InvalidProductEntityStateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidProductEntityStateException(
-            InvalidProductEntityStateException exception,
-            HttpServletRequest request
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.BAD_REQUEST.value(),
-                                exception.getMessage(),
-                                request.getRequestURI(),
-                                LocalDateTime.now()
-                        )
-                );
-    }
-
-    @ExceptionHandler(InvalidCategoryEntityStateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCategoryEntityStateException(
-            InvalidCategoryEntityStateException exception,
-            HttpServletRequest request
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(
-                        new ErrorResponse(
-                                HttpStatus.BAD_REQUEST.value(),
-                                exception.getMessage(),
-                                request.getRequestURI(),
-                                LocalDateTime.now()
-                        )
-                );
-    }
-
-    @ExceptionHandler(TokenGenerationException.class)
-    public ResponseEntity<ErrorResponse> handleTokenGenerationException(
-            TokenGenerationException exception,
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<ErrorResponse> handleInternalServerException(
+            InternalServerException exception,
             HttpServletRequest request
     ) {
         return ResponseEntity

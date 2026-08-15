@@ -4,7 +4,7 @@ import garcias.api.identity.authentication.application.dto.requests.LoginRequest
 import garcias.api.identity.authentication.application.dto.responses.LoginResponse;
 import garcias.api.identity.authentication.application.dto.results.LoginResult;
 import garcias.api.identity.authentication.application.usecases.LoginUseCase;
-import garcias.api.identity.authentication.application.usecases.RefreshTokenUseCase;
+import garcias.api.identity.authentication.application.usecases.LoginUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -22,17 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(
-        name = "Authentication",
-        description = "Endpoints responsible for user authentication and token management."
+        name = "Authentication - Login",
+        description = "Endpoint responsible for user authentication."
 )
-public class AuthenticationController {
+public class LoginController {
 
     private final LoginUseCase loginUseCase;
-    private final RefreshTokenUseCase refreshTokenUseCase;
 
-    public AuthenticationController(LoginUseCase loginUseCase, RefreshTokenUseCase refreshTokenUseCase) {
+    public LoginController(LoginUseCase loginUseCase) {
         this.loginUseCase = loginUseCase;
-        this.refreshTokenUseCase = refreshTokenUseCase;
     }
 
     @Operation(
@@ -132,35 +130,4 @@ public class AuthenticationController {
                 )
         );
     }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<LoginResponse> refresh(
-            @CookieValue("refresh_token") String refreshToken,
-            HttpServletResponse response
-    ) {
-
-        LoginResult result = refreshTokenUseCase.execute(
-                refreshToken
-        );
-
-        ResponseCookie refreshTokenCookie = ResponseCookie
-                .from("refresh_token", result.refreshToken())
-                .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
-                .path("/api/auth")
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
-
-        response.addHeader(
-                HttpHeaders.SET_COOKIE,
-                refreshTokenCookie.toString()
-        );
-
-        return ResponseEntity.ok(
-                new LoginResponse(
-                        result.accessToken()
-                )
-        );
-}
 }

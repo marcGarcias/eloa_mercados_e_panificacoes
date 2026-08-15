@@ -1,63 +1,59 @@
 package garcias.api.identity.authentication.application.services;
 
 import garcias.api.identity.authentication.application.dto.results.LoginResult;
-import garcias.api.identity.authentication.application.security.AccessTokenProvider;
-import garcias.api.identity.authentication.application.security.RefreshTokenProvider;
+import garcias.api.identity.authentication.application.dto.results.UserAuthenticationDto;
+import garcias.api.identity.authentication.application.ports.UserAuthenticationPort;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
+import garcias.api.identity.authentication.application.security.RefreshTokenManager;
 import garcias.api.identity.authentication.application.usecases.RefreshTokenUseCase;
 import garcias.api.identity.authentication.domain.exceptions.InvalidCredentialsException;
-import garcias.api.identity.user.domain.entities.User;
-import garcias.api.identity.user.domain.enums.UserStatus;
-import garcias.api.identity.user.domain.repositories.UserRepository;
-import garcias.api.identity.user.domain.valueobjects.UserCode;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RefreshTokenService implements RefreshTokenUseCase {
 
-    private final RefreshTokenProvider refreshTokenProvider;
-    private final AccessTokenProvider accessTokenProvider;
+    private final RefreshTokenManager refreshTokenManager;
+    private final AccessTokenManager accessTokenManager;
+    private final UserAuthenticationPort userAuthenticationPort;
 
-    public RefreshTokenService(RefreshTokenProvider refreshTokenProvider,
-                               AccessTokenProvider accessTokenProvider,
-                               UserRepository userRepository)
+    public RefreshTokenService(RefreshTokenManager refreshTokenManager,
+                               AccessTokenManager accessTokenManager,
+                               UserAuthenticationPort userAuthenticationPort)
     {
-        this.refreshTokenProvider = refreshTokenProvider;
-        this.accessTokenProvider = accessTokenProvider;
-        this.userRepository = userRepository;
+        this.refreshTokenManager = refreshTokenManager;
+        this.accessTokenManager = accessTokenManager;
+        this.userAuthenticationPort = userAuthenticationPort;
     }
-
-    private final UserRepository userRepository;
 
     @Override
     public LoginResult execute(String refreshToken) {
 
-        String userCode = refreshTokenProvider
+        String userCode = refreshTokenManager
                 .findUserCode(refreshToken)
                 .orElseThrow(
                         InvalidCredentialsException::new
                 );
 
-        User user = userRepository
-                .findByUserCode(
-                        new UserCode(userCode)
-                )
+        UserAuthenticationDto user = userAuthenticationPort
+                .findByUserCode(userCode)
                 .orElseThrow(
                         InvalidCredentialsException::new
                 );
 
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        if (!"ACTIVE".equals(user.status())) {
             throw new InvalidCredentialsException();
         }
 
-        refreshTokenProvider.revoke(refreshToken);
+        refreshTokenManager.revoke(refreshToken);
 
-        String accessToken = accessTokenProvider.generate(
-                user.getUserCode().value(),
-                user.getRole().name()
+        String accessToken = accessTokenManager.generate(
+                user.userCode(),
+                user.role(),
+                user.status()
         );
 
-        String newRefreshToken = refreshTokenProvider.generate(
-                user.getUserCode().value()
+        String newRefreshToken = refreshTokenManager.generate(
+                user.userCode()
         );
 
         return new LoginResult(

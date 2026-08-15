@@ -109,6 +109,59 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(
+            UnauthorizedException exception,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.UNAUTHORIZED.value(),
+                                exception.getMessage(),
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(
+            ForbiddenException exception,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.FORBIDDEN.value(),
+                                exception.getMessage(),
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
+    }
+
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<ErrorResponse> handleInternalServerException(
+            InternalServerException exception,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                exception.getMessage(),
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(
             Exception exception,

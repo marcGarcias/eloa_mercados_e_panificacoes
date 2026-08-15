@@ -2,10 +2,13 @@ package garcias.api.identity.authentication.infrastructure.persistence;
 
 import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Repository
 public class RefreshTokenRedisRepository implements RefreshTokenRepository {
@@ -30,8 +33,7 @@ public class RefreshTokenRedisRepository implements RefreshTokenRepository {
         redisTemplate.opsForValue().set(
                 buildKey(tokenHash),
                 userCode,
-                expiration,
-                TimeUnit.MILLISECONDS
+                Duration.ofSeconds(expiration)
         );
     }
 
@@ -55,6 +57,37 @@ public class RefreshTokenRedisRepository implements RefreshTokenRepository {
         redisTemplate.delete(
                 buildKey(tokenHash)
         );
+    }
+
+    @Override
+    public void deleteByUserCode(
+            String userCode
+    ) {
+
+        List<String> keysToDelete = new ArrayList<>();
+
+        ScanOptions options = ScanOptions.scanOptions()
+                .match(KEY_PREFIX + "*")
+                .count(100)
+                .build();
+
+        try (var cursor = redisTemplate.scan(options)) {
+
+            cursor.forEachRemaining(key -> {
+
+                String storedUserCode = redisTemplate
+                        .opsForValue()
+                        .get(key);
+
+                if (userCode.equals(storedUserCode)) {
+                    keysToDelete.add(key);
+                }
+            });
+        }
+
+        if (!keysToDelete.isEmpty()) {
+            redisTemplate.delete(keysToDelete);
+        }
     }
 
     private String buildKey(String tokenHash) {

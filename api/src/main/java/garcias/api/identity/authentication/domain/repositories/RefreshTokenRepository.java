@@ -17,4 +17,8 @@ public interface RefreshTokenRepository {
     void deleteByTokenHash(
             String tokenHash
     );
+
+    void deleteByUserCode(
+            String userCode
+    );
 }

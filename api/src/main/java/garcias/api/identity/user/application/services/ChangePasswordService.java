@@ -1,13 +1,13 @@
 package garcias.api.identity.user.application.services;
 
 import garcias.api.identity.user.application.dto.requests.ChangePasswordRequest;
-
 import garcias.api.identity.user.application.usecases.ChangePasswordUseCase;
 import garcias.api.identity.user.domain.entities.User;
+import garcias.api.identity.user.domain.exceptions.InvalidUserPasswordException;
+import garcias.api.identity.user.domain.exceptions.UserNotFoundException;
 import garcias.api.identity.user.domain.repositories.UserRepository;
 import garcias.api.identity.user.domain.valueobjects.Password;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
+import garcias.api.shared.security.application.PasswordHasher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +22,15 @@ public class ChangePasswordService
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordHasher passwordHasher;
 
 
     public ChangePasswordService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordHasher passwordHasher
     ) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordHasher = passwordHasher;
     }
 
 
@@ -42,14 +42,12 @@ public class ChangePasswordService
 
         User user = userRepository.findById(userId)
                 .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
+                        UserNotFoundException::new
                 );
 
 
         boolean samePassword =
-                passwordEncoder.matches(
+                passwordHasher.matches(
                         request.newPassword(),
                         user.getPassword().value()
                 );
@@ -57,14 +55,12 @@ public class ChangePasswordService
 
         if (samePassword) {
 
-            throw new IllegalArgumentException(
-                    "New password cannot be the same as current password"
-            );
+            throw new InvalidUserPasswordException();
         }
 
 
         String encodedPassword =
-                passwordEncoder.encode(
+                passwordHasher.hash(
                         request.newPassword()
                 );
 

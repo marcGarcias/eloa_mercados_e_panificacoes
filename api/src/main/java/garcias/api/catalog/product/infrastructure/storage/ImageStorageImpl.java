@@ -2,6 +2,8 @@ package garcias.api.catalog.product.infrastructure.storage;
 
 
 import garcias.api.catalog.product.application.storage.ImageStorage;
+import garcias.api.catalog.product.domain.exceptions.ImageNotFoundException;
+import garcias.api.catalog.product.infrastructure.exceptions.ImageStorageException;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -66,7 +68,7 @@ public class ImageStorageImpl implements ImageStorage {
         } catch(IOException exception) {
 
 
-            throw new RuntimeException(
+            throw new ImageStorageException(
                     "Could not save image",
                     exception
             );
@@ -132,7 +134,7 @@ public class ImageStorageImpl implements ImageStorage {
         } catch(IOException exception) {
 
 
-            throw new RuntimeException(
+            throw new ImageStorageException(
                     "Could not delete image",
                     exception
             );
@@ -166,9 +168,7 @@ public class ImageStorageImpl implements ImageStorage {
                     || !resource.isReadable()) {
 
 
-                throw new RuntimeException(
-                        "Image not found"
-                );
+                throw new ImageNotFoundException();
             }
 
 
@@ -180,7 +180,7 @@ public class ImageStorageImpl implements ImageStorage {
         } catch(MalformedURLException exception) {
 
 
-            throw new RuntimeException(
+            throw new ImageStorageException(
                     "Could not load image",
                     exception
             );

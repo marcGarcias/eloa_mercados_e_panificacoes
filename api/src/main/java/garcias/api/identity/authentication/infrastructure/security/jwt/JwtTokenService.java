@@ -1,5 +1,6 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
+import garcias.api.identity.authentication.infrastructure.security.exceptions.TokenGenerationException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class JwtTokenService {
         );
     }
 
-    public String generateAccessToken(String userCode, String role) {
+    public String generateAccessToken(String userCode, String role, String status) {
 
         Date issuedAt = new Date();
 
@@ -33,6 +34,7 @@ public class JwtTokenService {
         return Jwts.builder()
                 .subject(userCode)
                 .claim("role", role)
+                .claim("status", status)
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(issuedAt)
                 .expiration(expiration)

@@ -1,73 +1,72 @@
 package garcias.api.identity.authentication.application.services;
 
+import garcias.api.identity.authentication.application.dto.events.UserLoggedInEvent;
 import garcias.api.identity.authentication.application.dto.requests.LoginRequest;
 import garcias.api.identity.authentication.application.dto.results.LoginResult;
-import garcias.api.identity.authentication.application.security.RefreshTokenProvider;
+import garcias.api.identity.authentication.application.dto.results.UserAuthenticationDto;
+import garcias.api.identity.authentication.application.ports.UserAuthenticationPort;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
+import garcias.api.identity.authentication.application.security.RefreshTokenManager;
 import garcias.api.identity.authentication.application.usecases.LoginUseCase;
 import garcias.api.identity.authentication.domain.exceptions.InvalidCredentialsException;
-import garcias.api.identity.authentication.application.security.AccessTokenProvider;
-import garcias.api.identity.user.application.security.PasswordHasher;
-import garcias.api.identity.user.domain.entities.User;
-import garcias.api.identity.user.domain.enums.UserStatus;
-import garcias.api.identity.user.domain.repositories.UserRepository;
-import garcias.api.identity.user.domain.valueobjects.UserCode;
+import garcias.api.shared.security.application.PasswordHasher;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService implements LoginUseCase {
 
-    private final UserRepository userRepository;
+    private final UserAuthenticationPort userAuthenticationPort;
     private final PasswordHasher passwordHasher;
-    private final AccessTokenProvider accessTokenProvider;
-    private final RefreshTokenProvider refreshTokenProvider;
+    private final AccessTokenManager accessTokenManager;
+    private final RefreshTokenManager refreshTokenManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     public LoginService(
-            UserRepository userRepository,
+            UserAuthenticationPort userAuthenticationPort,
             PasswordHasher passwordHasher,
-            AccessTokenProvider accessTokenProvider, RefreshTokenProvider refreshTokenProvider
+            AccessTokenManager accessTokenManager,
+            RefreshTokenManager refreshTokenManager,
+            ApplicationEventPublisher eventPublisher
     ) {
-        this.userRepository = userRepository;
+        this.userAuthenticationPort = userAuthenticationPort;
         this.passwordHasher = passwordHasher;
-        this.accessTokenProvider = accessTokenProvider;
-        this.refreshTokenProvider = refreshTokenProvider;
+        this.accessTokenManager = accessTokenManager;
+        this.refreshTokenManager = refreshTokenManager;
+        this.eventPublisher = eventPublisher;
     }
 
     public LoginResult execute(LoginRequest request) {
 
-        UserCode userCode = new UserCode(
-                request.userCode()
-        );
-
-        User user = userRepository
-                .findByUserCode(userCode)
+        UserAuthenticationDto user = userAuthenticationPort
+                .findByUserCode(request.userCode())
                 .orElseThrow(
                         InvalidCredentialsException::new
                 );
 
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        if (!"ACTIVE".equals(user.status())) {
             throw new InvalidCredentialsException();
         }
 
         boolean passwordMatches = passwordHasher.matches(
                 request.password(),
-                user.getPassword().value()
+                user.hashedPassword()
         );
 
         if (!passwordMatches) {
             throw new InvalidCredentialsException();
         }
 
-        user.recordLogin();
+        eventPublisher.publishEvent(new UserLoggedInEvent(user.userCode()));
 
-        userRepository.save(user);
-
-        String accessToken = accessTokenProvider.generate(
-                user.getUserCode().value(),
-                user.getRole().name()
+        String accessToken = accessTokenManager.generate(
+                user.userCode(),
+                user.role(),
+                user.status()
         );
 
-        String refreshToken = refreshTokenProvider.generate(
-                user.getUserCode().value()
+        String refreshToken = refreshTokenManager.generate(
+                user.userCode()
         );
 
         return new LoginResult(

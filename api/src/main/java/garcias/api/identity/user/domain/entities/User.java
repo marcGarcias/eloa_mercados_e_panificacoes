@@ -6,6 +6,7 @@ import garcias.api.identity.user.domain.valueobjects.Password;
 import garcias.api.identity.user.domain.valueobjects.UserCode;
 import garcias.api.identity.user.domain.valueobjects.UserId;
 import garcias.api.identity.user.domain.valueobjects.UserName;
+import garcias.api.shared.exceptions.ValueObjectCannotBeNullException;
 
 import java.time.LocalDateTime;
 
@@ -59,8 +60,8 @@ public class User {
     public void changeName(UserName name) {
 
         if (name == null) {
-            throw new IllegalArgumentException(
-                    "User name cannot be null"
+            throw new ValueObjectCannotBeNullException(
+                    "User name"
             );
         }
 
@@ -71,8 +72,8 @@ public class User {
     public void changePassword(Password newPassword) {
 
         if (newPassword == null) {
-            throw new IllegalArgumentException(
-                    "User password cannot be null"
+            throw new ValueObjectCannotBeNullException(
+                    "User password"
             );
         }
 
@@ -83,8 +84,8 @@ public class User {
     public void changeRole(UserRole role) {
 
         if (role == null) {
-            throw new IllegalArgumentException(
-                    "User role cannot be null"
+            throw new ValueObjectCannotBeNullException(
+                    "User role"
             );
         }
 
@@ -95,8 +96,8 @@ public class User {
     public void changeStatus(UserStatus status) {
 
         if (status == null) {
-            throw new IllegalArgumentException(
-                    "User status cannot be null"
+            throw new ValueObjectCannotBeNullException(
+                    "User status"
             );
         }
 

@@ -2,6 +2,7 @@ package garcias.api.catalog.product.infrastructure.persistence;
 
 import garcias.api.catalog.category.infrastructure.persistence.CategoryJpaEntity;
 import garcias.api.catalog.product.domain.enums.ProductStatus;
+import garcias.api.catalog.product.infrastructure.exceptions.InvalidProductEntityStateException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -112,7 +113,7 @@ public class ProductJpaEntity {
 
         if (id == null) {
 
-            throw new IllegalArgumentException(
+            throw new InvalidProductEntityStateException(
                     "ID cannot be null for update"
             );
 

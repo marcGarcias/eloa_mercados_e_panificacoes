@@ -1,21 +1,20 @@
 package garcias.api.identity.user.domain.valueobjects;
 
+import garcias.api.shared.exceptions.AttributeCannotBeEmptyException;
+import garcias.api.shared.exceptions.AttributeTooLongException;
+
 public record UserName(String value) {
 
     public UserName {
 
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(
-                    "User name cannot be empty"
-            );
+            throw new AttributeCannotBeEmptyException("User name");
         }
 
         value = value.trim();
 
         if (value.length() > 150) {
-            throw new IllegalArgumentException(
-                    "User name must have maximum 150 characters"
-            );
+            throw new AttributeTooLongException("User name", "150");
         }
     }
 }

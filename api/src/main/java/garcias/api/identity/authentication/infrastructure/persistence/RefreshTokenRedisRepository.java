@@ -5,10 +5,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Repository
 public class RefreshTokenRedisRepository implements RefreshTokenRepository {
@@ -33,8 +33,7 @@ public class RefreshTokenRedisRepository implements RefreshTokenRepository {
         redisTemplate.opsForValue().set(
                 buildKey(tokenHash),
                 userCode,
-                expiration,
-                TimeUnit.MILLISECONDS
+                Duration.ofSeconds(expiration)
         );
     }
 

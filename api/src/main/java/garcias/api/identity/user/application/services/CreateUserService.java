@@ -1,7 +1,7 @@
 package garcias.api.identity.user.application.services;
 
 import garcias.api.identity.user.application.dto.requests.CreateUserRequest;
-import garcias.api.identity.user.application.security.PasswordHasher;
+import garcias.api.shared.security.application.PasswordHasher;
 import garcias.api.identity.user.application.usecases.CreateUserUseCase;
 import garcias.api.identity.user.domain.entities.User;
 import garcias.api.identity.user.domain.repositories.UserRepository;

@@ -1,4 +1,4 @@
-package garcias.api.identity.user.application.security;
+package garcias.api.shared.security.application;
 
 public interface PasswordHasher {
 

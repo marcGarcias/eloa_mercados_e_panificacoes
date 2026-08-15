@@ -1,61 +1,42 @@
 package garcias.api.identity.authentication.application.services;
 
+import garcias.api.identity.authentication.application.dto.events.BootstrapUserRequestedEvent;
 import garcias.api.identity.authentication.application.dto.requests.BootstrapUserRequest;
 import garcias.api.identity.authentication.application.dto.responses.BootstrapUserResponse;
+import garcias.api.identity.authentication.application.ports.UserAuthenticationPort;
 import garcias.api.identity.authentication.application.usecases.BootstrapUserUseCase;
 import garcias.api.identity.authentication.domain.exceptions.BootstrapAlreadyCompletedException;
-import garcias.api.identity.user.application.dto.requests.CreateUserRequest;
-import garcias.api.identity.user.application.usecases.CreateUserUseCase;
-import garcias.api.identity.user.domain.entities.User;
-import garcias.api.identity.user.domain.enums.UserRole;
-import garcias.api.identity.user.domain.enums.UserStatus;
-import garcias.api.identity.user.domain.repositories.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
-public class BootstrapUserService
-        implements BootstrapUserUseCase {
+public class BootstrapUserService implements BootstrapUserUseCase {
 
-    private final UserRepository userRepository;
-    private final CreateUserUseCase createUserUseCase;
+    private final UserAuthenticationPort userAuthenticationPort;
+    private final ApplicationEventPublisher eventPublisher;
 
     public BootstrapUserService(
-            UserRepository userRepository,
-            CreateUserUseCase createUserUseCase
+            UserAuthenticationPort userAuthenticationPort,
+            ApplicationEventPublisher eventPublisher
     ) {
-        this.userRepository = userRepository;
-        this.createUserUseCase = createUserUseCase;
+        this.userAuthenticationPort = userAuthenticationPort;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
-    public BootstrapUserResponse execute(
-            BootstrapUserRequest request
-    ) {
+    public BootstrapUserResponse execute(BootstrapUserRequest request) {
 
-        if (userRepository.existsAnyUser()) {
+        if (userAuthenticationPort.existsAnyUser()) {
             throw new BootstrapAlreadyCompletedException();
         }
 
-        CreateUserRequest createUserRequest =
-                new CreateUserRequest(
+        eventPublisher.publishEvent(
+                new BootstrapUserRequestedEvent(
                         request.name(),
-                        request.password(),
-                        UserRole.SUPER_ADMIN,
-                        UserStatus.ACTIVE
-                );
-
-        User user =
-                createUserUseCase.execute(
-                        createUserRequest
-                );
-
-        return new BootstrapUserResponse(
-                user.getName().value(),
-                user.getUserCode().value(),
-                user.getRole(),
-                user.getStatus()
+                        request.password()
+                )
         );
+
+        return new BootstrapUserResponse("Bootstrap process initiated successfully.");
     }
 }

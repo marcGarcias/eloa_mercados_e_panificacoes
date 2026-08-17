@@ -4,7 +4,6 @@ import garcias.api.identity.authentication.application.dto.requests.LoginRequest
 import garcias.api.identity.authentication.application.dto.responses.LoginResponse;
 import garcias.api.identity.authentication.application.dto.results.LoginResult;
 import garcias.api.identity.authentication.application.usecases.LoginUseCase;
-import garcias.api.identity.authentication.application.usecases.LoginUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

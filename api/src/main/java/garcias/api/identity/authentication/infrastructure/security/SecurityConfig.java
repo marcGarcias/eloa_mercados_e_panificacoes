@@ -24,7 +24,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
     ) {
-
         return http
                 .csrf(AbstractHttpConfigurer::disable)
 

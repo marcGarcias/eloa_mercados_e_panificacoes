@@ -1,0 +1,331 @@
+/* ================================================
+   Modal Produto — Estilos escopados
+   ================================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(46, 36, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: var(--white, #fff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(46, 36, 28, 0.22);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.is-open .modal {
+  transform: translateY(0) scale(1);
+}
+
+/* ---- Cabecalho ---- */
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line, #E7DACB);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-family: var(--font-title, 'Lora', serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dark-premium, #4C2D19);
+}
+
+.modal-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray, #8A7F74);
+  transition: background 0.15s, color 0.15s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.modal-close-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.modal-close-btn:hover {
+  background: var(--secondary, #F5E9DD);
+  color: var(--dark, #2E241C);
+}
+
+/* ---- Corpo / Formulario ---- */
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark, #2E241C);
+}
+
+.field-hint {
+  font-weight: 400;
+  color: var(--gray, #8A7F74);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line, #E7DACB);
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--bg, #FBF7F1);
+  color: var(--dark, #2E241C);
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--tan, #BF9B79);
+}
+
+.field.has-error input,
+.field.has-error select {
+  border-color: #C0392B;
+}
+
+.field-error {
+  font-size: 11.5px;
+  color: #C0392B;
+  margin-top: 2px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ---- Upload de foto ---- */
+.photo-upload-area {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.photo-preview-box {
+  width: 88px;
+  height: 88px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line, #E7DACB);
+  background: var(--secondary, #F5E9DD);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
+}
+
+.photo-preview-box.has-photo {
+  border-color: var(--tan, #BF9B79);
+}
+
+.photo-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--tan, #BF9B79);
+}
+
+.photo-placeholder svg {
+  width: 28px;
+  height: 28px;
+}
+
+.photo-placeholder span {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.photo-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.photo-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.photo-upload-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.photo-filename {
+  font-size: 11.5px;
+  color: var(--gray, #8A7F74);
+  word-break: break-all;
+}
+
+.photo-clear-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray, #8A7F74);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  align-self: flex-start;
+}
+
+.photo-clear-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.photo-clear-btn:hover {
+  background: #FBEAE7;
+  color: #A5402F;
+}
+
+/* ---- Botoes ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: var(--white, #fff);
+  color: var(--dark, #2E241C);
+  border: 1px solid var(--line, #E7DACB);
+}
+
+.btn-ghost:not(:disabled):hover {
+  border-color: var(--tan, #BF9B79);
+}
+
+.btn-solid {
+  background: var(--green, #24412A);
+  color: var(--white, #fff);
+}
+
+.btn-solid:not(:disabled):hover {
+  background: var(--green-hover, #17301C);
+}
+
+.btn-small {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+/* ---- Rodape ---- */
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line, #E7DACB);
+  margin-top: 4px;
+}
+
+/* ---- Spinner ---- */
+.spinner-icon {
+  width: 15px;
+  height: 15px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Responsivo ---- */
+@media (max-width: 600px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    max-width: 100%;
+    border-radius: 12px 12px 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 90vh;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+}

@@ -1,0 +1,48 @@
+<div class="overlay" id="overlay-usuario">
+        <div class="modal">
+            <div class="modal-head">
+                <h2>Novo usuário</h2>
+                <button class="modal-close" data-close>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="field">
+                    <label>Nome completo</label>
+                    <input type="text" placeholder="Ex: Renata Souza">
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>E-mail</label>
+                        <input type="email" placeholder="nome@eloa.com.br">
+                    </div>
+                    <div class="field">
+                        <label>CPF</label>
+                        <input type="text" placeholder="000.000.000-00">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>Função</label>
+                        <select id="usuario-role">
+                            <option value="admin">Administrador</option>
+                            <option value="editor">Editor</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Senha</label>
+                        <div class="password-field">
+                            <input type="password" id="usuario-senha" placeholder="Mínimo 8 caracteres">
+                            <button type="button" class="password-toggle" id="toggle-senha" title="Mostrar senha">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>

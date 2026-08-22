@@ -1,0 +1,73 @@
+<section class="view active" id="view-usuarios">
+    <div class="page-head">
+        <div>
+            <h1>Usuários</h1>
+            <p>Pessoas com acesso ao painel administrativo.</p>
+        </div>
+        <div class="head-actions">
+            <button class="btn btn-solid" id="btn-novo-usuario">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                Usuário
+            </button>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Senha</th>
+                    <th>Função</th>
+                    <th>Status</th>
+                    <th>Último acesso</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="users-body">
+                <tr *ngFor="let u of users">
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar">{{ getInitials(u.name) }}</div>
+                            <div>
+                                <div class="user-name">{{ u.name }}</div>
+                                <div class="user-email">{{ u.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color:var(--gray)">{{ u.cpf }}</td>
+                    <td>
+                        <div class="pass-cell">
+                            <span class="pass-value">••••••••</span>
+                            <button class="icon-btn" style="width:24px;height:24px" title="Copiar nova senha">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                    <td><span class="tag" [ngClass]="u.role === 'admin' ? 'tag-admin' : 'tag-editor'">{{ u.role === 'admin' ? 'Administrador' : 'Editor' }}</span></td>
+                    <td>
+                        <div class="status-toggle" style="padding:0;border:none;background:transparent;width:34px">
+                            <label class="switch" style="margin:0">
+                                <input type="checkbox" [checked]="u.status === 'ativo'">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </td>
+                    <td style="color:var(--gray)">{{ u.access }}</td>
+                    <td>
+                        <div style="display:flex;gap:4px">
+                            <button class="icon-btn" title="Editar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                            </button>
+                            <button class="icon-btn danger" title="Excluir">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2-2L6 6"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>

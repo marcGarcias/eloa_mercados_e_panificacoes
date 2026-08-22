@@ -1,0 +1,141 @@
+<section class="view active" id="view-catalogo">
+  <div class="page-head">
+    <div>
+      <h1>Catalogo</h1>
+      <p>Gerencie os produtos disponiveis no cardapio.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-ghost" id="btn-nova-categoria" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Categoria
+      </button>
+      <button class="btn btn-solid" id="btn-novo-produto" type="button" (click)="openCreateModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Produto
+      </button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="chips" id="filters">
+      <button
+        *ngFor="let cat of categories"
+        class="chip"
+        [class.active]="cat === activeFilter"
+        (click)="setFilter(cat)"
+        type="button"
+      >
+        {{ cat }}
+      </button>
+    </div>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3" />
+      </svg>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Buscar produto..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+  </div>
+
+  <div class="drag-hint" id="drag-hint" [style.opacity]="activeFilter === 'Todos' ? '1' : '0.4'">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="6" r="1" />
+      <circle cx="15" cy="6" r="1" />
+      <circle cx="9" cy="12" r="1" />
+      <circle cx="15" cy="12" r="1" />
+      <circle cx="9" cy="18" r="1" />
+      <circle cx="15" cy="18" r="1" />
+    </svg>
+    Arraste os cards para definir a ordem de exibicao no site.
+  </div>
+
+  <div 
+    class="grid" 
+    id="products" 
+    *ngIf="filteredProducts.length > 0; else emptyState"
+    cdkDropList 
+    cdkDropListOrientation="mixed"
+    [cdkDropListDisabled]="activeFilter !== 'Todos'"
+    (cdkDropListDropped)="onDrop($event)"
+  >
+    <div *ngFor="let p of filteredProducts" class="card" cdkDrag>
+      <div class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+          <circle cx="9" cy="6" r="1.5" />
+          <circle cx="15" cy="6" r="1.5" />
+          <circle cx="9" cy="12" r="1.5" />
+          <circle cx="15" cy="12" r="1.5" />
+          <circle cx="9" cy="18" r="1.5" />
+          <circle cx="15" cy="18" r="1.5" />
+        </svg>
+      </div>
+      <div class="card-media" style="background: #F5E9DD">
+        <div class="no-image" style="color: #BF9B79" *ngIf="!p.imagem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="9" cy="9" r="1.5" />
+            <path d="M21 15l-5-5-4 4-2-2-5 5" />
+          </svg>
+          <span>Sem imagem</span>
+        </div>
+        <img *ngIf="p.imagem" [src]="p.imagem" [alt]="p.nome" style="width:100%;height:100%;object-fit:cover" />
+        <span
+          class="card-status"
+          [ngClass]="p.status === 'ativo' ? 'status-ativo' : 'status-inativo'"
+        >
+          {{ p.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="card-cat">{{ p.categoria }}</div>
+        <div class="card-name">{{ p.nome }}</div>
+        <div class="card-meta">
+          <div class="card-weight">{{ p.peso }}</div>
+          <div class="card-actions">
+            <button class="icon-btn" title="Editar produto" type="button" (click)="openEditModal(p)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+            </button>
+            <button class="icon-btn danger" title="Excluir produto" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18" />
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty" id="empty-state" style="display: block">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3" />
+      </svg>
+      <p>Nenhum produto encontrado.</p>
+    </div>
+  </ng-template>
+</section>
+
+<!-- Modal de Produto (criacao / edicao) -->
+<app-modal-produto
+  [isOpen]="isProductModalOpen"
+  [product]="editingProduct"
+  [categories]="adminCategories"
+  (saved)="onProductSaved($event)"
+  (closed)="onProductModalClosed()"
+>
+</app-modal-produto>

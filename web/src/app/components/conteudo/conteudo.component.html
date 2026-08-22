@@ -1,131 +1,322 @@
-<section class="view" id="view-conteudo">
-                <div class="page-head">
-                    <div>
-                        <h1>Conteúdo</h1>
-                        <p>Textos e informações exibidos no site.</p>
+<section class="view active" id="view-conteudo">
+    <div class="page-head">
+        <div>
+            <h1>Conteúdo</h1>
+            <p>Textos e informações exibidos no site.</p>
+        </div>
+    </div>
+
+    <div [formGroup]="contentForm">
+
+        <!-- ACORDEON -->
+        <div class="accordion">
+
+            <!-- 1. Banner -->
+            <div class="accordion-item" [class.open]="openSection === 'banner'">
+                <button class="accordion-header" type="button" (click)="toggleSection('banner')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">1</span>
+                        Banner
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="banner">
+                    <div class="field">
+                        <label>Selo <span class="field-hint">(frase de destaque)</span></label>
+                        <input type="text" formControlName="selo" placeholder="Ex: Bem-vindo à Eloa">
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Título</label>
+                            <input type="text" formControlName="titulo" placeholder="Ex: Pães fresquinhos todos os dias.">
+                        </div>
+                        <div class="field">
+                            <label>Subtítulo</label>
+                            <input type="text" formControlName="subtitulo" placeholder="Ex: A melhor padaria da região.">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Descrição</label>
+                        <textarea rows="3" formControlName="descricao" placeholder="Texto de apoio do banner..."></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Indicadores <span class="field-hint">(3 indicadores)</span></label>
+                        <div class="list-items" formArrayName="indicadores">
+                            <div class="list-item" *ngFor="let ind of bannerIndicadores.controls; let i = index" [formGroupName]="i">
+                                <div class="list-item-label">Indicador {{ i + 1 }}</div>
+                                <div class="field-row" style="margin-bottom:0">
+                                    <div class="field">
+                                        <label class="field-sublabel">Título</label>
+                                        <input type="text" formControlName="nome" placeholder="Ex: Anos de Tradição">
+                                    </div>
+                                    <div class="field">
+                                        <label class="field-sublabel">Valor</label>
+                                        <input type="text" formControlName="valor" placeholder="Ex: 10+">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="content-grid">
-
-                    <!-- Comercial -->
-                    <div class="content-card">
-                        <div>
-                            <div class="card-title">Comercial</div>
-                            <div class="card-sub">Seção principal exibida no topo do site.</div>
+            <!-- 2. Diferenciais -->
+            <div class="accordion-item" [class.open]="openSection === 'diferenciais'">
+                <button class="accordion-header" type="button" (click)="toggleSection('diferenciais')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">2</span>
+                        Diferenciais
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="diferenciais">
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Selo</label>
+                            <input type="text" formControlName="selo" placeholder="Ex: Nossos Diferenciais">
                         </div>
                         <div class="field">
-                            <label>Título comercial</label>
-                            <input type="text" value="Pães fresquinhos todos os dias.">
-                        </div>
-                        <div class="field">
-                            <label>Texto comercial</label>
-                            <textarea rows="3">Doces, bolos, salgados, bebidas e produtos de mercado em um só lugar.</textarea>
-                        </div>
-                        <div class="content-foot">
-                            <button class="btn btn-solid btn-small">Salvar alterações</button>
+                            <label>Título</label>
+                            <input type="text" formControlName="titulo" placeholder="Ex: Por que escolher a Eloa?">
                         </div>
                     </div>
-
-                    <!-- Sobre -->
-                    <div class="content-card">
-                        <div>
-                            <div class="card-title">Sobre</div>
-                            <div class="card-sub">Texto institucional e diferenciais da padaria.</div>
-                        </div>
-                        <div class="field">
-                            <label>Título sobre</label>
-                            <input type="text" value="Mais que uma padaria.">
-                        </div>
-                        <div class="field">
-                            <label>Texto sobre</label>
-                            <textarea rows="3">Na Eloa Mercados & Panificações acreditamos que pão quentinho é sinônimo de carinho. Produzimos diariamente pães, doces, bolos e salgados sempre buscando qualidade, sabor e atendimento próximo dos nossos clientes.</textarea>
-                        </div>
-                        <div class="field">
-                            <label>Lista de diferenciais</label>
-                            <div class="diff-list" id="diff-list"></div>
-                            <button class="btn btn-ghost btn-small" id="btn-add-diff" style="margin-top:10px">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round">
-                                    <path d="M12 5v14M5 12h14" />
-                                </svg>
-                                Adicionar diferencial
-                            </button>
-                        </div>
-                        <div class="content-foot">
-                            <button class="btn btn-solid btn-small">Salvar alterações</button>
+                    <div class="field">
+                        <label>Descrição</label>
+                        <textarea rows="2" formControlName="descricao" placeholder="Texto de apoio..."></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Cards <span class="field-hint">(3 cards)</span></label>
+                        <div class="list-items" formArrayName="cards">
+                            <div class="list-item" *ngFor="let card of diferenciaisCards.controls; let i = index" [formGroupName]="i">
+                                <div class="list-item-label">Card {{ i + 1 }}</div>
+                                <div class="field-row" style="margin-bottom:0">
+                                    <div class="field">
+                                        <label class="field-sublabel">Título</label>
+                                        <input type="text" formControlName="titulo" placeholder="Ex: Qualidade Premium">
+                                    </div>
+                                    <div class="field">
+                                        <label class="field-sublabel">Texto</label>
+                                        <input type="text" formControlName="texto" placeholder="Ex: Ingredientes selecionados...">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Contato -->
-                    <div class="content-card full">
-                        <div>
-                            <div class="card-title">Contato</div>
-                            <div class="card-sub">Horário de funcionamento, endereço e redes sociais.</div>
-                        </div>
-
-                        <div class="field">
-                            <label>Dias de funcionamento</label>
-                            <div class="day-chips" id="day-chips"></div>
-                        </div>
-
-                        <div class="field-row">
-                            <div class="field">
-                                <label>Horário de abertura</label>
-                                <input type="time" value="07:00">
-                            </div>
-                            <div class="field">
-                                <label>Horário de fechamento</label>
-                                <input type="time" value="19:00">
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label>Endereço físico</label>
-                            <input type="text" placeholder="Rua, número, bairro, cidade">
-                        </div>
-
-                        <div class="field">
-                            <label style="margin-bottom:10px">Redes sociais</label>
-                        </div>
-
-                        <div class="social-row">
-                            <div class="field">
-                                <label>WhatsApp</label>
-                                <input type="text" placeholder="(11) 94792-5296">
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="social-row">
-                            <div class="field">
-                                <label>Instagram</label>
-                                <input type="text" placeholder="@eloamercados">
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="social-row">
-                            <div class="field">
-                                <label>Facebook</label>
-                                <input type="text" placeholder="facebook.com/eloamercados">
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="content-foot">
-                            <button class="btn btn-solid btn-small">Salvar alterações</button>
-                        </div>
-                    </div>
-
                 </div>
-            </section>
+            </div>
+
+            <!-- 3. Catálogo -->
+            <div class="accordion-item" [class.open]="openSection === 'catalogo'">
+                <button class="accordion-header" type="button" (click)="toggleSection('catalogo')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">3</span>
+                        Catálogo
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="catalogo">
+                    <div class="field">
+                        <label>Selo</label>
+                        <input type="text" formControlName="selo" placeholder="Ex: Nosso Catálogo">
+                    </div>
+                    <div class="field">
+                        <label>Descrição</label>
+                        <textarea rows="3" formControlName="descricao" placeholder="Texto de apoio do catálogo..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Sobre Nós -->
+            <div class="accordion-item" [class.open]="openSection === 'sobre'">
+                <button class="accordion-header" type="button" (click)="toggleSection('sobre')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">4</span>
+                        Sobre Nós
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="sobre">
+                    <div class="field">
+                        <label>Selo</label>
+                        <input type="text" formControlName="selo" placeholder="Ex: Sobre Nós">
+                    </div>
+                    <div class="field">
+                        <label>Título</label>
+                        <input type="text" formControlName="titulo" placeholder="Ex: Mais que uma padaria.">
+                    </div>
+                    <div class="field">
+                        <label>Descrição</label>
+                        <textarea rows="3" formControlName="descricao" placeholder="Texto institucional..."></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Lista <span class="field-hint">(5 itens)</span></label>
+                        <div class="list-items" formArrayName="lista">
+                            <div class="list-item" *ngFor="let item of sobreLista.controls; let i = index" [formGroupName]="i">
+                                <div class="list-item-label">Item {{ i + 1 }}</div>
+                                <div class="field-row" style="margin-bottom:0">
+                                    <div class="field">
+                                        <label class="field-sublabel">Título</label>
+                                        <input type="text" formControlName="nome" placeholder="Ex: Missão">
+                                    </div>
+                                    <div class="field">
+                                        <label class="field-sublabel">Texto</label>
+                                        <input type="text" formControlName="descricao" placeholder="Ex: Levar qualidade para sua mesa.">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Estatísticas -->
+            <div class="accordion-item" [class.open]="openSection === 'estatisticas'">
+                <button class="accordion-header" type="button" (click)="toggleSection('estatisticas')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">5</span>
+                        Estatísticas
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="estatisticas">
+                    <div class="field">
+                        <label>Lista <span class="field-hint">(4 itens)</span></label>
+                        <div class="list-items" formArrayName="lista">
+                            <div class="list-item" *ngFor="let est of estatisticasLista.controls; let i = index" [formGroupName]="i">
+                                <div class="list-item-label">Estatística {{ i + 1 }}</div>
+                                <div class="field-row" style="margin-bottom:0">
+                                    <div class="field">
+                                        <label class="field-sublabel">Título</label>
+                                        <input type="text" formControlName="nome" placeholder="Ex: Pães Assados">
+                                    </div>
+                                    <div class="field">
+                                        <label class="field-sublabel">Valor</label>
+                                        <input type="text" formControlName="valor" placeholder="Ex: 1M+">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. CTA -->
+            <div class="accordion-item" [class.open]="openSection === 'cta'">
+                <button class="accordion-header" type="button" (click)="toggleSection('cta')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">6</span>
+                        CTA
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="cta">
+                    <div class="field">
+                        <label>Selo</label>
+                        <input type="text" formControlName="selo" placeholder="Ex: Faça seu Pedido">
+                    </div>
+                    <div class="field">
+                        <label>Título</label>
+                        <input type="text" formControlName="titulo" placeholder="Ex: Pronto para experimentar?">
+                    </div>
+                    <div class="field">
+                        <label>Descrição</label>
+                        <textarea rows="2" formControlName="descricao" placeholder="Texto de apoio do CTA..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Rodapé -->
+            <div class="accordion-item" [class.open]="openSection === 'rodape'">
+                <button class="accordion-header" type="button" (click)="toggleSection('rodape')">
+                    <span class="accordion-title">
+                        <span class="accordion-number">7</span>
+                        Rodapé
+                    </span>
+                    <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="accordion-body" formGroupName="rodape">
+                    <div class="field">
+                        <label>Descrição</label>
+                        <textarea rows="2" formControlName="descricao" placeholder="Ex: Sua padaria de confiança..."></textarea>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Texto para Contato</label>
+                            <input type="text" formControlName="textoContato" placeholder="Ex: Entre em contato pelo WhatsApp...">
+                        </div>
+                        <div class="field">
+                            <label>Texto de Direitos Autorais</label>
+                            <input type="text" formControlName="textoDireitos" placeholder="Ex: © 2026 Eloa Mercados. Todos os direitos reservados.">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /accordion -->
+
+        <!-- DADOS GERAIS (fora do acordeon) -->
+        <div class="dados-card" formGroupName="dados">
+            <div class="dados-header">
+                <div class="dados-title">Dados</div>
+                <div class="dados-sub">Informações gerais do estabelecimento.</div>
+            </div>
+            <div class="field">
+                <label>Endereço</label>
+                <input type="text" formControlName="endereco" placeholder="Ex: Rua das Flores, 123, Centro, São Paulo - SP">
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label>Dias de Funcionamento</label>
+                    <input type="text" formControlName="diasFuncionamento" placeholder="Ex: Segunda a Sábado">
+                </div>
+                <div class="field">
+                    <label>Horário de Abertura</label>
+                    <input type="time" formControlName="horarioAbertura">
+                </div>
+                <div class="field">
+                    <label>Horário de Fechamento</label>
+                    <input type="time" formControlName="horarioFechamento">
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label>WhatsApp</label>
+                    <input type="text" formControlName="whatsapp" placeholder="Ex: (11) 94792-5296">
+                </div>
+                <div class="field">
+                    <label>CNPJ</label>
+                    <input type="text" formControlName="cnpj" placeholder="Ex: 00.000.000/0001-00">
+                </div>
+            </div>
+        </div><!-- /dados -->
+
+    </div>
+
+    <!-- Sticky Save Bar -->
+    <div class="save-bar">
+        <span class="save-bar-hint">Todas as seções serão salvas juntas.</span>
+        <button class="btn btn-solid" (click)="saveContent()" [disabled]="isSaving">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            {{ isSaving ? 'Salvando...' : 'Salvar Conteúdo' }}
+        </button>
+    </div>
+
+</section>

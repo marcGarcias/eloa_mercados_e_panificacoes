@@ -1,1 +1,173 @@
-/* Styles for conteudo */
+/* ---- Accordion ---- */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--line, #E7DACB);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.accordion-header:hover {
+  background: var(--secondary, #FAF5EF);
+}
+
+.accordion-item.open .accordion-header {
+  background: var(--secondary, #FAF5EF);
+}
+
+.accordion-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #2E241C);
+}
+
+.accordion-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--primary, #C07A45);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.accordion-chevron {
+  width: 18px;
+  height: 18px;
+  color: var(--gray, #9E8B7A);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.accordion-item.open .accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  display: none;
+  padding: 20px 22px 24px;
+  border-top: 1px solid var(--line, #E7DACB);
+  background: var(--white, #fff);
+}
+
+.accordion-item.open .accordion-body {
+  display: block;
+}
+
+/* ---- List Items ---- */
+.list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list-item {
+  background: var(--secondary, #FAF5EF);
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.list-item-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary, #C07A45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.list-item .field-row {
+  gap: 10px;
+}
+
+/* ---- Field sub-label (inside list items) ---- */
+.field-sublabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray, #9E8B7A);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* ---- Dados card (below accordion) ---- */
+.dados-card {
+  margin-top: 20px;
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 12px;
+  background: var(--white, #fff);
+  padding: 22px;
+}
+
+.dados-header {
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line, #E7DACB);
+}
+
+.dados-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text, #2E241C);
+  margin-bottom: 4px;
+}
+
+.dados-sub {
+  font-size: 12px;
+  color: var(--gray, #9E8B7A);
+}
+
+/* ---- Sticky Save Bar ---- */
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 14px 22px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line, #E7DACB);
+  border-radius: 0 0 12px 12px;
+  margin-top: 20px;
+  z-index: 50;
+}
+
+.save-bar-hint {
+  font-size: 12px;
+  color: var(--gray, #9E8B7A);
+  flex: 1;
+}

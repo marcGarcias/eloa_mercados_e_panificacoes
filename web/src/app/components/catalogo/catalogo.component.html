@@ -5,13 +5,23 @@
       <p>Gerencie os produtos disponiveis no cardapio.</p>
     </div>
     <div class="head-actions">
-      <button class="btn btn-ghost" id="btn-nova-categoria" type="button">
+      <button class="btn btn-ghost" type="button" (click)="toggleEditMode()" [class.active]="isEditMode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </svg>
+        {{ isEditMode ? 'Sair da Edição' : 'Editar Catálogo' }}
+      </button>
+      <button *ngIf="isEditMode" class="btn btn-solid" style="background-color: var(--danger, #dc3545)" type="button" (click)="saveChanges()" [disabled]="!hasChanges">
+        Salvar Alterações
+      </button>
+      <button *ngIf="!isEditMode" class="btn btn-ghost" id="btn-nova-categoria" type="button" (click)="openCreateCategoryModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <path d="M12 5v14M5 12h14" />
         </svg>
         Categoria
       </button>
-      <button class="btn btn-solid" id="btn-novo-produto" type="button" (click)="openCreateModal()">
+      <button *ngIf="!isEditMode" class="btn btn-solid" id="btn-novo-produto" type="button" (click)="openCreateModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <path d="M12 5v14M5 12h14" />
         </svg>
@@ -23,13 +33,17 @@
   <div class="toolbar">
     <div class="chips" id="filters">
       <button
-        *ngFor="let cat of categories"
+        *ngFor="let cat of visibleCategories"
         class="chip"
         [class.active]="cat === activeFilter"
         (click)="setFilter(cat)"
         type="button"
       >
         {{ cat }}
+        <svg *ngIf="isEditMode && cat !== 'Todos'" (click)="markCategoryForDeletion(cat, $event)" style="width: 14px; height: 14px; margin-left: 6px; cursor: pointer; color: var(--danger, #dc3545);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
       </button>
     </div>
     <div class="search">
@@ -46,7 +60,7 @@
     </div>
   </div>
 
-  <div class="drag-hint" id="drag-hint" [style.opacity]="activeFilter === 'Todos' ? '1' : '0.4'">
+  <div class="drag-hint" id="drag-hint" *ngIf="isEditMode && activeFilter === 'Todos'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="9" cy="6" r="1" />
       <circle cx="15" cy="6" r="1" />
@@ -64,11 +78,11 @@
     *ngIf="filteredProducts.length > 0; else emptyState"
     cdkDropList 
     cdkDropListOrientation="mixed"
-    [cdkDropListDisabled]="activeFilter !== 'Todos'"
+    [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos'"
     (cdkDropListDropped)="onDrop($event)"
   >
     <div *ngFor="let p of filteredProducts" class="card" cdkDrag>
-      <div class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
+      <div *ngIf="isEditMode" class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
           <circle cx="9" cy="6" r="1.5" />
           <circle cx="15" cy="6" r="1.5" />
@@ -107,7 +121,7 @@
                 <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
             </button>
-            <button class="icon-btn danger" title="Excluir produto" type="button">
+            <button *ngIf="isEditMode" class="icon-btn danger" title="Excluir produto" type="button" (click)="p.id && markProductForDeletion(p.id)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 6h18" />
                 <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6" />
@@ -139,3 +153,11 @@
   (closed)="onProductModalClosed()"
 >
 </app-modal-produto>
+
+<!-- Modal de Categoria (criacao) -->
+<app-modal-categoria
+  [isOpen]="isCategoryModalOpen"
+  (saved)="onCategorySaved($event)"
+  (closed)="onCategoryModalClosed()"
+>
+</app-modal-categoria>

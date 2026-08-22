@@ -1,1 +1,176 @@
-/* Styles for modal-categoria */
+/* ================================================
+   Modal Categoria — Estilos escopados
+   Segue o mesmo padrao visual do Modal Produto
+   ================================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(46, 36, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: var(--white, #fff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(46, 36, 28, 0.22);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.is-open .modal {
+  transform: translateY(0) scale(1);
+}
+
+/* ---- Cabecalho ---- */
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line, #E7DACB);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-family: var(--font-title, 'Lora', serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dark-premium, #4C2D19);
+}
+
+.modal-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #7A6355);
+  transition: background 0.15s, color 0.15s;
+}
+
+.modal-close-btn:hover {
+  background: var(--surface, #F5EEE8);
+  color: var(--dark-premium, #4C2D19);
+}
+
+.modal-close-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Corpo / Formulario ---- */
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-premium, #4C2D19);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line, #E7DACB);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--text, #3D2B1E);
+  background: var(--white, #fff);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.field input:focus {
+  border-color: var(--primary, #C07A45);
+  box-shadow: 0 0 0 3px rgba(192, 122, 69, 0.12);
+}
+
+.field.has-error input {
+  border-color: var(--danger, #dc3545);
+}
+
+.field-error {
+  font-size: 12px;
+  color: var(--danger, #dc3545);
+}
+
+/* ---- Rodape ---- */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.18s, opacity 0.18s, transform 0.12s;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: var(--surface, #F5EEE8);
+  color: var(--dark-premium, #4C2D19);
+  border: 1.5px solid var(--line, #E7DACB);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--line, #E7DACB);
+}
+
+.btn-solid {
+  background: var(--primary, #C07A45);
+  color: #fff;
+}
+
+.btn-solid:hover:not(:disabled) {
+  background: var(--primary-dark, #A66535);
+  transform: translateY(-1px);
+}

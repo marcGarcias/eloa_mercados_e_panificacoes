@@ -5,12 +5,14 @@ import { ProductService } from '../../services/product.service';
 import { CategoryAdminService } from '../../services/category-admin.service';
 import { Product, ProductAdminResponse, CategoryAdminResponse } from '../../models/product.model';
 import { ModalProdutoComponent } from '../../shared/modal-produto/modal-produto.component';
+import { ModalCategoriaComponent } from '../../shared/modal-categoria/modal-categoria.component';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalProdutoComponent, DragDropModule],
+  imports: [CommonModule, FormsModule, ModalProdutoComponent, ModalCategoriaComponent, DragDropModule],
   templateUrl: './catalogo.component.html',
   styleUrls: ['./catalogo.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,17 +36,33 @@ export class CatalogoComponent implements OnInit {
   searchTerm: string = '';
 
   // ----------------------------------------------------------------
-  // Estado do modal de produto
+  // Estado do modal de produto e categoria
   // ----------------------------------------------------------------
 
   /** Controla visibilidade do modal de produto */
   isProductModalOpen: boolean = false;
+
+  /** Controla visibilidade do modal de categoria */
+  isCategoryModalOpen: boolean = false;
 
   /** Produto sendo editado; null = modo criacao */
   editingProduct: ProductAdminResponse | null = null;
 
   /** Categorias para o select do modal (com id+name, da API admin) */
   adminCategories: CategoryAdminResponse[] = [];
+
+  // ----------------------------------------------------------------
+  // Estado do Modo de Edição
+  // ----------------------------------------------------------------
+
+  isEditMode: boolean = false;
+  deletedProductIds: Set<number> = new Set();
+  deletedCategoryNames: Set<string> = new Set();
+  hasOrderChanges: boolean = false;
+
+  get hasChanges(): boolean {
+    return this.deletedProductIds.size > 0 || this.deletedCategoryNames.size > 0 || this.hasOrderChanges;
+  }
 
   constructor(
     private readonly productService: ProductService,
@@ -84,8 +102,12 @@ export class CatalogoComponent implements OnInit {
     this.activeFilter = cat;
   }
 
+  get visibleCategories(): string[] {
+    return this.categories.filter(c => !this.deletedCategoryNames.has(c));
+  }
+
   get filteredProducts(): Product[] {
-    let result = this.products;
+    let result = this.products.filter(p => p.id && !this.deletedProductIds.has(p.id));
     if (this.activeFilter !== 'Todos') {
       result = result.filter(p => p.categoria === this.activeFilter);
     }
@@ -147,12 +169,122 @@ export class CatalogoComponent implements OnInit {
   }
 
   // ----------------------------------------------------------------
+  // Acoes do modal de categoria
+  // ----------------------------------------------------------------
+
+  openCreateCategoryModal(): void {
+    this.isCategoryModalOpen = true;
+    this.cdr.markForCheck();
+  }
+
+  onCategorySaved(category: CategoryAdminResponse): void {
+    console.log('[CatalogoComponent] Categoria salva:', category);
+    this.isCategoryModalOpen = false;
+    this.loadAdminCategories(); // Recarrega categorias da API
+    this.loadProducts(); // No mundo real, caso mude algo global
+    this.cdr.markForCheck();
+  }
+
+  onCategoryModalClosed(): void {
+    this.isCategoryModalOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  // ----------------------------------------------------------------
+  // Modo de Edição e Salvamento em Lote
+  // ----------------------------------------------------------------
+
+  toggleEditMode(): void {
+    if (this.isEditMode && this.hasChanges) {
+      if (!confirm('Existem alterações não salvas. Deseja descartá-las?')) {
+        return;
+      }
+    }
+    this.isEditMode = !this.isEditMode;
+    if (!this.isEditMode) {
+      // Descarta alterações e recarrega tudo
+      this.deletedProductIds.clear();
+      this.deletedCategoryNames.clear();
+      this.hasOrderChanges = false;
+      this.loadProducts();
+    }
+    this.cdr.markForCheck();
+  }
+
+  markProductForDeletion(id: number): void {
+    this.deletedProductIds.add(id);
+    this.cdr.markForCheck();
+  }
+
+  markCategoryForDeletion(name: string, event: Event): void {
+    event.stopPropagation();
+
+    // Bloquear exclusão se houver produtos vinculados à categoria
+    const hasLinkedProducts = this.products.some(
+      p => p.categoria === name && p.id && !this.deletedProductIds.has(p.id)
+    );
+
+    if (hasLinkedProducts) {
+      alert(`Não é possível excluir a categoria "${name}" pois ela possui produtos vinculados. Exclua ou mova os produtos antes de remover a categoria.`);
+      return;
+    }
+
+    this.deletedCategoryNames.add(name);
+    // Se excluiu o filtro ativo, muda para 'Todos'
+    if (this.activeFilter === name) {
+      this.activeFilter = 'Todos';
+    }
+    this.cdr.markForCheck();
+  }
+
+  saveChanges(): void {
+    if (!this.hasChanges) return;
+
+    // 1. Produtos para deletar
+    const productsToDelete = Array.from(this.deletedProductIds);
+    // 2. Categorias para deletar (encontrar o ID a partir do nome)
+    const categoryIdsToDelete = Array.from(this.deletedCategoryNames)
+      .map(name => this.adminCategories.find(c => c.name === name)?.id)
+      .filter(id => id != null) as number[];
+    // 3. Produtos atualizados (ordem) - exclui os que foram deletados
+    const productsToUpdateOrder = this.products
+      .filter(p => p.id && !this.deletedProductIds.has(p.id))
+      .map(p => ({ id: p.id!, position: p.order ?? 0 }));
+
+    const requests = [];
+
+    if (productsToDelete.length > 0) {
+      requests.push(this.productService.deleteProducts(productsToDelete));
+    }
+    if (categoryIdsToDelete.length > 0) {
+      requests.push(this.categoryAdminService.deleteCategories(categoryIdsToDelete));
+    }
+    if (this.hasOrderChanges) {
+      requests.push(this.productService.updateOrder(productsToUpdateOrder));
+    }
+
+    if (requests.length === 0) return;
+
+    forkJoin(requests).subscribe(() => {
+      console.log('[CatalogoComponent] Alterações em lote salvas com sucesso.');
+      this.isEditMode = false;
+      this.deletedProductIds.clear();
+      this.deletedCategoryNames.clear();
+      this.hasOrderChanges = false;
+      
+      this.loadProducts();
+      this.loadAdminCategories();
+      this.cdr.markForCheck();
+    });
+  }
+
+  // ----------------------------------------------------------------
   // Drag and Drop (Ordenacao)
   // ----------------------------------------------------------------
 
   onDrop(event: CdkDragDrop<Product[]>): void {
-    // Só permite reordenar se estiver visualizando "Todos"
-    if (this.activeFilter !== 'Todos') return;
+    // Só permite reordenar se estiver visualizando "Todos" e em modo edição
+    if (!this.isEditMode || this.activeFilter !== 'Todos') return;
 
     moveItemInArray(this.products, event.previousIndex, event.currentIndex);
     
@@ -161,9 +293,7 @@ export class CatalogoComponent implements OnInit {
       p.order = index;
     });
     
-    // TODO: Na integracao real, chamar o backend para salvar a nova ordem
-    // this.productService.updateOrder(this.products.map(p => p.id)).subscribe();
-    
+    this.hasOrderChanges = true;
     this.cdr.markForCheck();
   }
 }

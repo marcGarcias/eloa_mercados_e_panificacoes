@@ -35,4 +35,13 @@ export class CategoryAdminService {
     // return this.http.get<CategoryAdminResponse[]>(this.apiUrl);
     return of(this.mockCategories);
   }
+
+  /**
+   * Remove múltiplas categorias em lote.
+   */
+  deleteCategories(ids: number[]): Observable<void> {
+    // TODO: Substituir por chamada HTTP real:
+    // return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids });
+    return of(undefined);
+  }
 }

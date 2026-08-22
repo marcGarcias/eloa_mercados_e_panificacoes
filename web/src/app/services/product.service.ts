@@ -126,6 +126,25 @@ export class ProductService {
     throw new Error('ProductService.delete() nao implementado — integracao futura');
   }
 
+  /**
+   * Remove múltiplos produtos em lote.
+   * Exclui os produtos cujos IDs foram informados.
+   */
+  deleteProducts(ids: number[]): Observable<void> {
+    // TODO: Substituir por chamada HTTP real:
+    // return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids });
+    return of(undefined);
+  }
+
+  /**
+   * Atualiza a ordem de exibição dos produtos em lote.
+   */
+  updateOrder(products: {id: number, position: number}[]): Observable<void> {
+    // TODO: Substituir por chamada HTTP real:
+    // return this.http.put<void>(`${this.apiUrl}/order`, products);
+    return of(undefined);
+  }
+
   // ----------------------------------------------------------------
   // Helpers de FormData
   // ----------------------------------------------------------------

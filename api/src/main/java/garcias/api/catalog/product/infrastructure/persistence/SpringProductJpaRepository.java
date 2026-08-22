@@ -28,4 +28,8 @@ public interface SpringProductJpaRepository
     List<ProductJpaEntity> findByPositionGreaterThan(Long position);
 
     boolean existsByCategory_Id(Long categoryId);
+
+    @EntityGraph(attributePaths = {"category"})
+    @Query("SELECT p FROM ProductJpaEntity p WHERE p.id IN :ids")
+    List<ProductJpaEntity> findAllByIdIn(@Param("ids") List<Long> ids);
 }

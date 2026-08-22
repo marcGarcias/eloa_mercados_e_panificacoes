@@ -1,6 +1,7 @@
 package garcias.api.catalog.product.infrastructure.persistence;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -171,5 +172,48 @@ public class ProductRepositoryImpl implements ProductRepository {
         }
 
         return repository.existsByCategory_Id(categoryId.value());
+    }
+
+    @Override
+    public List<Product> findAllByIds(List<ProductId> ids) {
+
+        List<Long> rawIds =
+                ids.stream()
+                        .map(ProductId::value)
+                        .toList();
+
+        return repository
+                .findAllByIdIn(rawIds)
+                .stream()
+                .map(ProductMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void reorderAll(Map<ProductId, CatalogPosition> newPositions) {
+
+        List<Long> rawIds =
+                newPositions.keySet()
+                        .stream()
+                        .map(ProductId::value)
+                        .toList();
+
+        List<ProductJpaEntity> entities =
+                repository.findAllByIdIn(rawIds);
+
+        for (ProductJpaEntity entity : entities) {
+
+            CatalogPosition newPosition =
+                    newPositions.get(new ProductId(entity.getId()));
+
+            if (newPosition != null) {
+                entity.setPosition(newPosition.value());
+            }
+        }
+
+        // As entidades sao gerenciadas pelo EntityManager dentro da transacao,
+        // o flush automatico persiste as mudancas sem necessidade de save() explicito.
+        entityManager.flush();
     }
 }

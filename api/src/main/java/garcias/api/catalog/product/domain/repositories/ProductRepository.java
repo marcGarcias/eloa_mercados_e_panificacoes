@@ -8,6 +8,8 @@ import garcias.api.catalog.product.domain.valueobjects.ProductId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ProductRepository {
@@ -39,4 +41,18 @@ public interface ProductRepository {
     );
 
     boolean existsByCategoryId(CategoryId categoryId);
+
+    /**
+     * Busca multiplos produtos por uma lista de IDs.
+     * Usado para validar a existencia de todos os produtos antes de reordenar.
+     */
+    List<Product> findAllByIds(List<ProductId> ids);
+
+    /**
+     * Reescreve as posicoes de todos os produtos recebidos no mapa
+     * em uma unica transacao atomica.
+     * Nao utiliza a logica de deslocamento do updatePosition.
+     */
+    void reorderAll(Map<ProductId, CatalogPosition> newPositions);
+
 }

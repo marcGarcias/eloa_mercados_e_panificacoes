@@ -1,29 +1,29 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
+import { ModalUsuarioComponent } from '../../../../shared/modal-usuario/modal-usuario.component';
+
+// ModalProdutoComponent removido do layout global:
+// agora e controlado diretamente pelo CatalogoComponent.
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ModalCategoriaComponent, ModalUsuarioComponent],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
-  isSidebarOpen = false;
 
-  get isOwner() {
-    return this.authService.currentUser?.role === 'Owner';
+  ngOnInit(): void {
+    document.body.classList.add('admin-layout');
   }
 
-  get isEditor() {
-    return this.authService.currentUser?.role === 'Editor';
-  }
-
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
+  ngOnDestroy(): void {
+    document.body.classList.remove('admin-layout');
   }
 }

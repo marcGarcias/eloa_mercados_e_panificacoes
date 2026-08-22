@@ -8,19 +8,19 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => import('../../components/conteudo/conteudo.component').then(m => m.ConteudoComponent)
       },
       {
         path: 'catalog',
-        loadComponent: () => import('./pages/catalog/catalog.component').then(m => m.CatalogComponent)
+        loadComponent: () => import('../../components/catalogo/catalogo.component').then(m => m.CatalogoComponent)
       },
       {
         path: 'users',
-        loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent)
+        loadComponent: () => import('../../components/usuarios/usuarios.component').then(m => m.UsuariosComponent)
       },
       {
         path: '',
-        redirectTo: 'home',
+        redirectTo: 'catalog',
         pathMatch: 'full'
       }
     ]

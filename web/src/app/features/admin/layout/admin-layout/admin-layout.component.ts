@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
-import { ModalUsuarioComponent } from '../../../../shared/modal-usuario/modal-usuario.component';
 
 // ModalProdutoComponent removido do layout global:
 // agora e controlado diretamente pelo CatalogoComponent.
@@ -11,7 +10,7 @@ import { ModalUsuarioComponent } from '../../../../shared/modal-usuario/modal-us
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, ModalCategoriaComponent, ModalUsuarioComponent],
+  imports: [CommonModule, RouterModule, ModalCategoriaComponent],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

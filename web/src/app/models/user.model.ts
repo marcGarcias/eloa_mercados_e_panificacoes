@@ -1,7 +1,6 @@
 export interface User {
   name: string;
-  email: string;
-  cpf: string;
+  code: string;
   role: 'admin' | 'editor';
   status: 'ativo' | 'inativo';
   access: string;

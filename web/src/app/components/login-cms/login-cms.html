@@ -4,16 +4,18 @@
             <div class="brand-text">Eloa <small>ADMIN</small></div>
             <p>Entre com sua conta para gerenciar o painel.</p>
         </div>
-        <form class="login-form">
-            <div class="login-error"></div>
+        <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="login-error" [class.show]="loginError">
+                {{ loginError }}
+            </div>
             <div class="field">
                 <label>Código de acesso</label>
-                <input type="text" placeholder="Digite seu codigo de acesso" required>
+                <input type="text" formControlName="userCode" placeholder="Digite seu codigo de acesso">
             </div>
             <div class="field">
                 <label>Senha</label>
                 <div class="password-field">
-                    <input [type]="showPassword ? 'text' : 'password'" placeholder="Digite sua senha" required>
+                    <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Digite sua senha">
                     <button type="button" class="password-toggle" (click)="togglePassword()" [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
                         @if (showPassword) {
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -31,7 +33,13 @@
                     </button>
                 </div>
             </div>
-            <button type="submit" class="btn btn-solid login-submit">Entrar</button>
+            <button type="submit" class="btn btn-solid login-submit" [disabled]="loginForm.invalid || isLoading">
+                @if (isLoading) {
+                    Carregando...
+                } @else {
+                    Entrar
+                }
+            </button>
         </form>
     </div>
 </div>

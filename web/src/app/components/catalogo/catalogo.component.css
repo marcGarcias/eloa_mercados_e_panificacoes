@@ -59,3 +59,16 @@
 .drag-handle-hint:active {
   cursor: grabbing;
 }
+
+/* Botao Editar Catalogo — estado ativo (modo edicao ligado) */
+.btn-ghost.active {
+  background: var(--primary, #C07A45);
+  color: #fff;
+  border-color: var(--primary, #C07A45);
+}
+
+/* No modo edicao, o drag handle e sempre visivel */
+:host-context([data-edit-mode="true"]) .drag-handle-hint,
+.edit-mode-active .drag-handle-hint {
+  opacity: 1;
+}

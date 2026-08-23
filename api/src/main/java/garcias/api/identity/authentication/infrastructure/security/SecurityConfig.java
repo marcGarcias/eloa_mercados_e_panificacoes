@@ -36,19 +36,29 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/bootstrap",
                                 "/api/public/**"
                         ).permitAll()
 
+                        // 1º MAIS ESPECÍFICOS PRIMEIRO
+                        .requestMatchers(
+                                "/api/admin/products/**",
+                                "/api/admin/categories/**"
+                        ).hasAnyRole("SUPER_ADMIN", "ADMIN", "EDITOR")
+
+                        .requestMatchers("/api/admin/content/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN")
+
+                        // 2º REGRA GERAL (CATCH-ALL DO ADMIN) FICA POR ÚLTIMO
                         .requestMatchers("/api/admin/**")
                         .hasRole("SUPER_ADMIN")
 
                         .anyRequest()
                         .authenticated()
                 )
+
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,

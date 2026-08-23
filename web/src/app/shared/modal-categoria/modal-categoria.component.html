@@ -1,24 +1,49 @@
-<div class="overlay" id="overlay-categoria">
-        <div class="modal">
-            <div class="modal-head">
-                <h2>Categorias</h2>
-                <button class="modal-close" data-close>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round">
-                        <path d="M18 6L6 18M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="field">
-                    <label>Categorias existentes</label>
-                    <div class="cat-list" id="cat-list"></div>
-                </div>
-                <div class="field">
-                    <label>Nova categoria</label>
-                    <div class="cat-add-row">
-                        <input type="text" id="new-cat-input" placeholder="Ex: Salgados">
-                        <button class="btn btn-solid btn-small" id="btn-add-cat">Adicionar</button>
-                    </div>
-                </div>
-            </div>
+<div
+  class="modal-overlay"
+  [class.is-open]="isOpen"
+  (click)="onOverlayClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Nova categoria"
+>
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <!-- Cabecalho -->
+    <div class="modal-head">
+      <h2 class="modal-title">Nova categoria</h2>
+      <button class="modal-close-btn" type="button" (click)="close()" aria-label="Fechar modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Corpo -->
+    <form class="modal-body" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Nome da Categoria -->
+      <div class="field" [class.has-error]="isFieldInvalid('name')">
+        <label for="mc-name">Nome da categoria</label>
+        <input
+          id="mc-name"
+          type="text"
+          formControlName="name"
+          placeholder="Ex: Salgados"
+          autocomplete="off"
+        />
+        <span class="field-error" *ngIf="isFieldInvalid('name')">
+          {{ getFieldError('name') }}
+        </span>
+      </div>
+
+      <!-- Rodape -->
+      <div class="modal-footer">
+        <button class="btn btn-ghost" type="button" (click)="close()">Cancelar</button>
+        <button class="btn btn-solid" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Criando...' : 'Criar categoria' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

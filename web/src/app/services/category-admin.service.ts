@@ -15,15 +15,6 @@ import { CategoryAdminResponse } from '../models/product.model';
 export class CategoryAdminService {
   private readonly apiUrl = (environment?.apiUrl ?? '') + '/api/admin/categories';
 
-  // Dados mock para desenvolvimento — remover quando integrar com a API real
-  private readonly mockCategories: CategoryAdminResponse[] = [
-    { id: 1, name: 'Paes' },
-    { id: 2, name: 'Doces' },
-    { id: 3, name: 'Bolos' },
-    { id: 4, name: 'Salgados' },
-    { id: 5, name: 'Bebidas' },
-  ];
-
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -31,8 +22,13 @@ export class CategoryAdminService {
    * Endpoint: GET /api/admin/categories
    */
   getAll(): Observable<CategoryAdminResponse[]> {
-    // TODO: Substituir por chamada HTTP real quando integrar o backend:
-    // return this.http.get<CategoryAdminResponse[]>(this.apiUrl);
-    return of(this.mockCategories);
+    return this.http.get<CategoryAdminResponse[]>(this.apiUrl);
+  }
+
+  /**
+   * Remove múltiplas categorias em lote.
+   */
+  deleteCategories(ids: number[]): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids });
   }
 }

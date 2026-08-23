@@ -5,7 +5,7 @@
             <p>Pessoas com acesso ao painel administrativo.</p>
         </div>
         <div class="head-actions">
-            <button class="btn btn-solid" id="btn-novo-usuario">
+            <button class="btn btn-solid" id="btn-novo-usuario" (click)="openCreateModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <path d="M12 5v14M5 12h14" />
                 </svg>
@@ -18,7 +18,6 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>CPF</th>
                     <th>Senha</th>
                     <th>Função</th>
                     <th>Status</th>
@@ -30,19 +29,24 @@
                 <tr *ngFor="let u of users">
                     <td>
                         <div class="user-cell">
-                            <div class="avatar">{{ getInitials(u.name) }}</div>
                             <div>
                                 <div class="user-name">{{ u.name }}</div>
-                                <div class="user-email">{{ u.email }}</div>
+                                <div class="user-email">Cód: {{ u.code }}</div>
                             </div>
                         </div>
                     </td>
-                    <td style="color:var(--gray)">{{ u.cpf }}</td>
                     <td>
-                        <div class="pass-cell">
-                            <span class="pass-value">••••••••</span>
-                            <button class="icon-btn" style="width:24px;height:24px" title="Copiar nova senha">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <div class="pass-cell" style="display:flex;align-items:center;gap:8px">
+                            <span class="pass-value" style="font-family:monospace">{{ visiblePasswords.has(u.code) ? u.password : '••••••••' }}</span>
+                            <button class="icon-btn" style="width:24px;height:24px" title="Ver senha" (click)="togglePasswordVisibility(u.code)">
+                                <svg *ngIf="!visiblePasswords.has(u.code)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg *ngIf="visiblePasswords.has(u.code)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
                             </button>
                         </div>
                     </td>
@@ -58,10 +62,10 @@
                     <td style="color:var(--gray)">{{ u.access }}</td>
                     <td>
                         <div style="display:flex;gap:4px">
-                            <button class="icon-btn" title="Editar">
+                            <button class="icon-btn" title="Editar" (click)="openEditModal(u)">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                             </button>
-                            <button class="icon-btn danger" title="Excluir">
+                            <button class="icon-btn danger" title="Excluir" (click)="openDeleteConfirm(u)">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2-2L6 6"/></svg>
                             </button>
                         </div>
@@ -71,3 +75,30 @@
         </table>
     </div>
 </section>
+
+<!-- Confirm Delete Modal -->
+<div class="overlay" *ngIf="userToDelete" style="display:flex;">
+    <div class="modal" style="max-width: 400px;">
+        <div class="modal-head">
+            <h2>Excluir usuário</h2>
+            <button class="modal-close" (click)="cancelDelete()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding-bottom: 24px;">
+            <p>Tem certeza que deseja excluir o usuário <strong>{{ userToDelete.name }} (Cód: {{ userToDelete.code }})</strong>?</p>
+            <p style="color: var(--gray); font-size: 13px; margin-top: 8px;">Esta ação não poderá ser desfeita.</p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-ghost" (click)="cancelDelete()">Cancelar</button>
+            <button class="btn btn-solid danger" (click)="deleteUser()">Excluir</button>
+        </div>
+    </div>
+</div>
+
+<app-modal-usuario
+    *ngIf="isUserModalOpen"
+    [user]="userToEdit"
+    (saved)="onUserSaved($event)"
+    (closed)="closeUserModal()">
+</app-modal-usuario>

@@ -80,12 +80,12 @@ export class ConteudoComponent implements OnInit {
   }
 
   private loadContent() {
-    this.contentService.getContent().subscribe(data => {
+    this.contentService.getContent().subscribe((data: SiteContent) => {
       this.clearFormArrays();
-      data.banner.indicadores.forEach(ind => this.bannerIndicadores.push(this.createIndicador(ind)));
-      data.diferenciais.cards.forEach(card => this.diferenciaisCards.push(this.createCard(card)));
-      data.sobre.lista.forEach(item => this.sobreLista.push(this.createDescricaoItem(item)));
-      data.estatisticas.lista.forEach(est => this.estatisticasLista.push(this.createIndicador(est)));
+      data.banner.indicadores.forEach((ind: any) => this.bannerIndicadores.push(this.createIndicador(ind)));
+      data.diferenciais.cards.forEach((card: any) => this.diferenciaisCards.push(this.createCard(card)));
+      data.sobre.lista.forEach((item: any) => this.sobreLista.push(this.createDescricaoItem(item)));
+      data.estatisticas.lista.forEach((est: any) => this.estatisticasLista.push(this.createIndicador(est)));
       this.contentForm.patchValue(data);
     });
   }

@@ -87,19 +87,24 @@ export class AuthService {
       return of(this.isLoggedIn());
     }
     
-    // Se ainda não inicializamos, tenta o refresh silencioso
+    return this.silentRefresh().pipe(
+      tap(() => this.authInitialized = true)
+    );
+  }
+
+  silentRefresh(): Observable<boolean> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/refresh`, {}).pipe(
       tap(response => {
         if (response.accessToken) {
           this.setToken(response.accessToken);
           this.loadCurrentUser().subscribe();
         }
-        this.authInitialized = true;
       }),
       map(() => true),
       catchError(() => {
-        this.authInitialized = true;
+        this.accessToken = null;
         this.loggedInSubject.next(false);
+        this.currentUserSubject.next(null);
         return of(false);
       })
     );

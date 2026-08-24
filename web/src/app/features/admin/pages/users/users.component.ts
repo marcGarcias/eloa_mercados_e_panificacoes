@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -18,6 +18,7 @@ import { SpringPage } from '../../../../models/page.model';
 export class UsersComponent implements OnInit {
   authService = inject(AuthService);
   userService = inject(UserService);
+  cdr = inject(ChangeDetectorRef);
   
   currentUser$ = this.authService.currentUser$;
   
@@ -50,10 +51,23 @@ export class UsersComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    this.loadUsers();
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.loadUsers();
+      }
+    });
   }
 
   loadUsers(): void {
+    if (!this.isOwner) {
+      if (this.currentUser) {
+        this.users = [this.currentUser];
+        this.totalPages = 1;
+        this.cdr.markForCheck();
+      }
+      return;
+    }
+
     this.isLoading = true;
     this.userService.getAll(this.page, this.size).pipe(
       catchError(() => {
@@ -65,6 +79,7 @@ export class UsersComponent implements OnInit {
       this.users = pageData.content;
       this.totalPages = pageData.totalPages;
       this.isLoading = false;
+      this.cdr.markForCheck();
     });
   }
 

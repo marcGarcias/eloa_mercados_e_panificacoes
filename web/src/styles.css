@@ -282,6 +282,23 @@ body.admin-layout {
             color: var(--gray);
         }
 
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            color: var(--gray);
+            margin-left: 10px;
+            transition: .15s;
+        }
+
+        .logout-btn:hover {
+            background: #FBEAE7;
+            color: #A5402F;
+        }
+
         /* ============ MAIN ============ */
 
         main {

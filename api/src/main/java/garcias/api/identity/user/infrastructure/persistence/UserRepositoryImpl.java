@@ -22,6 +22,15 @@ public class UserRepositoryImpl
     }
 
     @Override
+    public org.springframework.data.domain.Page<User> findAll(
+            org.springframework.data.domain.Pageable pageable
+    ) {
+        return repository
+                .findAll(pageable)
+                .map(UserMapper::toDomain);
+    }
+
+    @Override
     public Optional<User> findById(
             UUID id
     ) {

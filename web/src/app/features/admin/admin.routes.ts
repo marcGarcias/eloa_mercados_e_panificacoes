@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
+import { authGuard } from '../../core/security/auth.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
+    canActivate: [authGuard], // Protege todas as rotas filhas para exigir login
     children: [
       {
         path: 'home',
@@ -16,7 +18,9 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'users',
-        loadComponent: () => import('../../components/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+        loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent),
+        canActivate: [authGuard],
+        data: { roles: ['SUPER_ADMIN'] }
       },
       {
         path: '',

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../../services/auth.service';
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
 
 // ModalProdutoComponent removido do layout global:

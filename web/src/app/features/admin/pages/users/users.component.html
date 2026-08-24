@@ -1,7 +1,7 @@
-<div class="users-container" *ngIf="isOwner || true">
+<div class="users-container">
   <div class="header-actions">
     <h2>Gerenciar Usuários</h2>
-    <button class="btn-primary" *ngIf="isOwner">Novo Usuário</button>
+    <button class="btn-primary" *ngIf="isOwner" (click)="openCreateModal()">Novo Usuário</button>
   </div>
   
   <div class="table-responsive">
@@ -17,14 +17,20 @@
         </tr>
       </thead>
       <tbody>
+        <tr *ngIf="isLoading">
+          <td colspan="6" class="text-center">Carregando usuários...</td>
+        </tr>
+        <tr *ngIf="!isLoading && users.length === 0">
+          <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
+        </tr>
         <tr *ngFor="let user of users">
           <td>{{ user.name }}</td>
-          <td>{{ user.code }}</td>
-          <td>{{ user.role }}</td>
-          <td><span class="status-badge" [class.active]="user.status === 'Ativo'">{{ user.status }}</span></td>
-          <td>{{ user.lastAccess }}</td>
+          <td>{{ user.userCode || '-' }}</td>
+          <td>{{ RoleTranslations[user.role] }}</td>
+          <td><span class="status-badge" [class.active]="user.status === 'ACTIVE'">{{ StatusTranslations[user.status] }}</span></td>
+          <td>{{ user.lastLoginAt || '-' }}</td>
           <td>
-            <button class="btn-icon" *ngIf="canEditUser(user)" (click)="openEditModal(user)">
+            <button class="btn-icon" *ngIf="canEditUser(user)" (click)="openEditModal(user)" title="Editar">
               <!-- Edit Icon -->
               <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </button>
@@ -32,18 +38,25 @@
         </tr>
       </tbody>
     </table>
+    
+    <!-- Simple Pagination Controls -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button class="btn-secondary" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+      <span>Página {{ page + 1 }} de {{ totalPages }}</span>
+      <button class="btn-secondary" [disabled]="page >= totalPages - 1" (click)="nextPage()">Próxima</button>
+    </div>
   </div>
 </div>
 
-<!-- Edit Modal -->
-<app-modal [title]="'Editar Usuário'" [isOpen]="isEditModalOpen" (close)="isEditModalOpen = false">
+<!-- Modal (Create & Edit) -->
+<app-modal [title]="isCreateMode ? 'Novo Usuário' : 'Editar Usuário'" [isOpen]="isModalOpen" (close)="isModalOpen = false">
   <div class="form-group">
     <label>Nome</label>
-    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner">
+    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner && !isCreateMode">
   </div>
   
   <div class="form-group password-group">
-    <label>Senha</label>
+    <label>Senha {{ !isCreateMode ? '(deixe em branco para não alterar)' : '' }}</label>
     <div class="input-wrapper">
       <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="editingUser.password" placeholder="*****">
       <button class="toggle-pwd" (click)="togglePassword()">
@@ -55,23 +68,24 @@
   <div class="form-group" *ngIf="isOwner && editingUser.id !== currentUser?.id">
     <label>Função</label>
     <select [(ngModel)]="editingUser.role">
-      <option value="Admin">Admin</option>
-      <option value="Editor">Editor</option>
+      <option value="SUPER_ADMIN">{{ RoleTranslations['SUPER_ADMIN'] }}</option>
+      <option value="ADMIN">{{ RoleTranslations['ADMIN'] }}</option>
+      <option value="EDITOR">{{ RoleTranslations['EDITOR'] }}</option>
     </select>
   </div>
   
   <div class="form-group" *ngIf="isOwner && editingUser.id !== currentUser?.id">
     <label>Status</label>
     <select [(ngModel)]="editingUser.status">
-      <option value="Ativo">Ativo</option>
-      <option value="Inativo">Inativo</option>
+      <option value="ACTIVE">{{ StatusTranslations['ACTIVE'] }}</option>
+      <option value="INACTIVE">{{ StatusTranslations['INACTIVE'] }}</option>
     </select>
   </div>
   
   <div class="modal-actions">
-    <button class="btn-delete" *ngIf="isOwner && editingUser.id !== currentUser?.id" (click)="openDeleteModal(editingUser!)">Excluir Perfil</button>
+    <button class="btn-delete" *ngIf="!isCreateMode && isOwner && editingUser.id !== currentUser?.id" (click)="openDeleteModal(editingUser!)">Excluir Perfil</button>
     <div class="spacer"></div>
-    <button class="btn-secondary" (click)="isEditModalOpen = false">Cancelar</button>
+    <button class="btn-secondary" (click)="isModalOpen = false">Cancelar</button>
     <button class="btn-primary" (click)="saveUser()">Salvar</button>
   </div>
 </app-modal>
@@ -79,7 +93,7 @@
 <!-- Delete Modal -->
 <app-modal [title]="'Confirmar Exclusão'" [isOpen]="isDeleteModalOpen" (close)="isDeleteModalOpen = false">
   <div class="alert alert-danger">
-    <p>Para excluir o usuário <strong>{{ userToDelete?.name }}</strong>, digite o nome do usuário e sua senha de Owner.</p>
+    <p>Para excluir o usuário <strong>{{ userToDelete?.name }}</strong>, digite o nome do usuário abaixo.</p>
   </div>
   
   <div class="form-group">
@@ -87,13 +101,8 @@
     <input type="text" [(ngModel)]="deleteUsernameConfirm" placeholder="Nome do usuário a deletar">
   </div>
   
-  <div class="form-group">
-    <label>Sua Senha (Owner)</label>
-    <input type="password" [(ngModel)]="deleteOwnerPasswordConfirm" placeholder="Sua senha">
-  </div>
-  
   <div class="modal-actions">
     <button class="btn-secondary" (click)="isDeleteModalOpen = false">Cancelar</button>
-    <button class="btn-danger" (click)="confirmDelete()" [disabled]="deleteUsernameConfirm !== userToDelete?.name || !deleteOwnerPasswordConfirm">Confirmar Exclusão</button>
+    <button class="btn-danger" (click)="confirmDelete()" [disabled]="deleteUsernameConfirm !== userToDelete?.name">Confirmar Exclusão</button>
   </div>
 </app-modal>

@@ -34,6 +34,7 @@ export class UsersComponent implements OnInit {
   editingUser: Partial<User> = {};
   showPassword = false;
   isLoading = false;
+  errorMessage: string | null = null;
   
   // Confirmação de exclusão simplificada (apenas nome)
   deleteUsernameConfirm = '';
@@ -90,6 +91,7 @@ export class UsersComponent implements OnInit {
   
   openCreateModal(): void {
     if (!this.isOwner) return;
+    this.errorMessage = null;
     this.isCreateMode = true;
     this.editingUser = {
       name: '',
@@ -103,6 +105,7 @@ export class UsersComponent implements OnInit {
 
   openEditModal(user: User): void {
     if (!this.canEditUser(user)) return;
+    this.errorMessage = null;
     this.isCreateMode = false;
     this.editingUser = { ...user, password: '' }; // Não carrega a senha real
     this.showPassword = false;
@@ -112,37 +115,120 @@ export class UsersComponent implements OnInit {
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
+
+  validateLocalData(): boolean {
+    this.errorMessage = null;
+    
+    const name = this.editingUser.name?.trim();
+    if (!name) {
+      this.errorMessage = 'O nome do usuário é obrigatório.';
+      return false;
+    }
+    if (name.length > 150) {
+      this.errorMessage = 'O nome do usuário não pode exceder 150 caracteres.';
+      return false;
+    }
+
+    if (this.isCreateMode) {
+      const password = this.editingUser.password?.trim();
+      if (!password) {
+        this.errorMessage = 'A senha é obrigatória para novos usuários.';
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  translateErrorMessage(err: any): string {
+    const rawMessage = err.error?.message;
+    if (!rawMessage) {
+      return 'Ocorreu um erro inesperado. Por favor, tente novamente.';
+    }
+
+    if (rawMessage.includes('New password cannot be the same as current password')) {
+      return 'A nova senha não pode ser igual à senha atual.';
+    }
+    if (rawMessage.includes('User name cannot be empty')) {
+      return 'O nome do usuário não pode ficar em branco.';
+    }
+    if (rawMessage.includes('User name exceeds maximum limit')) {
+      return 'O nome do usuário não pode exceder 150 caracteres.';
+    }
+    if (rawMessage.includes('SUPER_ADMIN user. Only one owner is allowed')) {
+      return 'Já existe um Proprietário cadastrado no sistema.';
+    }
+    if (rawMessage.includes('Creating a SUPER_ADMIN user is not allowed')) {
+      return 'Não é permitido criar usuários com perfil de Proprietário.';
+    }
+    if (rawMessage.includes('Modifying the role to/from SUPER_ADMIN')) {
+      return 'Não é permitido alterar ou promover usuários para a função de Proprietário.';
+    }
+    if (rawMessage.includes('User not found')) {
+      return 'Usuário não encontrado.';
+    }
+
+    return rawMessage;
+  }
   
   saveUser(): void {
+    if (!this.validateLocalData()) {
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.isLoading = true;
+    this.cdr.markForCheck();
+
     if (this.isCreateMode) {
-      // Create user (Requer name, password, role, status)
       this.userService.create(this.editingUser).subscribe({
         next: () => {
           this.isModalOpen = false;
+          this.isLoading = false;
           this.loadUsers();
         },
-        error: (err) => console.error('Erro ao criar usuário', err)
+        error: (err) => {
+          this.errorMessage = this.translateErrorMessage(err);
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
       });
     } else {
-      // Update user
       const id = this.editingUser.id!;
-      
-      // Se informou senha nova, chama o endpoint de troca de senha
-      if (this.editingUser.password && this.editingUser.password.trim() !== '') {
-        this.userService.changePassword(id, this.editingUser.password).subscribe({
-          error: (err) => console.error('Erro ao trocar senha', err)
+      const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
+
+      if (hasNewPassword) {
+        // Encadeamento sequencial: troca a senha primeiro
+        this.userService.changePassword(id, this.editingUser.password!).subscribe({
+          next: () => {
+            // Se a senha foi alterada com sucesso, atualiza o restante dos dados
+            this.updateUserDataOnly(id);
+          },
+          error: (err) => {
+            this.errorMessage = this.translateErrorMessage(err);
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          }
         });
+      } else {
+        this.updateUserDataOnly(id);
       }
-      
-      // Atualiza os dados (name, role, status)
-      this.userService.updateData(id, this.editingUser).subscribe({
-        next: () => {
-          this.isModalOpen = false;
-          this.loadUsers();
-        },
-        error: (err) => console.error('Erro ao atualizar usuário', err)
-      });
     }
+  }
+
+  private updateUserDataOnly(id: string): void {
+    this.userService.updateData(id, this.editingUser).subscribe({
+      next: () => {
+        this.isModalOpen = false;
+        this.isLoading = false;
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.errorMessage = this.translateErrorMessage(err);
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
   
   openDeleteModal(user: Partial<User>): void {

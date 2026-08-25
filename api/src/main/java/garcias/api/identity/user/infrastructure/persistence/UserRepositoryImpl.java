@@ -80,6 +80,14 @@ public class UserRepositoryImpl
     }
 
     @Override
+    public boolean existsByRole(
+            garcias.api.identity.user.domain.enums.UserRole role
+    ) {
+
+        return repository.existsByRole(role);
+    }
+
+    @Override
     public User save(
             User user
     ) {

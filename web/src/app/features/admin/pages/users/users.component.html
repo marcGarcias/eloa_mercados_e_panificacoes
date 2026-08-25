@@ -99,13 +99,19 @@
     </button>
   </div>
   
-  <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id">
+  <!-- Se nao for SUPER_ADMIN, exibe o select sem a opcao de Proprietario -->
+  <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id && editingUser.role !== 'SUPER_ADMIN'">
     <label>Função</label>
     <select [(ngModel)]="editingUser.role">
-      <option value="SUPER_ADMIN">{{ RoleTranslations['SUPER_ADMIN'] }}</option>
       <option value="ADMIN">{{ RoleTranslations['ADMIN'] }}</option>
       <option value="EDITOR">{{ RoleTranslations['EDITOR'] }}</option>
     </select>
+  </div>
+  
+  <!-- Se for SUPER_ADMIN, exibe apenas como leitura desabilitada -->
+  <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id && editingUser.role === 'SUPER_ADMIN'">
+    <label>Função</label>
+    <input type="text" [value]="RoleTranslations['SUPER_ADMIN']" disabled>
   </div>
   
   <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id">

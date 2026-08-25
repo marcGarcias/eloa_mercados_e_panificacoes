@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { UserService } from '../../../../services/user.service';
+import { ToastService } from '../../../../services/toast.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations } from '../../../../models/user.model';
 import { catchError, of } from 'rxjs';
@@ -19,6 +20,7 @@ export class UsersComponent implements OnInit {
   authService = inject(AuthService);
   userService = inject(UserService);
   cdr = inject(ChangeDetectorRef);
+  toastService = inject(ToastService);
   
   currentUser$ = this.authService.currentUser$;
   
@@ -181,10 +183,12 @@ export class UsersComponent implements OnInit {
     this.cdr.markForCheck();
 
     if (this.isCreateMode) {
+      const createdUserName = this.editingUser.name;
       this.userService.create(this.editingUser).subscribe({
         next: () => {
           this.isModalOpen = false;
           this.isLoading = false;
+          this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
           this.loadUsers();
         },
         error: (err) => {
@@ -217,10 +221,12 @@ export class UsersComponent implements OnInit {
   }
 
   private updateUserDataOnly(id: string): void {
+    const updatedUserName = this.editingUser.name;
     this.userService.updateData(id, this.editingUser).subscribe({
       next: () => {
         this.isModalOpen = false;
         this.isLoading = false;
+        this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
         this.loadUsers();
       },
       error: (err) => {
@@ -243,13 +249,25 @@ export class UsersComponent implements OnInit {
     if (this.deleteUsernameConfirm !== this.userToDelete?.name) return;
     if (!this.userToDelete?.id) return;
     
+    this.isLoading = true;
+    this.cdr.markForCheck();
+    
+    const deletedUserName = this.userToDelete.name;
+    
     this.userService.delete(this.userToDelete.id).subscribe({
       next: () => {
         this.isDeleteModalOpen = false;
+        this.isLoading = false;
+        this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
         this.userToDelete = null;
         this.loadUsers();
       },
-      error: (err) => console.error('Erro ao excluir usuário', err)
+      error: (err) => {
+        this.isLoading = false;
+        const errorMsg = this.translateErrorMessage(err);
+        this.toastService.error(errorMsg, 'Erro ao Excluir');
+        this.cdr.markForCheck();
+      }
     });
   }
   

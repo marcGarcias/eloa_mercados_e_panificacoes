@@ -13,6 +13,10 @@ public interface SpringDataUserRepository
             String userCode
     );
 
+    boolean existsByRole(
+            garcias.api.identity.user.domain.enums.UserRole role
+    );
+
     java.util.Optional<UserJpaEntity> findByUserCode(
             String userCode
     );

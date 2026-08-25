@@ -27,6 +27,10 @@ public interface UserRepository {
 
     boolean existsAnyUser();
 
+    boolean existsByRole(
+            garcias.api.identity.user.domain.enums.UserRole role
+    );
+
     User save(
             User user
     );

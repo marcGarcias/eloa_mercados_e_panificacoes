@@ -41,6 +41,10 @@ public class CreateUserService
             CreateUserRequest request
     ) {
 
+        if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+                && userRepository.existsByRole(garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN)) {
+            throw new garcias.api.shared.exceptions.SuperAdminAlreadyExistsException();
+        }
 
         UserCode code;
 

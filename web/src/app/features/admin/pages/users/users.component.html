@@ -79,9 +79,13 @@
 
 <!-- Modal (Create & Edit) -->
 <app-modal [title]="isCreateMode ? 'Novo Usuário' : 'Editar Usuário'" [isOpen]="isModalOpen" (close)="isModalOpen = false">
+  <div class="alert alert-danger" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
   <div class="field">
     <label>Nome</label>
-    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner && !isCreateMode" placeholder="Digite o nome completo" autocomplete="off">
+    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner && !isCreateMode" placeholder="Digite o nome completo" autocomplete="off" maxlength="150">
   </div>
   
   <div class="field password-field">

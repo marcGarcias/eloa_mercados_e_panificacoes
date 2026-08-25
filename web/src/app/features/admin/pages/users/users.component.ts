@@ -37,6 +37,8 @@ export class UsersComponent implements OnInit {
   showPassword = false;
   isLoading = false;
   errorMessage: string | null = null;
+  firstName = '';
+  lastName = '';
   
   // Confirmação de exclusão simplificada (apenas nome)
   deleteUsernameConfirm = '';
@@ -94,6 +96,8 @@ export class UsersComponent implements OnInit {
   openCreateModal(): void {
     if (!this.isOwner) return;
     this.errorMessage = null;
+    this.firstName = '';
+    this.lastName = '';
     this.isCreateMode = true;
     this.editingUser = {
       name: '',
@@ -121,20 +125,38 @@ export class UsersComponent implements OnInit {
   validateLocalData(): boolean {
     this.errorMessage = null;
     
-    const name = this.editingUser.name?.trim();
-    if (!name) {
-      this.errorMessage = 'O nome do usuário é obrigatório.';
-      return false;
-    }
-    if (name.length > 150) {
-      this.errorMessage = 'O nome do usuário não pode exceder 150 caracteres.';
-      return false;
-    }
-
     if (this.isCreateMode) {
+      const firstName = this.firstName.trim();
+      const lastName = this.lastName.trim();
+      
+      if (!firstName) {
+        this.errorMessage = 'O nome é obrigatório.';
+        return false;
+      }
+      if (!lastName) {
+        this.errorMessage = 'O sobrenome é obrigatório.';
+        return false;
+      }
+      
+      const fullName = `${firstName} ${lastName}`;
+      if (fullName.length > 150) {
+        this.errorMessage = 'A combinação de nome e sobrenome não pode exceder 150 caracteres.';
+        return false;
+      }
+      
       const password = this.editingUser.password?.trim();
       if (!password) {
         this.errorMessage = 'A senha é obrigatória para novos usuários.';
+        return false;
+      }
+    } else {
+      const name = this.editingUser.name?.trim();
+      if (!name) {
+        this.errorMessage = 'O nome do usuário é obrigatório.';
+        return false;
+      }
+      if (name.length > 150) {
+        this.errorMessage = 'O nome do usuário não pode exceder 150 caracteres.';
         return false;
       }
     }
@@ -183,6 +205,7 @@ export class UsersComponent implements OnInit {
     this.cdr.markForCheck();
 
     if (this.isCreateMode) {
+      this.editingUser.name = `${this.firstName.trim()} ${this.lastName.trim()}`;
       const createdUserName = this.editingUser.name;
       this.userService.create(this.editingUser).subscribe({
         next: () => {

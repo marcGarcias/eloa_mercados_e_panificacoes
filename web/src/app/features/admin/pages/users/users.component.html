@@ -54,7 +54,7 @@
               {{ StatusTranslations[user.status] }}
             </span>
           </td>
-          <td>{{ user.lastLoginAt || '-' }}</td>
+          <td>{{ user.lastLoginAt ? (user.lastLoginAt | date:'dd/MM/yyyy HH:mm') : 'Nunca acessou' }}</td>
           <td>
             <button class="icon-btn" *ngIf="canEditUser(user)" (click)="openEditModal(user)" title="Editar">
               <!-- Edit Icon -->
@@ -83,9 +83,22 @@
     {{ errorMessage }}
   </div>
 
-  <div class="field">
+  <!-- Modo de Criação: Nome e Sobrenome separados -->
+  <ng-container *ngIf="isCreateMode">
+    <div class="field">
+      <label>Nome</label>
+      <input type="text" [(ngModel)]="firstName" placeholder="Primeiro nome" autocomplete="off" maxlength="70">
+    </div>
+    <div class="field">
+      <label>Sobrenome</label>
+      <input type="text" [(ngModel)]="lastName" placeholder="Sobrenome completo" autocomplete="off" maxlength="75">
+    </div>
+  </ng-container>
+
+  <!-- Modo de Edição: Nome completo -->
+  <div class="field" *ngIf="!isCreateMode">
     <label>Nome</label>
-    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner && !isCreateMode" placeholder="Digite o nome completo" autocomplete="off" maxlength="150">
+    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner" placeholder="Digite o nome completo" autocomplete="off" maxlength="150">
   </div>
   
   <div class="field password-field">

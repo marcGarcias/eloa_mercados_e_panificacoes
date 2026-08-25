@@ -51,6 +51,16 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
         }
 
         if (request.role() != null) {
+            // Impedir promover alguém a SUPER_ADMIN (só joga erro se o usuário a ser modificado não for SUPER_ADMIN)
+            if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+                    && user.getRole() != garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN) {
+                throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
+            }
+            // Impedir rebaixar o SUPER_ADMIN (se a role atual é SUPER_ADMIN e a nova não é)
+            if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+                    && request.role() != garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN) {
+                throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
+            }
 
             user.changeRole(
                     request.role()

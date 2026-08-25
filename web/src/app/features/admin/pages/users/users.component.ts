@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { UserService } from '../../../../services/user.service';
+import { ToastService } from '../../../../services/toast.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations } from '../../../../models/user.model';
 import { catchError, of } from 'rxjs';
@@ -13,12 +14,13 @@ import { SpringPage } from '../../../../models/page.model';
   standalone: true,
   imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+  styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
   authService = inject(AuthService);
   userService = inject(UserService);
   cdr = inject(ChangeDetectorRef);
+  toastService = inject(ToastService);
   
   currentUser$ = this.authService.currentUser$;
   
@@ -34,6 +36,9 @@ export class UsersComponent implements OnInit {
   editingUser: Partial<User> = {};
   showPassword = false;
   isLoading = false;
+  errorMessage: string | null = null;
+  firstName = '';
+  lastName = '';
   
   // Confirmação de exclusão simplificada (apenas nome)
   deleteUsernameConfirm = '';
@@ -90,6 +95,9 @@ export class UsersComponent implements OnInit {
   
   openCreateModal(): void {
     if (!this.isOwner) return;
+    this.errorMessage = null;
+    this.firstName = '';
+    this.lastName = '';
     this.isCreateMode = true;
     this.editingUser = {
       name: '',
@@ -103,6 +111,7 @@ export class UsersComponent implements OnInit {
 
   openEditModal(user: User): void {
     if (!this.canEditUser(user)) return;
+    this.errorMessage = null;
     this.isCreateMode = false;
     this.editingUser = { ...user, password: '' }; // Não carrega a senha real
     this.showPassword = false;
@@ -112,37 +121,143 @@ export class UsersComponent implements OnInit {
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
+
+  validateLocalData(): boolean {
+    this.errorMessage = null;
+    
+    if (this.isCreateMode) {
+      const firstName = this.firstName.trim();
+      const lastName = this.lastName.trim();
+      
+      if (!firstName) {
+        this.errorMessage = 'O nome é obrigatório.';
+        return false;
+      }
+      if (!lastName) {
+        this.errorMessage = 'O sobrenome é obrigatório.';
+        return false;
+      }
+      
+      const fullName = `${firstName} ${lastName}`;
+      if (fullName.length > 150) {
+        this.errorMessage = 'A combinação de nome e sobrenome não pode exceder 150 caracteres.';
+        return false;
+      }
+      
+      const password = this.editingUser.password?.trim();
+      if (!password) {
+        this.errorMessage = 'A senha é obrigatória para novos usuários.';
+        return false;
+      }
+    } else {
+      const name = this.editingUser.name?.trim();
+      if (!name) {
+        this.errorMessage = 'O nome do usuário é obrigatório.';
+        return false;
+      }
+      if (name.length > 150) {
+        this.errorMessage = 'O nome do usuário não pode exceder 150 caracteres.';
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  translateErrorMessage(err: any): string {
+    const rawMessage = err.error?.message;
+    if (!rawMessage) {
+      return 'Ocorreu um erro inesperado. Por favor, tente novamente.';
+    }
+
+    if (rawMessage.includes('New password cannot be the same as current password')) {
+      return 'A nova senha não pode ser igual à senha atual.';
+    }
+    if (rawMessage.includes('User name cannot be empty')) {
+      return 'O nome do usuário não pode ficar em branco.';
+    }
+    if (rawMessage.includes('User name exceeds maximum limit')) {
+      return 'O nome do usuário não pode exceder 150 caracteres.';
+    }
+    if (rawMessage.includes('SUPER_ADMIN user. Only one owner is allowed')) {
+      return 'Já existe um Proprietário cadastrado no sistema.';
+    }
+    if (rawMessage.includes('Creating a SUPER_ADMIN user is not allowed')) {
+      return 'Não é permitido criar usuários com perfil de Proprietário.';
+    }
+    if (rawMessage.includes('Modifying the role to/from SUPER_ADMIN')) {
+      return 'Não é permitido alterar ou promover usuários para a função de Proprietário.';
+    }
+    if (rawMessage.includes('User not found')) {
+      return 'Usuário não encontrado.';
+    }
+
+    return rawMessage;
+  }
   
   saveUser(): void {
+    if (!this.validateLocalData()) {
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.isLoading = true;
+    this.cdr.markForCheck();
+
     if (this.isCreateMode) {
-      // Create user (Requer name, password, role, status)
+      this.editingUser.name = `${this.firstName.trim()} ${this.lastName.trim()}`;
+      const createdUserName = this.editingUser.name;
       this.userService.create(this.editingUser).subscribe({
         next: () => {
           this.isModalOpen = false;
+          this.isLoading = false;
+          this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
           this.loadUsers();
         },
-        error: (err) => console.error('Erro ao criar usuário', err)
+        error: (err) => {
+          this.errorMessage = this.translateErrorMessage(err);
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
       });
     } else {
-      // Update user
       const id = this.editingUser.id!;
-      
-      // Se informou senha nova, chama o endpoint de troca de senha
-      if (this.editingUser.password && this.editingUser.password.trim() !== '') {
-        this.userService.changePassword(id, this.editingUser.password).subscribe({
-          error: (err) => console.error('Erro ao trocar senha', err)
+      const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
+
+      if (hasNewPassword) {
+        // Encadeamento sequencial: troca a senha primeiro
+        this.userService.changePassword(id, this.editingUser.password!).subscribe({
+          next: () => {
+            // Se a senha foi alterada com sucesso, atualiza o restante dos dados
+            this.updateUserDataOnly(id);
+          },
+          error: (err) => {
+            this.errorMessage = this.translateErrorMessage(err);
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          }
         });
+      } else {
+        this.updateUserDataOnly(id);
       }
-      
-      // Atualiza os dados (name, role, status)
-      this.userService.updateData(id, this.editingUser).subscribe({
-        next: () => {
-          this.isModalOpen = false;
-          this.loadUsers();
-        },
-        error: (err) => console.error('Erro ao atualizar usuário', err)
-      });
     }
+  }
+
+  private updateUserDataOnly(id: string): void {
+    const updatedUserName = this.editingUser.name;
+    this.userService.updateData(id, this.editingUser).subscribe({
+      next: () => {
+        this.isModalOpen = false;
+        this.isLoading = false;
+        this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.errorMessage = this.translateErrorMessage(err);
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
   
   openDeleteModal(user: Partial<User>): void {
@@ -157,13 +272,25 @@ export class UsersComponent implements OnInit {
     if (this.deleteUsernameConfirm !== this.userToDelete?.name) return;
     if (!this.userToDelete?.id) return;
     
+    this.isLoading = true;
+    this.cdr.markForCheck();
+    
+    const deletedUserName = this.userToDelete.name;
+    
     this.userService.delete(this.userToDelete.id).subscribe({
       next: () => {
         this.isDeleteModalOpen = false;
+        this.isLoading = false;
+        this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
         this.userToDelete = null;
         this.loadUsers();
       },
-      error: (err) => console.error('Erro ao excluir usuário', err)
+      error: (err) => {
+        this.isLoading = false;
+        const errorMsg = this.translateErrorMessage(err);
+        this.toastService.error(errorMsg, 'Erro ao Excluir');
+        this.cdr.markForCheck();
+      }
     });
   }
   

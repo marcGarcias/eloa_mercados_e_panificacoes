@@ -83,6 +83,9 @@ public class CreateUserController {
 
     ) {
 
+        if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN) {
+            throw new garcias.api.shared.exceptions.SuperAdminCreationNotAllowedException();
+        }
 
         createUserUseCase.execute(
                 request

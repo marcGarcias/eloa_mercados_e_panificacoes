@@ -1,11 +1,22 @@
 <div class="users-container">
-  <div class="header-actions">
-    <h2>Gerenciar Usuários</h2>
-    <button class="btn-primary" *ngIf="isOwner" (click)="openCreateModal()">Novo Usuário</button>
+  <div class="page-head">
+    <div>
+      <h1>Gerenciar Usuários</h1>
+      <p>Cadastre e gerencie os perfis de acesso do sistema</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-solid" *ngIf="isOwner" (click)="openCreateModal()">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Novo Usuário
+      </button>
+    </div>
   </div>
   
-  <div class="table-responsive">
-    <table class="users-table">
+  <div class="table-wrap">
+    <table>
       <thead>
         <tr>
           <th>Nome</th>
@@ -24,48 +35,71 @@
           <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
         </tr>
         <tr *ngFor="let user of users">
-          <td>{{ user.name }}</td>
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
+              <div>
+                <div class="user-name">{{ user.name }}</div>
+              </div>
+            </div>
+          </td>
           <td>{{ user.userCode || '-' }}</td>
-          <td>{{ RoleTranslations[user.role] }}</td>
-          <td><span class="status-badge" [class.active]="user.status === 'ACTIVE'">{{ StatusTranslations[user.status] }}</span></td>
+          <td>
+            <span class="tag" [class.tag-admin]="user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'" [class.tag-editor]="user.role === 'EDITOR'">
+              {{ RoleTranslations[user.role] }}
+            </span>
+          </td>
+          <td>
+            <span class="tag" [class.status-ativo]="user.status === 'ACTIVE'" [class.status-inativo]="user.status === 'INACTIVE'">
+              {{ StatusTranslations[user.status] }}
+            </span>
+          </td>
           <td>{{ user.lastLoginAt || '-' }}</td>
           <td>
-            <button class="btn-icon" *ngIf="canEditUser(user)" (click)="openEditModal(user)" title="Editar">
+            <button class="icon-btn" *ngIf="canEditUser(user)" (click)="openEditModal(user)" title="Editar">
               <!-- Edit Icon -->
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-    
-    <!-- Simple Pagination Controls -->
-    <div class="pagination-controls" *ngIf="totalPages > 1">
-      <button class="btn-secondary" [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-      <span>Página {{ page + 1 }} de {{ totalPages }}</span>
-      <button class="btn-secondary" [disabled]="page >= totalPages - 1" (click)="nextPage()">Próxima</button>
-    </div>
+  </div>
+  
+  <!-- Simple Pagination Controls -->
+  <div class="pagination-controls" *ngIf="totalPages > 1">
+    <button [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
+    <button [disabled]="page >= totalPages - 1" (click)="nextPage()">Próxima</button>
   </div>
 </div>
 
 <!-- Modal (Create & Edit) -->
 <app-modal [title]="isCreateMode ? 'Novo Usuário' : 'Editar Usuário'" [isOpen]="isModalOpen" (close)="isModalOpen = false">
-  <div class="form-group">
+  <div class="field">
     <label>Nome</label>
-    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner && !isCreateMode">
+    <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner && !isCreateMode" placeholder="Digite o nome completo" autocomplete="off">
   </div>
   
-  <div class="form-group password-group">
+  <div class="field password-field">
     <label>Senha {{ !isCreateMode ? '(deixe em branco para não alterar)' : '' }}</label>
-    <div class="input-wrapper">
-      <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="editingUser.password" placeholder="*****">
-      <button class="toggle-pwd" (click)="togglePassword()">
-         {{ showPassword ? 'Ocultar' : 'Mostrar' }}
-      </button>
-    </div>
+    <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="editingUser.password" placeholder="••••••">
+    <button class="password-toggle" type="button" (click)="togglePassword()" [title]="showPassword ? 'Ocultar' : 'Mostrar'">
+      <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </svg>
+      <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </button>
   </div>
   
-  <div class="form-group" *ngIf="isOwner && editingUser.id !== currentUser?.id">
+  <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id">
     <label>Função</label>
     <select [(ngModel)]="editingUser.role">
       <option value="SUPER_ADMIN">{{ RoleTranslations['SUPER_ADMIN'] }}</option>
@@ -74,7 +108,7 @@
     </select>
   </div>
   
-  <div class="form-group" *ngIf="isOwner && editingUser.id !== currentUser?.id">
+  <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id">
     <label>Status</label>
     <select [(ngModel)]="editingUser.status">
       <option value="ACTIVE">{{ StatusTranslations['ACTIVE'] }}</option>
@@ -85,24 +119,24 @@
   <div class="modal-actions">
     <button class="btn-delete" *ngIf="!isCreateMode && isOwner && editingUser.id !== currentUser?.id" (click)="openDeleteModal(editingUser!)">Excluir Perfil</button>
     <div class="spacer"></div>
-    <button class="btn-secondary" (click)="isModalOpen = false">Cancelar</button>
-    <button class="btn-primary" (click)="saveUser()">Salvar</button>
+    <button class="btn btn-ghost" (click)="isModalOpen = false">Cancelar</button>
+    <button class="btn btn-solid" (click)="saveUser()">Salvar</button>
   </div>
 </app-modal>
 
 <!-- Delete Modal -->
 <app-modal [title]="'Confirmar Exclusão'" [isOpen]="isDeleteModalOpen" (close)="isDeleteModalOpen = false">
   <div class="alert alert-danger">
-    <p>Para excluir o usuário <strong>{{ userToDelete?.name }}</strong>, digite o nome do usuário abaixo.</p>
+    <p>Para excluir o usuário <strong>{{ userToDelete?.name }}</strong>, digite o nome do usuário abaixo para confirmar.</p>
   </div>
   
-  <div class="form-group">
+  <div class="field">
     <label>Nome do Usuário</label>
-    <input type="text" [(ngModel)]="deleteUsernameConfirm" placeholder="Nome do usuário a deletar">
+    <input type="text" [(ngModel)]="deleteUsernameConfirm" placeholder="Exatamente o nome a deletar" autocomplete="off">
   </div>
   
   <div class="modal-actions">
-    <button class="btn-secondary" (click)="isDeleteModalOpen = false">Cancelar</button>
-    <button class="btn-danger" (click)="confirmDelete()" [disabled]="deleteUsernameConfirm !== userToDelete?.name">Confirmar Exclusão</button>
+    <button class="btn btn-ghost" (click)="isDeleteModalOpen = false">Cancelar</button>
+    <button class="btn-danger-action" (click)="confirmDelete()" [disabled]="deleteUsernameConfirm !== userToDelete?.name">Confirmar Exclusão</button>
   </div>
 </app-modal>

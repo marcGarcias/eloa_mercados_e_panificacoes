@@ -13,13 +13,13 @@ import { RoleTranslations } from '../../../../models/user.model';
   standalone: true,
   imports: [CommonModule, RouterModule, ModalCategoriaComponent],
   templateUrl: './admin-layout.component.html',
-  styleUrls: ['./admin-layout.component.scss'],
+  styleUrls: ['./admin-layout.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   router = inject(Router);
-  
+
   readonly RoleTranslations = RoleTranslations;
 
   ngOnInit(): void {
@@ -29,7 +29,7 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     document.body.classList.remove('admin-layout');
   }
-  
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login-cms']);

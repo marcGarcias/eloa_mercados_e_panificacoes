@@ -13,7 +13,7 @@ import { SpringPage } from '../../../../models/page.model';
   standalone: true,
   imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+  styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
   authService = inject(AuthService);

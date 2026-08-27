@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/bootstrap",
                                 "/api/auth/refresh",
-                                "/api/public/**"
+                                "/api/public/**",
+                                "/api/storage/images/**"
                         ).permitAll()
 
                         // 1º MAIS ESPECÍFICOS PRIMEIRO

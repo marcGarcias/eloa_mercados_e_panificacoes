@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { CategoryAdminService } from '../../services/category-admin.service';
-import { Product, ProductAdminResponse, CategoryAdminResponse } from '../../models/product.model';
+import { ToastService } from '../../services/toast.service';
+import { Product, ProductAdminResponse, CategoryAdminResponse, ProductStatus } from '../../models/product.model';
 import { ModalProdutoComponent } from '../../shared/modal-produto/modal-produto.component';
 import { ModalCategoriaComponent } from '../../shared/modal-categoria/modal-categoria.component';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-catalogo',
@@ -34,6 +36,14 @@ export class CatalogoComponent implements OnInit {
 
   /** Termo de busca por nome */
   searchTerm: string = '';
+
+  // Atributos de paginação e loading
+  isLoading: boolean = false;
+  page: number = 0;
+  size: number = 12;
+  totalPages: number = 0;
+
+  private readonly searchSubject = new Subject<string>();
 
   // ----------------------------------------------------------------
   // Estado do modal de produto e categoria
@@ -67,12 +77,39 @@ export class CatalogoComponent implements OnInit {
   constructor(
     private readonly productService: ProductService,
     private readonly categoryAdminService: CategoryAdminService,
+    private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadAdminCategories();
+
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page = 0;
+      this.loadProducts();
+    });
+  }
+
+  nextPage(): void {
+    if (this.page < this.totalPages - 1) {
+      this.page++;
+      this.loadProducts();
+    }
+  }
+
+  prevPage(): void {
+    if (this.page > 0) {
+      this.page--;
+      this.loadProducts();
+    }
+  }
+
+  onSearchChange(): void {
+    this.searchSubject.next(this.searchTerm);
   }
 
   // ----------------------------------------------------------------
@@ -80,18 +117,64 @@ export class CatalogoComponent implements OnInit {
   // ----------------------------------------------------------------
 
   private loadProducts(): void {
-    this.productService.getAll().subscribe(data => {
-      this.products  = data;
-      this.categories = this.productService.getCategories();
-      this.cdr.markForCheck();
+    this.isLoading = true;
+    this.cdr.markForCheck();
+
+    const categoryId = this.adminCategories.find(c => c.name === this.activeFilter)?.id;
+    const name = this.searchTerm.trim() || undefined;
+
+    this.productService.searchAdmin({ 
+      page: this.page, 
+      size: this.size,
+      categoryId,
+      name
+    }).subscribe({
+      next: (page) => {
+        this.products = page.content.map(p => ({
+          id: p.id,
+          nome: p.name,
+          categoria: p.categoryName,
+          peso: this.formatWeight(p.weight),
+          status: p.status === ProductStatus.ACTIVE ? 'ativo' : 'inativo',
+          imagem: this.productService.getProductImageUrl(p.photo),
+          order: p.position
+        }));
+        
+        // Ordena os produtos pela posicao
+        this.products.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        this.totalPages = page.totalPages;
+        this.isLoading = false;
+        this.updateFilterCategories();
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toastService.error('Falha ao carregar os produtos do catálogo.', 'Erro');
+        this.cdr.markForCheck();
+      }
     });
   }
 
   private loadAdminCategories(): void {
     this.categoryAdminService.getAll().subscribe(cats => {
       this.adminCategories = cats;
+      this.updateFilterCategories();
       this.cdr.markForCheck();
     });
+  }
+
+  private updateFilterCategories(): void {
+    const catNames = this.adminCategories.map(c => c.name);
+    this.categories = ['Todos', ...catNames];
+  }
+
+  private formatWeight(weight: number): string {
+    if (!weight) return '0g';
+    if (weight >= 1) {
+      return `${weight}kg`;
+    } else {
+      return `${Math.round(weight * 1000)}g`;
+    }
   }
 
   // ----------------------------------------------------------------
@@ -100,6 +183,8 @@ export class CatalogoComponent implements OnInit {
 
   setFilter(cat: string): void {
     this.activeFilter = cat;
+    this.page = 0;
+    this.loadProducts();
   }
 
   get visibleCategories(): string[] {
@@ -107,15 +192,7 @@ export class CatalogoComponent implements OnInit {
   }
 
   get filteredProducts(): Product[] {
-    let result = this.products.filter(p => p.id && !this.deletedProductIds.has(p.id));
-    if (this.activeFilter !== 'Todos') {
-      result = result.filter(p => p.categoria === this.activeFilter);
-    }
-    if (this.searchTerm.trim()) {
-      const term = this.searchTerm.trim().toLowerCase();
-      result = result.filter(p => p.nome.toLowerCase().includes(term));
-    }
-    return result;
+    return this.products.filter(p => p.id && !this.deletedProductIds.has(p.id));
   }
 
   // ----------------------------------------------------------------
@@ -135,17 +212,19 @@ export class CatalogoComponent implements OnInit {
    * Substituir por chamada direta com ProductAdminResponse na integracao real.
    */
   openEditModal(product: Product): void {
-    // Converte o model legado para ProductAdminResponse parcial ate a integracao
+    let weightNum = parseFloat(product.peso) || 0;
+    if (product.peso.toLowerCase().endsWith('g') && !product.peso.toLowerCase().endsWith('kg')) {
+      weightNum = weightNum / 1000;
+    }
+
     this.editingProduct = {
       id:           product.id ?? 0,
       name:         product.nome,
-      weight:       parseFloat(product.peso) || 0,
+      weight:       weightNum,
       position:     product.order ?? 0,
       photo:        product.imagem ?? '',
       categoryName: product.categoria,
-      status:       product.status === 'ativo'
-                      ? ('' as any)  // mapeado como ProductStatus.ACTIVE
-                      : ('' as any), // mapeado como ProductStatus.INACTIVE
+      status:       product.status === 'ativo' ? ProductStatus.ACTIVE : ProductStatus.INACTIVE,
     };
     this.isProductModalOpen = true;
     this.cdr.markForCheck();
@@ -154,9 +233,9 @@ export class CatalogoComponent implements OnInit {
   /** Chamado apos salvar com sucesso */
   onProductSaved(product: ProductAdminResponse): void {
     console.log('[CatalogoComponent] Produto salvo:', product);
+    this.toastService.success(`O produto "${product.name}" foi salvo com sucesso.`, 'Produto Salvo');
     this.isProductModalOpen = false;
     this.editingProduct     = null;
-    // TODO: recarregar lista via ProductService.searchAdmin() na integracao real
     this.loadProducts();
     this.cdr.markForCheck();
   }
@@ -179,6 +258,7 @@ export class CatalogoComponent implements OnInit {
 
   onCategorySaved(category: CategoryAdminResponse): void {
     console.log('[CatalogoComponent] Categoria salva:', category);
+    this.toastService.success(`A categoria "${category.name}" foi criada com sucesso.`, 'Categoria Criada');
     this.isCategoryModalOpen = false;
     this.loadAdminCategories(); // Recarrega categorias da API
     this.loadProducts(); // No mundo real, caso mude algo global
@@ -196,7 +276,8 @@ export class CatalogoComponent implements OnInit {
 
   toggleEditMode(): void {
     if (this.isEditMode && this.hasChanges) {
-      if (!confirm('Existem alterações não salvas. Deseja descartá-las?')) {
+      const discard = typeof window !== 'undefined' && window.confirm('Existem alterações não salvas. Deseja descartá-las?');
+      if (!discard) {
         return;
       }
     }
@@ -240,16 +321,19 @@ export class CatalogoComponent implements OnInit {
   saveChanges(): void {
     if (!this.hasChanges) return;
 
+    this.isLoading = true;
+    this.cdr.markForCheck();
+
     // 1. Produtos para deletar
     const productsToDelete = Array.from(this.deletedProductIds);
     // 2. Categorias para deletar (encontrar o ID a partir do nome)
     const categoryIdsToDelete = Array.from(this.deletedCategoryNames)
       .map(name => this.adminCategories.find(c => c.name === name)?.id)
       .filter(id => id != null) as number[];
-    // 3. Produtos atualizados (ordem) - exclui os que foram deletados
+    // 3. Produtos atualizados (ordem) - exclui os que foram deletados e envia apenas lista ordenada de IDs
     const productsToUpdateOrder = this.products
       .filter(p => p.id && !this.deletedProductIds.has(p.id))
-      .map(p => ({ id: p.id!, position: p.order ?? 0 }));
+      .map(p => p.id!);
 
     const requests = [];
 
@@ -263,18 +347,32 @@ export class CatalogoComponent implements OnInit {
       requests.push(this.productService.updateOrder(productsToUpdateOrder));
     }
 
-    if (requests.length === 0) return;
-
-    forkJoin(requests).subscribe(() => {
-      console.log('[CatalogoComponent] Alterações em lote salvas com sucesso.');
-      this.isEditMode = false;
-      this.deletedProductIds.clear();
-      this.deletedCategoryNames.clear();
-      this.hasOrderChanges = false;
-      
-      this.loadProducts();
-      this.loadAdminCategories();
+    if (requests.length === 0) {
+      this.isLoading = false;
       this.cdr.markForCheck();
+      return;
+    }
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.toastService.success('As alterações do catálogo foram salvas com sucesso.', 'Catálogo Atualizado');
+        this.isEditMode = false;
+        this.deletedProductIds.clear();
+        this.deletedCategoryNames.clear();
+        this.hasOrderChanges = false;
+        this.page = 0; // Reseta para primeira página após salvar em lote
+        
+        this.loadProducts();
+        this.loadAdminCategories();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        const rawMsg = err?.error?.message;
+        const msg = rawMsg || 'Falha ao salvar as alterações do catálogo.';
+        this.toastService.error(msg, 'Erro ao Salvar');
+        this.cdr.markForCheck();
+      }
     });
   }
 

@@ -78,13 +78,19 @@ export class ModalCategoriaComponent implements OnChanges {
     }
 
     const name: string = this.form.value.name.trim();
+    this.isSubmitting = true;
 
-    // TODO: Integrar com CategoryAdminService.create(name) quando o backend estiver pronto.
-    // Simulacao local: cria um objeto de retorno mock com ID temporario.
-    const mockCreated: CategoryAdminResponse = { id: Date.now(), name };
-
-    console.log('[ModalCategoriaComponent] Categoria criada:', mockCreated);
-    this.saved.emit(mockCreated);
+    this.categoryAdminService.create(name).subscribe({
+      next: (created) => {
+        this.isSubmitting = false;
+        console.log('[ModalCategoriaComponent] Categoria criada:', created);
+        this.saved.emit(created);
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   isFieldInvalid(field: string): boolean {

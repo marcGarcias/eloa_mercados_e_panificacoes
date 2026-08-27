@@ -101,8 +101,22 @@ export class ProductService {
   /**
    * Atualiza a ordem de exibição dos produtos em lote.
    */
-  updateOrder(products: {id: number, position: number}[]): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/order`, products);
+  updateOrder(productIds: number[]): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/reorder`, { order: productIds });
+  }
+
+  // ----------------------------------------------------------------
+  // Helpers Gerais
+  // ----------------------------------------------------------------
+
+  /**
+   * Converte o caminho da foto (/uploads/products/filename) para a URL de visualizacao.
+   */
+  getProductImageUrl(photoPath: string | null | undefined): string | null {
+    if (!photoPath) return null;
+    const filename = photoPath.substring(photoPath.lastIndexOf('/') + 1);
+    const apiBase = environment?.apiUrl ?? '';
+    return `${apiBase}/api/storage/images/${filename}`;
   }
 
   // ----------------------------------------------------------------

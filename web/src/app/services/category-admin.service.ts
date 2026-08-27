@@ -26,6 +26,13 @@ export class CategoryAdminService {
   }
 
   /**
+   * Cria uma nova categoria.
+   */
+  create(name: string): Observable<CategoryAdminResponse> {
+    return this.http.post<CategoryAdminResponse>(this.apiUrl, { name });
+  }
+
+  /**
    * Remove múltiplas categorias em lote.
    */
   deleteCategories(ids: number[]): Observable<void> {

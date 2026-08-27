@@ -190,11 +190,11 @@ export class ModalProdutoComponent implements OnChanges {
       fd.forEach((value, key) => console.log(' ', key, '=', value));
 
       // TODO: Integrar com ProductService.update(this.product.id, payload)
-      // this.isSubmitting = true;
-      // this.productService.update(this.product.id, payload).subscribe({
-      //   next: (updated) => { this.isSubmitting = false; this.saved.emit(updated); },
-      //   error: () => { this.isSubmitting = false; }
-      // });
+      this.isSubmitting = true;
+      this.productService.update(this.product.id, payload).subscribe({
+        next: (updated) => { this.isSubmitting = false; this.saved.emit(updated); },
+        error: () => { this.isSubmitting = false; }
+      });
 
     } else {
       const payload: CreateProductPayload = {
@@ -210,11 +210,11 @@ export class ModalProdutoComponent implements OnChanges {
       fd.forEach((value, key) => console.log(' ', key, '=', value));
 
       // TODO: Integrar com ProductService.create(payload)
-      // this.isSubmitting = true;
-      // this.productService.create(payload).subscribe({
-      //   next: (created) => { this.isSubmitting = false; this.saved.emit(created); },
-      //   error: () => { this.isSubmitting = false; }
-      // });
+      this.isSubmitting = true;
+      this.productService.create(payload).subscribe({
+        next: (created) => { this.isSubmitting = false; this.saved.emit(created); },
+        error: () => { this.isSubmitting = false; }
+      });
     }
   }
 

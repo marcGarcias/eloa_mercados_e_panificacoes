@@ -55,4 +55,10 @@ public interface ProductRepository {
      */
     void reorderAll(Map<ProductId, CatalogPosition> newPositions);
 
+    /**
+     * Normaliza as posicoes de todos os produtos remanescentes no catalogo
+     * consecutivamente de 1 a N.
+     */
+    void reorganizeAllPositions();
+
 }

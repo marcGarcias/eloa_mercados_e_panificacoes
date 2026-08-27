@@ -216,4 +216,16 @@ public class ProductRepositoryImpl implements ProductRepository {
         // o flush automatico persiste as mudancas sem necessidade de save() explicito.
         entityManager.flush();
     }
+
+    @Override
+    @Transactional
+    public void reorganizeAllPositions() {
+        List<ProductJpaEntity> remaining = repository.findAll(
+                Sort.by("position")
+        );
+        for (int i = 0; i < remaining.size(); i++) {
+            remaining.get(i).setPosition((long) (i + 1));
+        }
+        entityManager.flush();
+    }
 }

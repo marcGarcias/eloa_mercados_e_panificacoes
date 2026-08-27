@@ -56,6 +56,7 @@
         id="search-input"
         placeholder="Buscar produto..."
         [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
       />
     </div>
   </div>
@@ -72,10 +73,18 @@
     Arraste os cards para definir a ordem de exibicao no site.
   </div>
 
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading" style="text-align: center; padding: 60px 0; color: var(--text-muted, #6c757d);">
+    <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px; margin-bottom: 12px;">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+    </svg>
+    <p>Carregando catálogo...</p>
+  </div>
+
   <div 
     class="grid" 
     id="products" 
-    *ngIf="filteredProducts.length > 0; else emptyState"
+    *ngIf="!isLoading && filteredProducts.length > 0; else emptyState"
     cdkDropList 
     cdkDropListOrientation="mixed"
     [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos'"
@@ -134,7 +143,7 @@
   </div>
 
   <ng-template #emptyState>
-    <div class="empty" id="empty-state" style="display: block">
+    <div class="empty" id="empty-state" *ngIf="!isLoading" style="display: block">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <circle cx="11" cy="11" r="7" />
         <path d="M21 21l-4.3-4.3" />
@@ -142,6 +151,13 @@
       <p>Nenhum produto encontrado.</p>
     </div>
   </ng-template>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-controls" *ngIf="totalPages > 1 && !isLoading">
+    <button [disabled]="page === 0" (click)="prevPage()">Anterior</button>
+    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
+    <button [disabled]="page >= totalPages - 1" (click)="nextPage()">Próxima</button>
+  </div>
 </section>
 
 <!-- Modal de Produto (criacao / edicao) -->

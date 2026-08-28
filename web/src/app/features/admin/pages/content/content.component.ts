@@ -1,25 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ContentService } from '../../services/content.service';
-import { SiteContent } from '../../models/content.model';
+import { ContentService } from '../../../../services/content.service';
+import { SiteContent } from '../../../../models/content.model';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
-  selector: 'app-conteudo',
+  selector: 'app-content',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './conteudo.component.html',
-  styleUrls: ['./conteudo.component.css']
+  templateUrl: './content.component.html',
+  styleUrls: ['./content.component.css']
 })
-export class ConteudoComponent implements OnInit {
+export class ContentComponent implements OnInit {
   contentForm!: FormGroup;
   isSaving = false;
   openSection: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private contentService: ContentService
-  ) {}
+  private fb = inject(FormBuilder);
+  private contentService = inject(ContentService);
+  private toastService = inject(ToastService);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.initForm();
@@ -126,14 +128,20 @@ export class ConteudoComponent implements OnInit {
   saveContent() {
     if (this.contentForm.invalid) {
       this.contentForm.markAllAsTouched();
-      alert('Preencha todos os campos corretamente antes de salvar.');
+      this.toastService.error('Preencha todos os campos corretamente antes de salvar.');
       return;
     }
     this.isSaving = true;
     const contentData: SiteContent = this.contentForm.value;
-    this.contentService.saveContent(contentData).subscribe(() => {
-      this.isSaving = false;
-      alert('Conteúdo salvo com sucesso!');
+    this.contentService.saveContent(contentData).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.toastService.success('Conteúdo salvo com sucesso!');
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toastService.error('Erro ao salvar o conteúdo. Tente novamente.');
+      }
     });
   }
 }

@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import garcias.api.identity.authentication.domain.exceptions.MissingRefreshTokenException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class RefreshTokenController {
 
     private final RefreshTokenUseCase refreshTokenUseCase;
+
+    @Value("${cookie.secure}")
+    private boolean cookieSecure;
+
+    @Value("${cookie.same-site}")
+    private String cookieSameSite;
 
     public RefreshTokenController(RefreshTokenUseCase refreshTokenUseCase) {
         this.refreshTokenUseCase = refreshTokenUseCase;
@@ -81,9 +89,13 @@ public class RefreshTokenController {
     })
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponse> refresh(
-            @CookieValue("refresh_token") String refreshToken,
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
             HttpServletResponse response
     ) {
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new MissingRefreshTokenException();
+        }
 
         LoginResult result = refreshTokenUseCase.execute(
                 refreshToken
@@ -92,8 +104,8 @@ public class RefreshTokenController {
         ResponseCookie refreshTokenCookie = ResponseCookie
                 .from("refresh_token", result.refreshToken())
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .path("/api/auth")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();

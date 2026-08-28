@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogoutController {
 
     private final LogoutUseCase logoutUseCase;
+
+    @Value("${cookie.secure}")
+    private boolean cookieSecure;
+
+    @Value("${cookie.same-site}")
+    private String cookieSameSite;
 
     public LogoutController(LogoutUseCase logoutUseCase) {
         this.logoutUseCase = logoutUseCase;
@@ -73,8 +80,8 @@ public class LogoutController {
         ResponseCookie clearCookie = ResponseCookie
                 .from("refresh_token", "")
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .path("/api/auth")
                 .maxAge(0) // 0 maxAge deletes the cookie
                 .build();

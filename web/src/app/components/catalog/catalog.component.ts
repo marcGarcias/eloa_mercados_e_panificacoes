@@ -29,8 +29,13 @@ export class CatalogComponent implements OnInit {
   ngOnInit() {
     this.productService.getAll().subscribe(data => {
       this.products.set(data);
+      // Gera as categorias unicas de forma dinamica baseada nos produtos retornados
+      const uniqueCategories = Array.from(new Set(data.map(p => p.categoria)));
+      this.categories = [
+        { id: 'Todos', label: 'Todos' },
+        ...uniqueCategories.map(c => ({ id: c, label: c }))
+      ];
     });
-    this.categories = this.productService.getCategories().map(c => ({ id: c, label: c }));
   }
 
   setCategory(category: string) {

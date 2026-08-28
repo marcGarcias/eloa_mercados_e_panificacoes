@@ -49,6 +49,13 @@ export class ProductService {
     return this.http.get<SpringPage<ProductPublicResponse>>(publicUrl, { params });
   }
 
+  getPublicCategories(): Observable<string[]> {
+    const categoriesUrl = (environment?.apiUrl ?? '') + '/api/public/categories';
+    return this.http.get<{ name: string }[]>(categoriesUrl).pipe(
+      map(list => list.map(c => c.name))
+    );
+  }
+
   // ----------------------------------------------------------------
   // Metodos Admin — alinhados com a API
   // ----------------------------------------------------------------

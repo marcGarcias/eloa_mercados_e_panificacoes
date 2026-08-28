@@ -171,3 +171,17 @@
   color: var(--gray, #9E8B7A);
   flex: 1;
 }
+
+@media (max-width: 767px) {
+  .save-bar {
+    bottom: 64px; /* Ajuste para ficar exatamente acima do Bottom Nav */
+    border-radius: 0;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 12px 16px;
+  }
+  
+  .accordion-body {
+    padding: 16px 14px 20px;
+  }
+}

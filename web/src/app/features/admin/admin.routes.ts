@@ -10,13 +10,13 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('../../components/conteudo/conteudo.component').then(m => m.ConteudoComponent),
+        loadComponent: () => import('./pages/content/content.component').then(m => m.ContentComponent),
         canMatch: [authMatchGuard],
         data: { roles: ['SUPER_ADMIN', 'ADMIN'] }
       },
       {
         path: 'catalog',
-        loadComponent: () => import('../../components/catalogo/catalogo.component').then(m => m.CatalogoComponent)
+        loadComponent: () => import('./pages/catalog/catalog.component').then(m => m.CatalogComponent)
       },
       {
         path: 'users',

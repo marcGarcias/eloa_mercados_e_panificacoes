@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,12 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final LoginUseCase loginUseCase;
+
+    @Value("${cookie.secure}")
+    private boolean cookieSecure;
+
+    @Value("${cookie.same-site}")
+    private String cookieSameSite;
 
     public LoginController(LoginUseCase loginUseCase) {
         this.loginUseCase = loginUseCase;
@@ -112,8 +119,8 @@ public class LoginController {
         ResponseCookie refreshTokenCookie = ResponseCookie
                 .from("refresh_token", loginResult.refreshToken())
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .path("/api/auth")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();

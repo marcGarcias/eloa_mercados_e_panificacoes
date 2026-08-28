@@ -5,7 +5,23 @@
             <nav class="tabs" id="tabs">
                 <a class="tab" routerLink="catalog" routerLinkActive="active">Catálogo</a>
                 <a class="tab" routerLink="home" routerLinkActive="active">Conteúdo</a>
-                <a class="tab" routerLink="users" routerLinkActive="active">Usuários</a>
+                <ng-container *ngIf="authService.currentUser$ | async as user">
+                    <a class="tab" 
+                       *ngIf="user.role === 'SUPER_ADMIN'; else lockedUsers" 
+                       routerLink="users" 
+                       routerLinkActive="active">
+                        Usuários
+                    </a>
+                    <ng-template #lockedUsers>
+                        <span class="tab tab-locked" title="Acesso exclusivo para Super Administrador">
+                            Usuários
+                            <svg class="lock-icon" viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                    </ng-template>
+                </ng-container>
             </nav>
             <div class="account" *ngIf="authService.currentUser$ | async as user">
                 <div>

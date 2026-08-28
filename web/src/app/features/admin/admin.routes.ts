@@ -10,7 +10,9 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('../../components/conteudo/conteudo.component').then(m => m.ConteudoComponent)
+        loadComponent: () => import('../../components/conteudo/conteudo.component').then(m => m.ConteudoComponent),
+        canMatch: [authMatchGuard],
+        data: { roles: ['SUPER_ADMIN', 'ADMIN'] }
       },
       {
         path: 'catalog',

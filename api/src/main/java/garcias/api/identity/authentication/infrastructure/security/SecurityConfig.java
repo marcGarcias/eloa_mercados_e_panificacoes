@@ -68,9 +68,7 @@ public class SecurityConfig {
 
                         // 1º MAIS ESPECÍFICOS PRIMEIRO
                         .requestMatchers(
-                                "/api/admin/products",
                                 "/api/admin/products/**",
-                                "/api/admin/categories",
                                 "/api/admin/categories/**"
                         ).hasAnyRole("SUPER_ADMIN", "ADMIN", "EDITOR")
 

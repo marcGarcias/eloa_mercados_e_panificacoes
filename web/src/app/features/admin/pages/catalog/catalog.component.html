@@ -87,11 +87,12 @@
     *ngIf="!isLoading && filteredProducts.length > 0; else emptyState"
     cdkDropList 
     cdkDropListOrientation="mixed"
-    [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos'"
+    [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos' || isMobile"
     (cdkDropListDropped)="onDrop($event)"
   >
-    <div *ngFor="let p of filteredProducts" class="card" cdkDrag>
-      <div *ngIf="isEditMode" class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
+    <div *ngFor="let p of filteredProducts; let idx = index" class="card" cdkDrag>
+      <!-- Drag handle (Apenas Desktop) -->
+      <div *ngIf="isEditMode && !isMobile" class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
           <circle cx="9" cy="6" r="1.5" />
           <circle cx="15" cy="6" r="1.5" />
@@ -100,6 +101,20 @@
           <circle cx="9" cy="18" r="1.5" />
           <circle cx="15" cy="18" r="1.5" />
         </svg>
+      </div>
+
+      <!-- Setas de reordenação (Apenas Mobile no modo Edição + Filtro Todos) -->
+      <div *ngIf="isEditMode && isMobile && activeFilter === 'Todos'" class="mobile-order-controls">
+        <button class="order-btn" type="button" (click)="moveProductUp(idx, $event)" [disabled]="idx === 0" title="Mover para cima">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
+        <button class="order-btn" type="button" (click)="moveProductDown(idx, $event)" [disabled]="idx === filteredProducts.length - 1" title="Mover para baixo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
       <div class="card-media" style="background: #F5E9DD">
         <div class="no-image" style="color: #BF9B79" *ngIf="!p.imagem">

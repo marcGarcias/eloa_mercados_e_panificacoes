@@ -247,6 +247,26 @@ body.admin-layout {
             background: var(--secondary);
         }
 
+        .tab.tab-locked {
+            opacity: 0.55;
+            cursor: not-allowed;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .tab.tab-locked:hover {
+            background: transparent;
+            color: var(--gray);
+        }
+
+        .lock-icon {
+            opacity: 0.85;
+            flex-shrink: 0;
+            margin-bottom: -1px;
+        }
+
         .account {
             display: flex;
             align-items: center;

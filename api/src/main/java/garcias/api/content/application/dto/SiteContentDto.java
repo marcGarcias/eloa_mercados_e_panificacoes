@@ -9,35 +9,27 @@ import java.util.List;
 
 public class SiteContentDto {
 
-    @NotNull(message = "O banner é obrigatório.")
     @Valid
     private BannerDto banner;
 
-    @NotNull(message = "Os diferenciais são obrigatórios.")
     @Valid
     private DiferenciaisDto diferenciais;
 
-    @NotNull(message = "O catálogo é obrigatório.")
     @Valid
     private CatalogoDto catalogo;
 
-    @NotNull(message = "A seção sobre nós é obrigatória.")
     @Valid
     private SobreDto sobre;
 
-    @NotNull(message = "As estatísticas são obrigatórias.")
     @Valid
     private EstatisticasDto estatisticas;
 
-    @NotNull(message = "O CTA é obrigatório.")
     @Valid
     private CtaDto cta;
 
-    @NotNull(message = "O rodapé é obrigatório.")
     @Valid
     private RodapeDto rodape;
 
-    @NotNull(message = "Os dados são obrigatórios.")
     @Valid
     private DadosDto dados;
 
@@ -110,11 +102,9 @@ public class SiteContentDto {
     // --- Sub DTOs ---
 
     public static class IndicadorDto {
-        @NotBlank(message = "O nome do indicador é obrigatório.")
         @Size(max = 100, message = "O nome do indicador deve ter no máximo 100 caracteres.")
         private String nome;
 
-        @NotBlank(message = "O valor do indicador é obrigatório.")
         @Size(max = 50, message = "O valor do indicador deve ter no máximo 50 caracteres.")
         private String valor;
 
@@ -125,11 +115,9 @@ public class SiteContentDto {
     }
 
     public static class CardDto {
-        @NotBlank(message = "O título do card é obrigatório.")
         @Size(max = 120, message = "O título do card deve ter no máximo 120 caracteres.")
         private String titulo;
 
-        @NotBlank(message = "O texto do card é obrigatório.")
         @Size(max = 300, message = "O texto do card deve ter no máximo 300 caracteres.")
         private String texto;
 
@@ -140,11 +128,9 @@ public class SiteContentDto {
     }
 
     public static class DescricaoItemDto {
-        @NotBlank(message = "O nome do item é obrigatório.")
         @Size(max = 100, message = "O nome do item deve ter no máximo 100 caracteres.")
         private String nome;
 
-        @NotBlank(message = "A descrição do item é obrigatória.")
         @Size(max = 300, message = "A descrição do item deve ter no máximo 300 caracteres.")
         private String descricao;
 
@@ -155,23 +141,18 @@ public class SiteContentDto {
     }
 
     public static class BannerDto {
-        @NotBlank(message = "O selo do banner é obrigatório.")
         @Size(max = 100, message = "O selo do banner deve ter no máximo 100 caracteres.")
         private String selo;
 
-        @NotBlank(message = "O título do banner é obrigatório.")
         @Size(max = 150, message = "O título do banner deve ter no máximo 150 caracteres.")
         private String titulo;
 
-        @NotBlank(message = "O subtítulo do banner é obrigatório.")
         @Size(max = 150, message = "O subtítulo do banner deve ter no máximo 150 caracteres.")
         private String subtitulo;
 
-        @NotBlank(message = "A descrição do banner é obrigatória.")
         @Size(max = 500, message = "A descrição do banner deve ter no máximo 500 caracteres.")
         private String descricao;
 
-        @NotNull(message = "Os indicadores do banner são obrigatórios.")
         @Valid
         private List<IndicadorDto> indicadores;
 
@@ -188,19 +169,15 @@ public class SiteContentDto {
     }
 
     public static class DiferenciaisDto {
-        @NotBlank(message = "O selo dos diferenciais é obrigatório.")
         @Size(max = 100, message = "O selo dos diferenciais deve ter no máximo 100 caracteres.")
         private String selo;
 
-        @NotBlank(message = "O título dos diferenciais é obrigatório.")
         @Size(max = 150, message = "O título dos diferenciais deve ter no máximo 150 caracteres.")
         private String titulo;
 
-        @NotBlank(message = "A descrição dos diferenciais é obrigatória.")
         @Size(max = 500, message = "A descrição dos diferenciais deve ter no máximo 500 caracteres.")
         private String descricao;
 
-        @NotNull(message = "Os cards de diferenciais são obrigatórios.")
         @Valid
         private List<CardDto> cards;
 
@@ -215,11 +192,9 @@ public class SiteContentDto {
     }
 
     public static class CatalogoDto {
-        @NotBlank(message = "O selo do catálogo é obrigatório.")
         @Size(max = 100, message = "O selo do catálogo deve ter no máximo 100 caracteres.")
         private String selo;
 
-        @NotBlank(message = "A descrição do catálogo é obrigatória.")
         @Size(max = 500, message = "A descrição do catálogo deve ter no máximo 500 caracteres.")
         private String descricao;
 
@@ -230,19 +205,15 @@ public class SiteContentDto {
     }
 
     public static class SobreDto {
-        @NotBlank(message = "O selo da seção sobre é obrigatório.")
         @Size(max = 100, message = "O selo da seção sobre deve ter no máximo 100 caracteres.")
         private String selo;
 
-        @NotBlank(message = "O título da seção sobre é obrigatório.")
         @Size(max = 150, message = "O título da seção sobre deve ter no máximo 150 caracteres.")
         private String titulo;
 
-        @NotBlank(message = "A descrição da seção sobre é obrigatória.")
         @Size(max = 1000, message = "A descrição da seção sobre deve ter no máximo 1000 caracteres.")
         private String descricao;
 
-        @NotNull(message = "A lista da seção sobre é obrigatória.")
         @Valid
         private List<DescricaoItemDto> lista;
 
@@ -257,7 +228,6 @@ public class SiteContentDto {
     }
 
     public static class EstatisticasDto {
-        @NotNull(message = "A lista de estatísticas é obrigatória.")
         @Valid
         private List<IndicadorDto> lista;
 
@@ -266,15 +236,12 @@ public class SiteContentDto {
     }
 
     public static class CtaDto {
-        @NotBlank(message = "O selo do CTA é obrigatório.")
         @Size(max = 100, message = "O selo do CTA deve ter no máximo 100 caracteres.")
         private String selo;
 
-        @NotBlank(message = "O título do CTA é obrigatório.")
         @Size(max = 150, message = "O título do CTA deve ter no máximo 150 caracteres.")
         private String titulo;
 
-        @NotBlank(message = "A descrição do CTA é obrigatória.")
         @Size(max = 500, message = "A descrição do CTA deve ter no máximo 500 caracteres.")
         private String descricao;
 
@@ -287,15 +254,12 @@ public class SiteContentDto {
     }
 
     public static class RodapeDto {
-        @NotBlank(message = "A descrição do rodapé é obrigatória.")
         @Size(max = 300, message = "A descrição do rodapé deve ter no máximo 300 caracteres.")
         private String descricao;
 
-        @NotBlank(message = "O texto de contato do rodapé é obrigatório.")
         @Size(max = 150, message = "O texto de contato do rodapé deve ter no máximo 150 caracteres.")
         private String textoContato;
 
-        @NotBlank(message = "O texto de direitos autorais do rodapé é obrigatório.")
         @Size(max = 150, message = "O texto de direitos autorais do rodapé deve ter no máximo 150 caracteres.")
         private String textoDireitos;
 
@@ -308,25 +272,19 @@ public class SiteContentDto {
     }
 
     public static class DadosDto {
-        @NotBlank(message = "O endereço é obrigatório.")
         @Size(max = 250, message = "O endereço deve ter no máximo 250 caracteres.")
         private String endereco;
 
-        @NotBlank(message = "O horário de abertura é obrigatório.")
         private String horarioAbertura;
 
-        @NotBlank(message = "O horário de fechamento é obrigatório.")
         private String horarioFechamento;
 
-        @NotBlank(message = "Os dias de funcionamento são obrigatórios.")
         @Size(max = 100, message = "Os dias de funcionamento devem ter no máximo 100 caracteres.")
         private String diasFuncionamento;
 
-        @NotBlank(message = "O WhatsApp é obrigatório.")
         @Size(max = 30, message = "O WhatsApp deve ter no máximo 30 caracteres.")
         private String whatsapp;
 
-        @NotBlank(message = "O CNPJ é obrigatório.")
         @Pattern(
                 regexp = "^[A-Z0-9]{2}\\.[A-Z0-9]{3}\\.[A-Z0-9]{3}/[A-Z0-9]{4}-\\d{2}$",
                 message = "O CNPJ deve seguir o formato válido da Receita Federal (inclusive o novo padrão alfanumérico): XX.XXX.XXX/XXXX-XX"

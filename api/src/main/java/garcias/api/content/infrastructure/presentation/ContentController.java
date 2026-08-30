@@ -4,7 +4,6 @@ import garcias.api.content.application.dto.SiteContentDto;
 import garcias.api.content.application.usecases.GetContentUseCase;
 import garcias.api.content.application.usecases.SaveContentUseCase;
 import garcias.api.content.infrastructure.mapper.ContentDtoMapper;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +37,14 @@ public class ContentController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
-    @PutMapping("/api/admin/content")
-    public ResponseEntity<SiteContentDto> saveAdminContent(
-            @RequestBody @Valid SiteContentDto dto
+    @PatchMapping("/api/admin/content")
+    public ResponseEntity<SiteContentDto> patchAdminContent(
+            @RequestBody SiteContentDto patch
     ) {
-        var domain = ContentDtoMapper.toDomain(dto);
-        var saved = saveUseCase.execute(domain);
+        var existing = getUseCase.execute().orElse(null);
+        var merged = ContentDtoMapper.merge(existing, patch);
+        var saved = saveUseCase.execute(merged);
         return ResponseEntity.ok(ContentDtoMapper.toDto(saved));
     }
 }
+

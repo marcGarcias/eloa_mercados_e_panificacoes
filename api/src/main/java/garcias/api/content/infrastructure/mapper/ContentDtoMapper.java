@@ -151,4 +151,65 @@ public class ContentDtoMapper {
 
         return dto;
     }
+
+    public static SiteContent merge(SiteContent existing, SiteContentDto patch) {
+        if (patch == null) return existing;
+        if (existing == null) return toDomain(patch);
+
+        var existingDto = toDto(existing);
+
+        if (patch.getBanner() != null) {
+            if (patch.getBanner().getSelo() != null) existingDto.getBanner().setSelo(patch.getBanner().getSelo());
+            if (patch.getBanner().getTitulo() != null) existingDto.getBanner().setTitulo(patch.getBanner().getTitulo());
+            if (patch.getBanner().getSubtitulo() != null) existingDto.getBanner().setSubtitulo(patch.getBanner().getSubtitulo());
+            if (patch.getBanner().getDescricao() != null) existingDto.getBanner().setDescricao(patch.getBanner().getDescricao());
+            if (patch.getBanner().getIndicadores() != null) existingDto.getBanner().setIndicadores(patch.getBanner().getIndicadores());
+        }
+
+        if (patch.getDiferenciais() != null) {
+            if (patch.getDiferenciais().getSelo() != null) existingDto.getDiferenciais().setSelo(patch.getDiferenciais().getSelo());
+            if (patch.getDiferenciais().getTitulo() != null) existingDto.getDiferenciais().setTitulo(patch.getDiferenciais().getTitulo());
+            if (patch.getDiferenciais().getDescricao() != null) existingDto.getDiferenciais().setDescricao(patch.getDiferenciais().getDescricao());
+            if (patch.getDiferenciais().getCards() != null) existingDto.getDiferenciais().setCards(patch.getDiferenciais().getCards());
+        }
+
+        if (patch.getCatalogo() != null) {
+            if (patch.getCatalogo().getSelo() != null) existingDto.getCatalogo().setSelo(patch.getCatalogo().getSelo());
+            if (patch.getCatalogo().getDescricao() != null) existingDto.getCatalogo().setDescricao(patch.getCatalogo().getDescricao());
+        }
+
+        if (patch.getSobre() != null) {
+            if (patch.getSobre().getSelo() != null) existingDto.getSobre().setSelo(patch.getSobre().getSelo());
+            if (patch.getSobre().getTitulo() != null) existingDto.getSobre().setTitulo(patch.getSobre().getTitulo());
+            if (patch.getSobre().getDescricao() != null) existingDto.getSobre().setDescricao(patch.getSobre().getDescricao());
+            if (patch.getSobre().getLista() != null) existingDto.getSobre().setLista(patch.getSobre().getLista());
+        }
+
+        if (patch.getEstatisticas() != null) {
+            if (patch.getEstatisticas().getLista() != null) existingDto.getEstatisticas().setLista(patch.getEstatisticas().getLista());
+        }
+
+        if (patch.getCta() != null) {
+            if (patch.getCta().getSelo() != null) existingDto.getCta().setSelo(patch.getCta().getSelo());
+            if (patch.getCta().getTitulo() != null) existingDto.getCta().setTitulo(patch.getCta().getTitulo());
+            if (patch.getCta().getDescricao() != null) existingDto.getCta().setDescricao(patch.getCta().getDescricao());
+        }
+
+        if (patch.getRodape() != null) {
+            if (patch.getRodape().getDescricao() != null) existingDto.getRodape().setDescricao(patch.getRodape().getDescricao());
+            if (patch.getRodape().getTextoContato() != null) existingDto.getRodape().setTextoContato(patch.getRodape().getTextoContato());
+            if (patch.getRodape().getTextoDireitos() != null) existingDto.getRodape().setTextoDireitos(patch.getRodape().getTextoDireitos());
+        }
+
+        if (patch.getDados() != null) {
+            if (patch.getDados().getEndereco() != null) existingDto.getDados().setEndereco(patch.getDados().getEndereco());
+            if (patch.getDados().getHorarioAbertura() != null) existingDto.getDados().setHorarioAbertura(patch.getDados().getHorarioAbertura());
+            if (patch.getDados().getHorarioFechamento() != null) existingDto.getDados().setHorarioFechamento(patch.getDados().getHorarioFechamento());
+            if (patch.getDados().getDiasFuncionamento() != null) existingDto.getDados().setDiasFuncionamento(patch.getDados().getDiasFuncionamento());
+            if (patch.getDados().getWhatsapp() != null) existingDto.getDados().setWhatsapp(patch.getDados().getWhatsapp());
+            if (patch.getDados().getCnpj() != null) existingDto.getDados().setCnpj(patch.getDados().getCnpj());
+        }
+
+        return toDomain(existingDto);
+    }
 }

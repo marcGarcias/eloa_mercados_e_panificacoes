@@ -21,6 +21,6 @@ export class ContentService {
   }
 
   saveContent(newContent: SiteContent): Observable<boolean> {
-    return this.http.put<boolean>(this.apiUrl, newContent);
+    return this.http.patch<boolean>(this.apiUrl, newContent);
   }
 }

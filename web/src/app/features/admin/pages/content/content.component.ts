@@ -35,48 +35,48 @@ export class ContentComponent implements OnInit {
   private initForm() {
     this.contentForm = this.fb.group({
       banner: this.fb.group({
-        selo: ['', Validators.required],
-        titulo: ['', Validators.required],
-        subtitulo: ['', Validators.required],
-        descricao: ['', Validators.required],
+        selo: [''],
+        titulo: [''],
+        subtitulo: [''],
+        descricao: [''],
         indicadores: this.fb.array([])
       }),
       diferenciais: this.fb.group({
-        selo: ['', Validators.required],
-        titulo: ['', Validators.required],
-        descricao: ['', Validators.required],
+        selo: [''],
+        titulo: [''],
+        descricao: [''],
         cards: this.fb.array([])
       }),
       catalogo: this.fb.group({
-        selo: ['', Validators.required],
-        descricao: ['', Validators.required]
+        selo: [''],
+        descricao: ['']
       }),
       sobre: this.fb.group({
-        selo: ['', Validators.required],
-        titulo: ['', Validators.required],
-        descricao: ['', Validators.required],
+        selo: [''],
+        titulo: [''],
+        descricao: [''],
         lista: this.fb.array([])
       }),
       estatisticas: this.fb.group({
         lista: this.fb.array([])
       }),
       cta: this.fb.group({
-        selo: ['', Validators.required],
-        titulo: ['', Validators.required],
-        descricao: ['', Validators.required]
+        selo: [''],
+        titulo: [''],
+        descricao: ['']
       }),
       rodape: this.fb.group({
-        descricao: ['', Validators.required],
-        textoContato: ['', Validators.required],
-        textoDireitos: ['', Validators.required]
+        descricao: [''],
+        textoContato: [''],
+        textoDireitos: ['']
       }),
       dados: this.fb.group({
-        endereco: ['', Validators.required],
-        horarioAbertura: ['', Validators.required],
-        horarioFechamento: ['', Validators.required],
-        diasFuncionamento: ['', Validators.required],
-        whatsapp: ['', Validators.required],
-        cnpj: ['', Validators.required]
+        endereco: [''],
+        horarioAbertura: [''],
+        horarioFechamento: [''],
+        diasFuncionamento: [''],
+        whatsapp: [''],
+        cnpj: ['']
       })
     });
   }
@@ -106,23 +106,40 @@ export class ContentComponent implements OnInit {
 
   private createIndicador(item?: any): FormGroup {
     return this.fb.group({
-      nome: [item?.nome || '', Validators.required],
-      valor: [item?.valor || '', Validators.required]
+      nome: [item?.nome || ''],
+      valor: [item?.valor || '']
     });
   }
 
   private createCard(item?: any): FormGroup {
     return this.fb.group({
-      titulo: [item?.titulo || '', Validators.required],
-      texto: [item?.texto || '', Validators.required]
+      titulo: [item?.titulo || ''],
+      texto: [item?.texto || '']
     });
   }
 
   private createDescricaoItem(item?: any): FormGroup {
     return this.fb.group({
-      nome: [item?.nome || '', Validators.required],
-      descricao: [item?.descricao || '', Validators.required]
+      nome: [item?.nome || ''],
+      descricao: [item?.descricao || '']
     });
+  }
+
+  private cleanPayload(obj: any): any {
+    if (Array.isArray(obj)) {
+      const arr = obj.map(v => this.cleanPayload(v)).filter(v => v !== null && v !== undefined && v !== '');
+      return arr.length > 0 ? arr : null;
+    } else if (obj !== null && typeof obj === 'object') {
+      const cleaned: any = {};
+      for (const key in obj) {
+        const val = this.cleanPayload(obj[key]);
+        if (val !== null && val !== undefined && val !== '') {
+           cleaned[key] = val;
+        }
+      }
+      return Object.keys(cleaned).length > 0 ? cleaned : null;
+    }
+    return obj;
   }
 
   saveContent() {
@@ -132,7 +149,11 @@ export class ContentComponent implements OnInit {
       return;
     }
     this.isSaving = true;
-    const contentData: SiteContent = this.contentForm.value;
+    
+    // Limpa o payload de strings vazias para o comportamento de PATCH
+    const rawData = this.contentForm.value;
+    const contentData = this.cleanPayload(rawData) || {};
+    
     this.contentService.saveContent(contentData).subscribe({
       next: () => {
         this.isSaving = false;

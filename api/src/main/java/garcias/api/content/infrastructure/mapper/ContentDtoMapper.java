@@ -86,79 +86,104 @@ public class ContentDtoMapper {
 
     public static SiteContentDto toDto(SiteContent domain) {
         if (domain == null) return null;
-
         var dto = new SiteContentDto();
 
         var bannerDto = new SiteContentDto.BannerDto();
-        bannerDto.setSelo(domain.getBanner().selo());
-        bannerDto.setTitulo(domain.getBanner().titulo());
-        bannerDto.setSubtitulo(domain.getBanner().subtitulo());
-        bannerDto.setDescricao(domain.getBanner().descricao());
-        bannerDto.setIndicadores(domain.getBanner().indicadores().stream().map(ind -> {
-            var indDto = new SiteContentDto.IndicadorDto();
-            indDto.setNome(ind.nome());
-            indDto.setValor(ind.valor());
-            return indDto;
-        }).collect(Collectors.toList()));
+        if (domain.getBanner() != null) {
+            bannerDto.setSelo(domain.getBanner().selo());
+            bannerDto.setTitulo(domain.getBanner().titulo());
+            bannerDto.setSubtitulo(domain.getBanner().subtitulo());
+            bannerDto.setDescricao(domain.getBanner().descricao());
+            if (domain.getBanner().indicadores() != null) {
+                bannerDto.setIndicadores(domain.getBanner().indicadores().stream()
+                        .map(ind -> {
+                            var i = new SiteContentDto.IndicadorDto();
+                            i.setNome(ind.nome());
+                            i.setValor(ind.valor());
+                            return i;
+                        }).collect(Collectors.toList()));
+            }
+        }
         dto.setBanner(bannerDto);
 
         var difDto = new SiteContentDto.DiferenciaisDto();
-        difDto.setSelo(domain.getDiferenciais().selo());
-        difDto.setTitulo(domain.getDiferenciais().titulo());
-        difDto.setDescricao(domain.getDiferenciais().descricao());
-        difDto.setCards(domain.getDiferenciais().cards().stream().map(card -> {
-            var cardDto = new SiteContentDto.CardDto();
-            cardDto.setTitulo(card.titulo());
-            cardDto.setTexto(card.texto());
-            return cardDto;
-        }).collect(Collectors.toList()));
+        if (domain.getDiferenciais() != null) {
+            difDto.setSelo(domain.getDiferenciais().selo());
+            difDto.setTitulo(domain.getDiferenciais().titulo());
+            difDto.setDescricao(domain.getDiferenciais().descricao());
+            if (domain.getDiferenciais().cards() != null) {
+                difDto.setCards(domain.getDiferenciais().cards().stream()
+                        .map(c -> {
+                            var card = new SiteContentDto.CardDto();
+                            card.setTitulo(c.titulo());
+                            card.setTexto(c.texto());
+                            return card;
+                        }).collect(Collectors.toList()));
+            }
+        }
         dto.setDiferenciais(difDto);
 
         var catDto = new SiteContentDto.CatalogoDto();
-        catDto.setSelo(domain.getCatalogo().selo());
-        catDto.setDescricao(domain.getCatalogo().descricao());
+        if (domain.getCatalogo() != null) {
+            catDto.setSelo(domain.getCatalogo().selo());
+            catDto.setDescricao(domain.getCatalogo().descricao());
+        }
         dto.setCatalogo(catDto);
 
         var sobreDto = new SiteContentDto.SobreDto();
-        sobreDto.setSelo(domain.getSobre().selo());
-        sobreDto.setTitulo(domain.getSobre().titulo());
-        sobreDto.setDescricao(domain.getSobre().descricao());
-        sobreDto.setLista(domain.getSobre().lista().stream().map(item -> {
-            var itemDto = new SiteContentDto.DescricaoItemDto();
-            itemDto.setNome(item.nome());
-            itemDto.setDescricao(item.descricao());
-            return itemDto;
-        }).collect(Collectors.toList()));
+        if (domain.getSobre() != null) {
+            sobreDto.setSelo(domain.getSobre().selo());
+            sobreDto.setTitulo(domain.getSobre().titulo());
+            sobreDto.setDescricao(domain.getSobre().descricao());
+            if (domain.getSobre().lista() != null) {
+                sobreDto.setLista(domain.getSobre().lista().stream()
+                        .map(item -> {
+                            var desc = new SiteContentDto.DescricaoItemDto();
+                            desc.setNome(item.nome());
+                            desc.setDescricao(item.descricao());
+                            return desc;
+                        }).collect(Collectors.toList()));
+            }
+        }
         dto.setSobre(sobreDto);
 
         var estDto = new SiteContentDto.EstatisticasDto();
-        estDto.setLista(domain.getEstatisticas().lista().stream().map(est -> {
-            var indDto = new SiteContentDto.IndicadorDto();
-            indDto.setNome(est.nome());
-            indDto.setValor(est.valor());
-            return indDto;
-        }).collect(Collectors.toList()));
+        if (domain.getEstatisticas() != null && domain.getEstatisticas().lista() != null) {
+            estDto.setLista(domain.getEstatisticas().lista().stream()
+                    .map(est -> {
+                        var ind = new SiteContentDto.IndicadorDto();
+                        ind.setNome(est.nome());
+                        ind.setValor(est.valor());
+                        return ind;
+                    }).collect(Collectors.toList()));
+        }
         dto.setEstatisticas(estDto);
 
         var ctaDto = new SiteContentDto.CtaDto();
-        ctaDto.setSelo(domain.getCta().selo());
-        ctaDto.setTitulo(domain.getCta().titulo());
-        ctaDto.setDescricao(domain.getCta().descricao());
+        if (domain.getCta() != null) {
+            ctaDto.setSelo(domain.getCta().selo());
+            ctaDto.setTitulo(domain.getCta().titulo());
+            ctaDto.setDescricao(domain.getCta().descricao());
+        }
         dto.setCta(ctaDto);
 
         var rodDto = new SiteContentDto.RodapeDto();
-        rodDto.setDescricao(domain.getRodape().descricao());
-        rodDto.setTextoContato(domain.getRodape().textoContato());
-        rodDto.setTextoDireitos(domain.getRodape().textoDireitos());
+        if (domain.getRodape() != null) {
+            rodDto.setDescricao(domain.getRodape().descricao());
+            rodDto.setTextoContato(domain.getRodape().textoContato());
+            rodDto.setTextoDireitos(domain.getRodape().textoDireitos());
+        }
         dto.setRodape(rodDto);
 
         var dadDto = new SiteContentDto.DadosDto();
-        dadDto.setEndereco(domain.getDados().endereco());
-        dadDto.setHorarioAbertura(domain.getDados().horarioAbertura());
-        dadDto.setHorarioFechamento(domain.getDados().horarioFechamento());
-        dadDto.setDiasFuncionamento(domain.getDados().diasFuncionamento());
-        dadDto.setWhatsapp(domain.getDados().whatsapp());
-        dadDto.setCnpj(domain.getDados().cnpj());
+        if (domain.getDados() != null) {
+            dadDto.setEndereco(domain.getDados().endereco());
+            dadDto.setHorarioAbertura(domain.getDados().horarioAbertura());
+            dadDto.setHorarioFechamento(domain.getDados().horarioFechamento());
+            dadDto.setDiasFuncionamento(domain.getDados().diasFuncionamento());
+            dadDto.setWhatsapp(domain.getDados().whatsapp());
+            dadDto.setCnpj(domain.getDados().cnpj());
+        }
         dto.setDados(dadDto);
 
         return dto;

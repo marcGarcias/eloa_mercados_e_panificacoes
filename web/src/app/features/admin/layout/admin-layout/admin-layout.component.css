@@ -19,21 +19,11 @@
    ========================================== */
 
 .mobile-only {
-  display: none !important;
-}
-
-.desktop-only {
   display: flex !important;
 }
 
-@media (max-width: 767px) {
-  .mobile-only {
-    display: flex !important;
-  }
-  
-  .desktop-only {
-    display: none !important;
-  }
+.desktop-only {
+  display: none !important;
 }
 
 /* ==========================================
@@ -335,25 +325,32 @@ main {
   flex: 1;
 }
 
-/* Ajustes de layout para Desktop */
-@media (min-width: 768px) {
+/* Estilo base móvel para wrappers */
+.app-content-wrapper {
+  padding-bottom: 76px; /* Espaço para a Bottom Nav não sobrepor o conteúdo */
+}
+
+main {
+  padding: 20px 16px 40px;
+}
+
+/* Ajustes de layout para Tablet/Desktop (≥ 744px) */
+@media (min-width: 744px) {
+  .mobile-only {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: flex !important;
+  }
+
   .app-content-wrapper {
     padding-left: 260px; /* Recuo para acomodar a Sidebar fixa */
+    padding-bottom: 0;
   }
   
   main {
     padding: 40px 40px 80px;
-  }
-}
-
-/* Ajustes de layout para Mobile (esquema Web App) */
-@media (max-width: 767px) {
-  .app-content-wrapper {
-    padding-bottom: 76px; /* Espaço para a Bottom Nav não sobrepor o conteúdo */
-  }
-  
-  main {
-    padding: 20px 16px 40px;
   }
 }
 

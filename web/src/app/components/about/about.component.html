@@ -4,32 +4,39 @@
             <img src="/assets/images/eloa_building.webp" alt="Sobre a Eloa" loading="lazy">
         </div>
         <div class="about-content">
-            <div class="section-tag">Nossa História</div>
-            <h2 class="title">Tradição e qualidade<br>em cada pão</h2>
-            <p class="subtitle">A Eloa Mercados & Panificações &amp; nasceu do amor pela boa panificação. Há mais de uma
-                década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.</p>
-            <ul>
-                <li>
+            <div class="section-tag">{{ sobre?.selo || 'Nossa História' }}</div>
+            <h2 class="title" [innerHTML]="sobre?.titulo || 'Tradição e qualidade<br>em cada pão'"></h2>
+            <p class="subtitle">{{ sobre?.descricao || 'A Eloa Mercados & Panificações nasceu do amor pela boa panificação. Há mais de uma década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.' }}</p>
+            <ul *ngIf="sobre?.lista && (sobre?.lista?.length || 0) > 0; else defaultItems">
+                <li *ngFor="let item of sobre?.lista">
                     <span class="check">✓</span>
-                    <span><strong>Produção artesanal</strong> — cada produto feito com cuidado e atenção aos
-                        detalhes</span>
-                </li>
-                <li>
-                    <span class="check">✓</span>
-                    <span><strong>Ingredientes de qualidade</strong> — selecionamos apenas o melhor para a sua
-                        família</span>
-                </li>
-                <li>
-                    <span class="check">✓</span>
-                    <span><strong>Variedade completa</strong> — pães, bolos, doces, salgados e produtos de
-                        mercado</span>
-                </li>
-                <li>
-                    <span class="check">✓</span>
-                    <span><strong>Atendimento próximo</strong> — pedidos rápidos via WhatsApp, com entrega e
-                        retirada</span>
+                    <span><strong>{{ item.nome }}</strong> — {{ item.descricao }}</span>
                 </li>
             </ul>
+            <ng-template #defaultItems>
+                <ul>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Produção artesanal</strong> — cada produto feito com cuidado e atenção aos
+                            detalhes</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Ingredientes de qualidade</strong> — selecionamos apenas o melhor para a sua
+                            família</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Variedade completa</strong> — pães, bolos, doces, salgados e produtos de
+                            mercado</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Atendimento próximo</strong> — pedidos rápidos via WhatsApp, com entrega e
+                            retirada</span>
+                    </li>
+                </ul>
+            </ng-template>
         </div>
     </div>
 </section>

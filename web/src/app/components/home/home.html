@@ -1,10 +1,10 @@
-<app-header></app-header>
+<app-header [dados]="content?.dados"></app-header>
 <div class="page-wrapper">
-  <app-hero></app-hero>
-  <app-features></app-features>
-  <app-catalog></app-catalog>
-  <app-about></app-about>
-  <app-stats></app-stats>
-  <app-cta></app-cta>
-  <app-footer></app-footer>
+  <app-hero [banner]="content?.banner"></app-hero>
+  <app-features [diferenciais]="content?.diferenciais"></app-features>
+  <app-catalog [catalogo]="content?.catalogo"></app-catalog>
+  <app-about [sobre]="content?.sobre"></app-about>
+  <app-stats [estatisticas]="content?.estatisticas"></app-stats>
+  <app-cta [cta]="content?.cta" [dados]="content?.dados"></app-cta>
+  <app-footer [rodape]="content?.rodape" [dados]="content?.dados"></app-footer>
 </div>

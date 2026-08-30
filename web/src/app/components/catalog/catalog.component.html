@@ -1,8 +1,8 @@
 <section class="catalog" id="catalog">
   <div class="container">
-    <div class="section-tag">Nosso Cardápio</div>
+    <div class="section-tag">{{ catalogo?.selo || 'Nosso Cardápio' }}</div>
     <h2 class="title">Catálogo de Produtos</h2>
-    <p class="subtitle">Escolha seus favoritos e faça o pedido diretamente via WhatsApp.</p>
+    <p class="subtitle">{{ catalogo?.descricao || 'Escolha seus favoritos e faça o pedido diretamente via WhatsApp.' }}</p>
 
     <div class="filters" [class.open]="filtersOpen()">
       @for (cat of categories; track cat.id) {

@@ -1,10 +1,9 @@
 <section class="features" id="features">
     <div class="container">
         <div class="section-header">
-            <div class="section-tag">Por que a Eloa?</div>
-            <h2 class="title">Qualidade que você sente</h2>
-            <p class="subtitle">Cada produto é preparado com cuidado e ingredientes frescos, para garantir o melhor
-                sabor na sua mesa.</p>
+            <div class="section-tag">{{ diferenciais?.selo || 'Por que a Eloa?' }}</div>
+            <h2 class="title">{{ diferenciais?.titulo || 'Qualidade que você sente' }}</h2>
+            <p class="subtitle">{{ diferenciais?.descricao || 'Cada produto é preparado com cuidado e ingredientes frescos, para garantir o melhor sabor na sua mesa.' }}</p>
         </div>
         <div class="diff-grid">
             <div class="diff-card">
@@ -14,9 +13,8 @@
                             d="M12 2v20M12 2c-1.5 2-4 2.5-4 2.5s.5-2.5 4-2.5zM12 5c-1.5 2-4 2.5-4 2.5s.5-2.5 4-2.5zM12 8c-1.5 2-4 2.5-4 2.5s.5-2.5 4-2.5zM12 2c1.5 2 4 2.5 4 2.5s-.5-2.5-4-2.5zM12 5c1.5 2 4 2.5 4 2.5s-.5-2.5-4-2.5zM12 8c1.5 2 4 2.5 4 2.5s-.5-2.5-4-2.5z" />
                     </svg>
                 </div>
-                <h3>Ingredientes Selecionados</h3>
-                <p>Usamos apenas farinha de qualidade, ovos frescos e ingredientes naturais para garantir o sabor
-                    autêntico de padaria.</p>
+                <h3>{{ diferenciais?.cards?.[0]?.titulo || 'Ingredientes Selecionados' }}</h3>
+                <p>{{ diferenciais?.cards?.[0]?.texto || 'Usamos apenas farinha de qualidade, ovos frescos e ingredientes naturais para garantir o sabor autêntico de padaria.' }}</p>
             </div>
             <div class="diff-card">
                 <div class="diff-icon">
@@ -25,9 +23,8 @@
                         <polyline points="12 6 12 12 16 14" />
                     </svg>
                 </div>
-                <h3>Produção Diária</h3>
-                <p>Nossos pães saem do forno todos os dias, sempre frescos. Você recebe o que há de melhor, sem estoque
-                    velho.</p>
+                <h3>{{ diferenciais?.cards?.[1]?.titulo || 'Produção Diária' }}</h3>
+                <p>{{ diferenciais?.cards?.[1]?.texto || 'Nossos pães saem do forno todos os dias, sempre frescos. Você recebe o que há de melhor, sem estoque velho.' }}</p>
             </div>
             <div class="diff-card">
                 <div class="diff-icon">
@@ -38,9 +35,8 @@
                         <circle cx="18.5" cy="18.5" r="2.5" />
                     </svg>
                 </div>
-                <h3>Praticidade no Pedido</h3>
-                <p>Peça pelo WhatsApp com facilidade. Atendemos com agilidade para sua encomenda chegar no tempo certo.
-                </p>
+                <h3>{{ diferenciais?.cards?.[2]?.titulo || 'Praticidade no Pedido' }}</h3>
+                <p>{{ diferenciais?.cards?.[2]?.texto || 'Peça pelo WhatsApp com facilidade. Atendemos com agilidade para sua encomenda chegar no tempo certo.' }}</p>
             </div>
         </div>
     </div>

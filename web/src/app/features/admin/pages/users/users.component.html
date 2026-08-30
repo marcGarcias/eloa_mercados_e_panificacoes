@@ -35,7 +35,7 @@
           <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
         </tr>
         <tr *ngFor="let user of users">
-          <td>
+          <td data-label="Nome">
             <div class="user-cell">
               <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
               <div>
@@ -43,19 +43,19 @@
               </div>
             </div>
           </td>
-          <td>{{ user.userCode || '-' }}</td>
-          <td>
+          <td data-label="Código">{{ user.userCode || '-' }}</td>
+          <td data-label="Função">
             <span class="tag" [class.tag-admin]="user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'" [class.tag-editor]="user.role === 'EDITOR'">
               {{ RoleTranslations[user.role] }}
             </span>
           </td>
-          <td>
+          <td data-label="Status">
             <span class="tag" [class.status-ativo]="user.status === 'ACTIVE'" [class.status-inativo]="user.status === 'INACTIVE'">
               {{ StatusTranslations[user.status] }}
             </span>
           </td>
-          <td>{{ user.lastLoginAt ? (user.lastLoginAt | date:'dd/MM/yyyy HH:mm') : 'Nunca acessou' }}</td>
-          <td>
+          <td data-label="Acesso">{{ user.lastLoginAt ? (user.lastLoginAt | date:'dd/MM/yyyy HH:mm') : 'Nunca acessou' }}</td>
+          <td data-label="Ações">
             <button class="icon-btn" *ngIf="canEditUser(user)" (click)="openEditModal(user)" title="Editar">
               <!-- Edit Icon -->
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

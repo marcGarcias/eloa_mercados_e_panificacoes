@@ -1,6 +1,6 @@
 <div class="card">
   <div class="photo">
-    <img *ngIf="product.imagem" [src]="product.imagem" [alt]="product.nome">
+    <img *ngIf="product.imagem" [src]="product.imagem" [alt]="product.nome" loading="lazy">
     <span *ngIf="!product.imagem" class="no-image" [innerHTML]="noImageIcon"></span>
   </div>
   <div class="info">

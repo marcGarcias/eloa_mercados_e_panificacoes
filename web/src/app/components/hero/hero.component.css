@@ -152,10 +152,10 @@
   box-shadow: 0 5px 20px rgba(204, 145, 72, 0.15);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 744px) {
   .hero-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 30px;
   }
 
   .hero {
@@ -171,6 +171,21 @@
   }
 
   .hero h1 {
+    font-size: 44px;
+  }
+
+  .hero-circle {
+    width: 320px;
+    height: 320px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-grid {
+    gap: 60px;
+  }
+
+  .hero h1 {
     font-size: 56px;
   }
 
@@ -179,3 +194,4 @@
     height: 420px;
   }
 }
+

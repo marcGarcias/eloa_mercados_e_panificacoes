@@ -42,7 +42,7 @@
   font-weight: 500;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 744px) {
   .numeros-grid {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -68,3 +68,4 @@
     font-size: 14px;
   }
 }
+

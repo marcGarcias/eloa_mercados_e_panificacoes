@@ -21,7 +21,7 @@
       <div class="card">
         <div class="photo">
           @if (produto.imagem) {
-          <img [src]="produto.imagem" [alt]="produto.nome">
+          <img [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
           } @else {
           <span class="no-image">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"

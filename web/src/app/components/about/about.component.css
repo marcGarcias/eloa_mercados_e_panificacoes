@@ -74,15 +74,15 @@
   margin-top: 2px;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 744px) {
   .about-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 80px;
+    gap: 40px;
   }
 
   .about-image {
-    width: 480px;
-    height: 480px;
+    width: 320px;
+    height: 320px;
     order: unset;
   }
 
@@ -91,3 +91,15 @@
     flex-direction: column;
   }
 }
+
+@media (min-width: 1280px) {
+  .about-grid {
+    gap: 80px;
+  }
+
+  .about-image {
+    width: 480px;
+    height: 480px;
+  }
+}
+

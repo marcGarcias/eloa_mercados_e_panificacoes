@@ -150,7 +150,7 @@
   transform: rotate(180deg);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 744px) {
   .filters {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -167,6 +167,7 @@
     content: none;
   }
 }
+
 
 .weight {
   margin-top: auto;

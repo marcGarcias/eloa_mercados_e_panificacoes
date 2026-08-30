@@ -9,64 +9,76 @@ public class ContentDtoMapper {
     public static SiteContent toDomain(SiteContentDto dto) {
         if (dto == null) return null;
 
+        var bannerDto = dto.getBanner() != null ? dto.getBanner() : new SiteContentDto.BannerDto();
+        var bannerInds = bannerDto.getIndicadores() != null ? bannerDto.getIndicadores() : java.util.Collections.<SiteContentDto.IndicadorDto>emptyList();
         var banner = new SiteContent.Banner(
-                dto.getBanner().getSelo(),
-                dto.getBanner().getTitulo(),
-                dto.getBanner().getSubtitulo(),
-                dto.getBanner().getDescricao(),
-                dto.getBanner().getIndicadores().stream()
+                bannerDto.getSelo(),
+                bannerDto.getTitulo(),
+                bannerDto.getSubtitulo(),
+                bannerDto.getDescricao(),
+                bannerInds.stream()
                         .map(ind -> new SiteContent.Indicador(ind.getNome(), ind.getValor()))
                         .collect(Collectors.toList())
         );
 
+        var difDto = dto.getDiferenciais() != null ? dto.getDiferenciais() : new SiteContentDto.DiferenciaisDto();
+        var difCards = difDto.getCards() != null ? difDto.getCards() : java.util.Collections.<SiteContentDto.CardDto>emptyList();
         var diferenciais = new SiteContent.Diferenciais(
-                dto.getDiferenciais().getSelo(),
-                dto.getDiferenciais().getTitulo(),
-                dto.getDiferenciais().getDescricao(),
-                dto.getDiferenciais().getCards().stream()
+                difDto.getSelo(),
+                difDto.getTitulo(),
+                difDto.getDescricao(),
+                difCards.stream()
                         .map(c -> new SiteContent.Card(c.getTitulo(), c.getTexto()))
                         .collect(Collectors.toList())
         );
 
+        var catDto = dto.getCatalogo() != null ? dto.getCatalogo() : new SiteContentDto.CatalogoDto();
         var catalogo = new SiteContent.Catalogo(
-                dto.getCatalogo().getSelo(),
-                dto.getCatalogo().getDescricao()
+                catDto.getSelo(),
+                catDto.getDescricao()
         );
 
+        var sobreDto = dto.getSobre() != null ? dto.getSobre() : new SiteContentDto.SobreDto();
+        var sobreLista = sobreDto.getLista() != null ? sobreDto.getLista() : java.util.Collections.<SiteContentDto.DescricaoItemDto>emptyList();
         var sobre = new SiteContent.Sobre(
-                dto.getSobre().getSelo(),
-                dto.getSobre().getTitulo(),
-                dto.getSobre().getDescricao(),
-                dto.getSobre().getLista().stream()
+                sobreDto.getSelo(),
+                sobreDto.getTitulo(),
+                sobreDto.getDescricao(),
+                sobreLista.stream()
                         .map(item -> new SiteContent.DescricaoItem(item.getNome(), item.getDescricao()))
                         .collect(Collectors.toList())
         );
 
+        var estDto = dto.getEstatisticas() != null ? dto.getEstatisticas() : new SiteContentDto.EstatisticasDto();
+        var estLista = estDto.getLista() != null ? estDto.getLista() : java.util.Collections.<SiteContentDto.IndicadorDto>emptyList();
         var estatisticas = new SiteContent.Estatisticas(
-                dto.getEstatisticas().getLista().stream()
+                estLista.stream()
                         .map(est -> new SiteContent.Indicador(est.getNome(), est.getValor()))
                         .collect(Collectors.toList())
         );
 
+        var ctaDto = dto.getCta() != null ? dto.getCta() : new SiteContentDto.CtaDto();
         var cta = new SiteContent.Cta(
-                dto.getCta().getSelo(),
-                dto.getCta().getTitulo(),
-                dto.getCta().getDescricao()
+                ctaDto.getSelo(),
+                ctaDto.getTitulo(),
+                ctaDto.getDescricao()
         );
 
+        var rodDto = dto.getRodape() != null ? dto.getRodape() : new SiteContentDto.RodapeDto();
         var rodape = new SiteContent.Rodape(
-                dto.getRodape().getDescricao(),
-                dto.getRodape().getTextoContato(),
-                dto.getRodape().getTextoDireitos()
+                rodDto.getDescricao(),
+                rodDto.getTextoContato(),
+                rodDto.getTextoDireitos()
         );
 
+        var dadDto = dto.getDados() != null ? dto.getDados() : new SiteContentDto.DadosDto();
         var dados = new SiteContent.Dados(
-                dto.getDados().getEndereco(),
-                dto.getDados().getHorarioAbertura(),
-                dto.getDados().getHorarioFechamento(),
-                dto.getDados().getDiasFuncionamento(),
-                dto.getDados().getWhatsapp(),
-                dto.getDados().getCnpj()
+                dadDto.getEndereco(),
+                dadDto.getHorarioAbertura(),
+                dadDto.getHorarioFechamento(),
+                dadDto.getDiasFuncionamento(),
+                dadDto.getWhatsapp(),
+                dadDto.getCnpj()
         );
 
         return new SiteContent(banner, diferenciais, catalogo, sobre, estatisticas, cta, rodape, dados);

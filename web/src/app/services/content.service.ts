@@ -15,6 +15,11 @@ export class ContentService {
     return this.http.get<SiteContent>(this.apiUrl);
   }
 
+  getContentPublic(): Observable<SiteContent> {
+    const publicUrl = (environment?.apiUrl ?? '') + '/api/public/content';
+    return this.http.get<SiteContent>(publicUrl);
+  }
+
   saveContent(newContent: SiteContent): Observable<boolean> {
     return this.http.put<boolean>(this.apiUrl, newContent);
   }

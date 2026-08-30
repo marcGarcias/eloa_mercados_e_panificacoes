@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ContentDiferenciais } from '../../models/content.model';
 
 @Component({
   selector: 'app-features',
@@ -9,5 +10,5 @@ import { CommonModule } from '@angular/common';
   styleUrl: './features.component.css'
 })
 export class FeaturesComponent {
-
+  @Input() diferenciais?: ContentDiferenciais | null;
 }

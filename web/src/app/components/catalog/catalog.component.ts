@@ -1,7 +1,8 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
+import { ContentCatalogo } from '../../models/content.model';
 
 @Component({
   selector: 'app-catalog',
@@ -11,6 +12,7 @@ import { Product } from '../../models/product.model';
   styleUrl: './catalog.component.css'
 })
 export class CatalogComponent implements OnInit {
+  @Input() catalogo?: ContentCatalogo | null;
   private productService = inject(ProductService);
 
   products = signal<Product[]>([]);

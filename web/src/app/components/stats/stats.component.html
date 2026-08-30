@@ -1,22 +1,36 @@
 <section class="numeros" id="stats">
   <div class="container">
-      <div class="numeros-grid">
-          <div class="numero-item">
-              <span #numeroVal class="numero-val" data-prefix="+" data-target="10">+0</span>
-              <span class="numero-label">Anos de Tradição</span>
-          </div>
-          <div class="numero-item">
-              <span #numeroVal class="numero-val" data-prefix="+" data-target="50">+0</span>
-              <span class="numero-label">Produtos no Catálogo</span>
-          </div>
-          <div class="numero-item">
-              <span class="numero-val">Diária</span>
-              <span class="numero-label">Produção Fresca</span>
-          </div>
-          <div class="numero-item">
-              <span #numeroVal class="numero-val" data-prefix="" data-target="100" data-suffix="%">0%</span>
-              <span class="numero-label">Satisfação Garantida</span>
+      <div class="numeros-grid" *ngIf="parsedStats && parsedStats.length > 0; else defaultStats">
+          <div class="numero-item" *ngFor="let est of parsedStats">
+              <span *ngIf="est.target !== null" #numeroVal class="numero-val" [attr.data-prefix]="est.prefix" [attr.data-target]="est.target" [attr.data-suffix]="est.suffix">
+                  {{ est.prefix }}0{{ est.suffix }}
+              </span>
+              <span *ngIf="est.target === null" class="numero-val">
+                  {{ est.text }}
+              </span>
+              <span class="numero-label">{{ est.nome }}</span>
           </div>
       </div>
+      
+      <ng-template #defaultStats>
+          <div class="numeros-grid">
+              <div class="numero-item">
+                  <span #numeroVal class="numero-val" data-prefix="+" data-target="10">+0</span>
+                  <span class="numero-label">Anos de Tradição</span>
+              </div>
+              <div class="numero-item">
+                  <span #numeroVal class="numero-val" data-prefix="+" data-target="50">+0</span>
+                  <span class="numero-label">Produtos no Catálogo</span>
+              </div>
+              <div class="numero-item">
+                  <span class="numero-val">Diária</span>
+                  <span class="numero-label">Produção Fresca</span>
+              </div>
+              <div class="numero-item">
+                  <span #numeroVal class="numero-val" data-prefix="" data-target="100" data-suffix="%">0%</span>
+                  <span class="numero-label">Satisfação Garantida</span>
+              </div>
+          </div>
+      </ng-template>
   </div>
 </section>

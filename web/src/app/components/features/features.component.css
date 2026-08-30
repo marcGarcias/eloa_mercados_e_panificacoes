@@ -83,8 +83,9 @@
   gap: 28px;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 744px) {
   .diff-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+

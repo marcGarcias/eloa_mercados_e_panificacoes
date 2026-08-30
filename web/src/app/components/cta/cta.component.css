@@ -82,7 +82,7 @@
   border-color: white;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 744px) {
   .cta-box {
     padding: 80px 60px;
   }
@@ -91,3 +91,4 @@
     font-size: 46px;
   }
 }
+

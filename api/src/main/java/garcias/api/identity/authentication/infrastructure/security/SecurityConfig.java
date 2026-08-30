@@ -76,7 +76,10 @@ public class SecurityConfig {
                                 "/api/admin/categories/**"
                         ).hasAnyRole("SUPER_ADMIN", "ADMIN", "EDITOR")
 
-                        .requestMatchers("/api/admin/content/**")
+                        .requestMatchers(
+                                "/api/admin/content",
+                                "/api/admin/content/**"
+                        )
                         .hasAnyRole("SUPER_ADMIN", "ADMIN")
 
                         // 2º REGRA GERAL (CATCH-ALL DO ADMIN) FICA POR ÚLTIMO

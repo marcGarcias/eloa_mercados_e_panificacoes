@@ -1269,6 +1269,8 @@ body.admin-layout {
             width: 100%;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none; /* Firefox */
+            -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+            mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
         }
 
         .chips::-webkit-scrollbar {
@@ -1306,6 +1308,8 @@ body.admin-layout {
             scrollbar-width: none;
             display: flex;
             gap: 8px;
+            -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+            mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
         }
 
         .head-actions::-webkit-scrollbar {
@@ -1370,6 +1374,8 @@ body.admin-layout {
                 overflow-x: visible;
                 padding-bottom: 0;
                 width: auto;
+                -webkit-mask-image: none;
+                mask-image: none;
             }
 
             .search {
@@ -1404,6 +1410,8 @@ body.admin-layout {
                 padding-bottom: 0;
                 display: flex;
                 gap: 10px;
+                -webkit-mask-image: none;
+                mask-image: none;
             }
 
             .head-actions .btn {
@@ -1445,7 +1453,7 @@ body.admin-layout {
                 display: table-row-group;
             }
 
-            tbody tr {
+            tr {
                 display: table-row;
                 border: none;
                 border-radius: 0;

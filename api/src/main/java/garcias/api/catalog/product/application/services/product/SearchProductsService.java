@@ -8,6 +8,7 @@ import garcias.api.catalog.product.domain.repositories.ProductRepository;
 import garcias.api.catalog.product.domain.valueobjects.ProductFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -38,7 +39,8 @@ public class SearchProductsService implements SearchProductsUseCase {
                 filter,
                 PageRequest.of(
                         pageRequest.page(),
-                        pageRequest.size()
+                        pageRequest.size(),
+                        Sort.by(Sort.Direction.ASC, "position")
                 )
         );
     }

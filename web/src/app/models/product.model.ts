@@ -74,3 +74,11 @@ export interface SpringPage<T> {
   number: number;
   size: number;
 }
+
+export interface ProductPublicResponse {
+  name: string;
+  weight: number;
+  photoUrl: string | null;
+  categoryName: string;
+  position: number;
+}

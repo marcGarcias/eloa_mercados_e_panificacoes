@@ -247,6 +247,26 @@ body.admin-layout {
             background: var(--secondary);
         }
 
+        .tab.tab-locked {
+            opacity: 0.55;
+            cursor: not-allowed;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .tab.tab-locked:hover {
+            background: transparent;
+            color: var(--gray);
+        }
+
+        .lock-icon {
+            opacity: 0.85;
+            flex-shrink: 0;
+            margin-bottom: -1px;
+        }
+
         .account {
             display: flex;
             align-items: center;
@@ -1158,42 +1178,122 @@ body.admin-layout {
             }
         }
 
-        @media (max-width: 800px) {
-            .tabs {
-                display: none;
+        @media (max-width: 767px) {
+            /* Modais se comportam como Bottom Sheets no celular */
+            .overlay {
+                align-items: flex-end;
+                justify-content: center;
+                padding: 0;
+                background: rgba(46, 36, 28, 0.45);
             }
 
-            .topbar-inner {
-                justify-content: space-between;
+            .modal {
+                border-radius: 20px 20px 0 0;
+                max-width: 100%;
+                width: 100%;
+                max-height: 85vh;
+                transform: translateY(100%);
+                animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
 
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                }
+                to {
+                    transform: translateY(0);
+                }
+            }
+
+            /* Barra de ferramentas responsiva do admin */
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .chips {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 8px;
+                width: 100%;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none; /* Firefox */
+            }
+
+            .chips::-webkit-scrollbar {
+                display: none; /* Chrome/Safari */
+            }
+
+            .search {
+                width: 100%;
+            }
+
+            .search input {
+                width: 100%;
+            }
+
+            /* Grid de produtos fluido */
             .grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
 
             .field-row {
                 grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 520px) {
-            .grid {
-                grid-template-columns: 1fr 1fr;
+                gap: 10px;
             }
 
             .page-head {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 20px;
             }
 
-            main {
-                padding: 28px 16px 60px;
+            .page-head h1 {
+                font-size: 22px;
+            }
+
+            .head-actions {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 4px;
+                scrollbar-width: none;
+                display: flex;
+                gap: 8px;
+            }
+
+            .head-actions::-webkit-scrollbar {
+                display: none;
+            }
+
+            .head-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .card-body {
+                padding: 10px 12px 12px;
+            }
+            
+            .card-name {
+                font-size: 14px;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
+                animation: none !important;
             }
         }
 }

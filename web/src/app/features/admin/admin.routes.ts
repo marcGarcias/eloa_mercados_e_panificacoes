@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
-import { authGuard } from '../../core/security/auth.guard';
+import { authGuard, authMatchGuard } from '../../core/security/auth.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -10,16 +10,18 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('../../components/conteudo/conteudo.component').then(m => m.ConteudoComponent)
+        loadComponent: () => import('./pages/content/content.component').then(m => m.ContentComponent),
+        canMatch: [authMatchGuard],
+        data: { roles: ['SUPER_ADMIN', 'ADMIN'] }
       },
       {
         path: 'catalog',
-        loadComponent: () => import('../../components/catalogo/catalogo.component').then(m => m.CatalogoComponent)
+        loadComponent: () => import('./pages/catalog/catalog.component').then(m => m.CatalogComponent)
       },
       {
         path: 'users',
         loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent),
-        canActivate: [authGuard],
+        canMatch: [authMatchGuard],
         data: { roles: ['SUPER_ADMIN'] }
       },
       {

@@ -124,3 +124,41 @@
     transform: rotate(360deg);
   }
 }
+
+/* Controles de ordenação mobile */
+.mobile-order-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+}
+
+.mobile-order-controls .order-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(2px);
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 50%;
+  color: var(--green, #24412A);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mobile-order-controls .order-btn:active {
+  transform: scale(0.9);
+  background: var(--secondary, #F5E9DD);
+}
+
+.mobile-order-controls .order-btn:disabled {
+  opacity: 0.4;
+  color: var(--gray, #8A7F74);
+  cursor: not-allowed;
+}

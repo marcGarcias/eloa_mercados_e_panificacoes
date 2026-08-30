@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, map } from 'rxjs';
 import {
   Product,
   ProductAdminResponse,
+  ProductPublicResponse,
   ProductStatus,
   CreateProductPayload,
   UpdateProductPayload,
@@ -18,12 +19,41 @@ export class ProductService {
   constructor(private readonly http: HttpClient) {}
 
   getAll(): Observable<Product[]> {
-    // Retornando array vazio temporariamente para compilar, deve usar searchAdmin()
-    return of([]);
+    return this.searchPublic().pipe(
+      map(page => page.content.map(p => ({
+        nome: p.name,
+        categoria: p.categoryName,
+        peso: p.weight ? `${p.weight.toString().replace('.', ',')} kg` : '',
+        imagem: this.getProductImageUrl(p.photoUrl),
+        order: Number(p.position)
+      })))
+    );
   }
 
   getCategories(): string[] {
     return [];
+  }
+
+  searchPublic(filters: {
+    name?: string;
+    categoryName?: string;
+    page?: number;
+    size?: number;
+  } = {}): Observable<SpringPage<ProductPublicResponse>> {
+    const publicUrl = (environment?.apiUrl ?? '') + '/api/public/products';
+    let params = new HttpParams()
+      .set('page', String(filters.page ?? 0))
+      .set('size', String(filters.size ?? 999));
+    if (filters.name)         params = params.set('name', filters.name);
+    if (filters.categoryName) params = params.set('categoryName', filters.categoryName);
+    return this.http.get<SpringPage<ProductPublicResponse>>(publicUrl, { params });
+  }
+
+  getPublicCategories(): Observable<string[]> {
+    const categoriesUrl = (environment?.apiUrl ?? '') + '/api/public/categories';
+    return this.http.get<{ name: string }[]>(categoriesUrl).pipe(
+      map(list => list.map(c => c.name))
+    );
   }
 
   // ----------------------------------------------------------------

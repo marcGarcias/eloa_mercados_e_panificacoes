@@ -30,7 +30,13 @@ export class CatalogComponent implements OnInit {
     this.productService.getAll().subscribe(data => {
       this.products.set(data);
     });
-    this.categories = this.productService.getCategories().map(c => ({ id: c, label: c }));
+
+    this.productService.getPublicCategories().subscribe(cats => {
+      this.categories = [
+        { id: 'Todos', label: 'Todos' },
+        ...cats.map(c => ({ id: c, label: c }))
+      ];
+    });
   }
 
   setCategory(category: string) {

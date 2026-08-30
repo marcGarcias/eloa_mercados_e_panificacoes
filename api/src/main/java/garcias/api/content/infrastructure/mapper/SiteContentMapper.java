@@ -9,11 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SiteContentMapper {
 
-    private final ObjectMapper objectMapper;
-
-    public SiteContentMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public SiteContent toDomain(SiteContentJpaEntity jpaEntity) {
         if (jpaEntity == null) return null;
@@ -34,3 +30,4 @@ public class SiteContentMapper {
         }
     }
 }
+

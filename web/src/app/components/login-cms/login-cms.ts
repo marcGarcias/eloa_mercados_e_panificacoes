@@ -43,7 +43,13 @@ export class LoginCms {
     this.authService.login(userCode!, password!).subscribe({
       next: () => {
         this.toastService.success('Bem-vindo de volta ao painel!', 'Login Realizado');
-        this.router.navigate(['/admin']);
+        this.router.navigate(['/admin']).then(navigated => {
+          if (!navigated) {
+            this.isLoading = false;
+          }
+        }).catch(() => {
+          this.isLoading = false;
+        });
       },
       error: (err) => {
         this.isLoading = false;

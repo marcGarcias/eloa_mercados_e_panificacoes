@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, of, map } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, map, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, UserRole } from '../models/user.model';
 
@@ -32,12 +32,22 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(userCode: string, password: string): Observable<LoginResponse> {
+  login(userCode: string, password: string): Observable<User> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { userCode, password }).pipe(
-      tap(response => {
+      switchMap(response => {
         if (response.accessToken) {
           this.setToken(response.accessToken);
-          this.loadCurrentUser().subscribe();
+          this.authInitialized = true; // Evita refresh redundante no guard
+          return this.loadCurrentUser().pipe(
+            map(user => {
+              if (!user) {
+                throw new Error('Falha ao carregar perfil do usuário.');
+              }
+              return user;
+            })
+          );
+        } else {
+          throw new Error('Token de acesso ausente.');
         }
       })
     );

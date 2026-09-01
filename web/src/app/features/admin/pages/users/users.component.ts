@@ -74,24 +74,46 @@ export class UsersComponent implements OnInit {
     const field = this.sortField;
     const dir = this.sortDirection === 'asc' ? 1 : -1;
 
-    // Peso de hierarquia para ordenação de função
+    // Função: asc = menor privilégio primeiro (Editor → Admin → Proprietário)
     const roleWeight: Record<string, number> = {
-      'SUPER_ADMIN': 1,
+      'EDITOR': 1,
       'ADMIN': 2,
-      'EDITOR': 3
+      'SUPER_ADMIN': 3
+    };
+
+    // Status: asc = Ativo primeiro
+    const statusWeight: Record<string, number> = {
+      'ACTIVE': 1,
+      'INACTIVE': 2
     };
 
     this.users = [...this.users].sort((a, b) => {
       if (field === 'role') {
-        const aW = roleWeight[a.role] ?? 99;
-        const bW = roleWeight[b.role] ?? 99;
-        return (aW - bW) * dir;
+        return ((roleWeight[a.role] ?? 99) - (roleWeight[b.role] ?? 99)) * dir;
       }
-      const aVal = a[field as keyof User] ?? '';
-      const bVal = b[field as keyof User] ?? '';
-      if (aVal < bVal) return -1 * dir;
-      if (aVal > bVal) return 1 * dir;
-      return 0;
+
+      if (field === 'status') {
+        return ((statusWeight[a.status] ?? 99) - (statusWeight[b.status] ?? 99)) * dir;
+      }
+
+      if (field === 'userCode') {
+        // Numérico: '0001' < '0010'
+        const aNum = parseInt(a.userCode ?? '0', 10);
+        const bNum = parseInt(b.userCode ?? '0', 10);
+        return (aNum - bNum) * dir;
+      }
+
+      if (field === 'lastLoginAt') {
+        // Nunca acessou vai para o final no crescente
+        const aTime = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
+        const bTime = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
+        return (aTime - bTime) * dir;
+      }
+
+      // Padrão: comparação textual (ex: nome A→Z)
+      const aVal = (a[field as keyof User] ?? '') as string;
+      const bVal = (b[field as keyof User] ?? '') as string;
+      return aVal.localeCompare(bVal, 'pt-BR') * dir;
     });
   }
   

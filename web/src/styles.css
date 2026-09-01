@@ -1503,6 +1503,13 @@ body.admin-layout {
 }
 
 /* ============ TOAST NOTIFICATIONS (GLOBAL) ============ */
+:root {
+    --toast-success: #24412A;
+    --toast-error: #A5402F;
+    --toast-warning: #CC9148;
+    --toast-info: #4C2D19;
+}
+
 #toast-container {
     position: fixed;
     top: 24px;
@@ -1510,29 +1517,31 @@ body.admin-layout {
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-width: 380px;
+    gap: 12px;
+    max-width: 400px;
     width: calc(100% - 48px);
     pointer-events: none;
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-body, 'Poppins', sans-serif);
 }
 
 .toast {
     pointer-events: auto;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: 12px;
-    padding: 14px 18px;
-    box-shadow: 0 10px 30px rgba(46, 36, 28, 0.12);
-    border-left: 5px solid #CC9148;
+    padding: 16px 20px;
+    box-shadow: 0 8px 32px rgba(76, 45, 25, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 14px;
     transform: translateX(120%);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15), opacity 0.3s ease;
     opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.1), opacity 0.4s ease;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
 }
 
 .toast.show {
@@ -1540,72 +1549,101 @@ body.admin-layout {
     opacity: 1;
 }
 
-.toast-success {
-    border-left-color: #28a745;
-}
-
-.toast-error {
-    border-left-color: #dc3545;
-}
-
-.toast-warning {
-    border-left-color: #ffc107;
-}
-
-.toast-info {
-    border-left-color: #17a2b8;
-}
+.toast-success { color: var(--toast-success); }
+.toast-error { color: var(--toast-error); }
+.toast-warning { color: var(--toast-warning); }
+.toast-info { color: var(--toast-info); }
 
 .toast-icon {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     margin-top: 2px;
+    stroke: currentColor;
 }
 
 .toast-content {
     flex: 1;
+    color: var(--dark, #2E241C);
 }
 
 .toast-title {
     font-weight: 600;
-    font-size: 13.5px;
-    color: #4C2D19;
-    margin-bottom: 2px;
+    font-size: 14px;
+    color: currentColor;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
 }
 
 .toast-msg {
-    font-size: 12px;
-    color: #777;
-    line-height: 1.4;
+    font-size: 12.5px;
+    color: #555;
+    line-height: 1.45;
 }
 
 .toast-close {
     background: none;
     border: none;
-    color: #777;
+    color: #999;
     cursor: pointer;
-    padding: 0;
-    opacity: 0.6;
-    transition: opacity 0.15s;
-    font-size: 18px;
+    padding: 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s, background 0.2s;
+    font-size: 20px;
     line-height: 1;
-    margin-left: 6px;
+    margin-left: 8px;
     flex-shrink: 0;
-    margin-top: -2px;
+    margin-top: -4px;
+    margin-right: -8px;
+    border-radius: 6px;
 }
 
 .toast-close:hover {
     opacity: 1;
+    color: var(--dark, #2E241C);
+    background: rgba(0,0,0,0.05);
 }
 
-@media (max-width: 480px) {
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: currentColor;
+    width: 100%;
+    opacity: 0.3;
+    animation: toast-progress 3.5s linear forwards;
+}
+
+@keyframes toast-progress {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}
+
+@media (max-width: 767px) {
     #toast-container {
-        top: 16px;
+        top: auto;
+        /* 64px (altura do bottom-nav) + 12px de respiro + safe-area para iPhones com notch */
+        bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px));
         right: 16px;
         left: 16px;
         width: auto;
         max-width: none;
+    }
+
+    .toast {
+        transform: translateY(120%);
+        padding: 18px 20px;
+    }
+
+    .toast.show {
+        transform: translateY(0);
+    }
+
+    .toast-close {
+        padding: 8px;
+        margin-top: -8px;
+        margin-right: -12px;
     }
 }
 

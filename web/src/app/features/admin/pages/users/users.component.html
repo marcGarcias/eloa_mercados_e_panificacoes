@@ -19,11 +19,46 @@
     <table>
       <thead>
         <tr>
-          <th>Nome</th>
-          <th>Código</th>
-          <th>Função</th>
-          <th>Status</th>
-          <th>Último Acesso</th>
+          <th class="sortable" (click)="sortBy('name')" [class.sort-active]="sortField === 'name'">
+            Nome
+            <span class="sort-icon" [class.asc]="sortField === 'name' && sortDirection === 'asc'" [class.desc]="sortField === 'name' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="sortable" (click)="sortBy('userCode')" [class.sort-active]="sortField === 'userCode'">
+            Código
+            <span class="sort-icon" [class.asc]="sortField === 'userCode' && sortDirection === 'asc'" [class.desc]="sortField === 'userCode' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="sortable" (click)="sortBy('role')" [class.sort-active]="sortField === 'role'">
+            Função
+            <span class="sort-icon" [class.asc]="sortField === 'role' && sortDirection === 'asc'" [class.desc]="sortField === 'role' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="sortable" (click)="sortBy('status')" [class.sort-active]="sortField === 'status'">
+            Status
+            <span class="sort-icon" [class.asc]="sortField === 'status' && sortDirection === 'asc'" [class.desc]="sortField === 'status' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="sortable" (click)="sortBy('lastLoginAt')" [class.sort-active]="sortField === 'lastLoginAt'">
+            Último Acesso
+            <span class="sort-icon" [class.asc]="sortField === 'lastLoginAt' && sortDirection === 'asc'" [class.desc]="sortField === 'lastLoginAt' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
           <th>Ações</th>
         </tr>
       </thead>

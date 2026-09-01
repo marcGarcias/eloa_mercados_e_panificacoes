@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -50,12 +50,59 @@ export class UsersComponent implements OnInit {
   sortField: keyof User | 'lastLoginAt' | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
 
+  // Filtro multi-seleção de funções
+  readonly allRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'EDITOR'];
+  selectedRoles = new Set<UserRole>(['SUPER_ADMIN', 'ADMIN', 'EDITOR']);
+  roleFilterOpen = false;
+
   get currentUser(): User | null {
     return this.authService.currentUser;
   }
 
   get isOwner(): boolean {
     return this.authService.hasRole(['SUPER_ADMIN']);
+  }
+
+  get isRoleFilterActive(): boolean {
+    return this.selectedRoles.size < this.allRoles.length;
+  }
+
+  get filteredUsers(): User[] {
+    return this.users.filter(u => this.selectedRoles.has(u.role));
+  }
+
+  toggleRoleFilterOpen(event: Event): void {
+    event.stopPropagation();
+    this.roleFilterOpen = !this.roleFilterOpen;
+    this.cdr.markForCheck();
+  }
+
+  toggleRoleFilter(role: UserRole, event: Event): void {
+    event.stopPropagation();
+    if (this.selectedRoles.has(role)) {
+      // Impede desmarcar tudo
+      if (this.selectedRoles.size > 1) {
+        this.selectedRoles.delete(role);
+      }
+    } else {
+      this.selectedRoles.add(role);
+    }
+    this.selectedRoles = new Set(this.selectedRoles); // força detecção
+    this.cdr.markForCheck();
+  }
+
+  clearRoleFilter(): void {
+    this.selectedRoles = new Set(this.allRoles);
+    this.roleFilterOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('document:click')
+  closeRoleFilter(): void {
+    if (this.roleFilterOpen) {
+      this.roleFilterOpen = false;
+      this.cdr.markForCheck();
+    }
   }
 
   sortBy(field: keyof User | 'lastLoginAt'): void {
@@ -81,12 +128,6 @@ export class UsersComponent implements OnInit {
     };
 
     this.users = [...this.users].sort((a, b) => {
-      if (field === 'role') {
-        // Ordena pelo nome exibido em pt-BR: Administrador < Editor < Proprietário
-        const aLabel = this.RoleTranslations[a.role] ?? a.role;
-        const bLabel = this.RoleTranslations[b.role] ?? b.role;
-        return aLabel.localeCompare(bLabel, 'pt-BR') * dir;
-      }
 
       if (field === 'status') {
         return ((statusWeight[a.status] ?? 99) - (statusWeight[b.status] ?? 99)) * dir;

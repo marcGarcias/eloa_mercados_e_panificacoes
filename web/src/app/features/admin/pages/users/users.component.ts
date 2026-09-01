@@ -54,6 +54,7 @@ export class UsersComponent implements OnInit {
   readonly allRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'EDITOR'];
   selectedRoles = new Set<UserRole>(['SUPER_ADMIN', 'ADMIN', 'EDITOR']);
   roleFilterOpen = false;
+  searchQuery = '';
 
   get currentUser(): User | null {
     return this.authService.currentUser;
@@ -68,7 +69,15 @@ export class UsersComponent implements OnInit {
   }
 
   get filteredUsers(): User[] {
-    return this.users.filter(u => this.selectedRoles.has(u.role));
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.users.filter(u => {
+      const matchesRole = this.selectedRoles.has(u.role);
+      if (!q) return matchesRole;
+      const matchesSearch =
+        u.name?.toLowerCase().includes(q) ||
+        u.userCode?.toLowerCase().includes(q);
+      return matchesRole && matchesSearch;
+    });
   }
 
   toggleRoleFilterOpen(event: Event): void {

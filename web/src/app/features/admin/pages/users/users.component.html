@@ -36,12 +36,7 @@
         </tr>
         <tr *ngFor="let user of users">
           <td data-label="Nome">
-            <div class="user-cell">
-              <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
-              <div>
-                <div class="user-name">{{ user.name }}</div>
-              </div>
-            </div>
+            <div class="user-name">{{ user.name }}</div>
           </td>
           <td data-label="Código">{{ user.userCode || '-' }}</td>
           <td data-label="Função">

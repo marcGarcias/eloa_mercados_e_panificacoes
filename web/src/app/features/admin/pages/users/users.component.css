@@ -120,3 +120,55 @@
   padding: 30px 20px !important;
   font-size: 14px;
 }
+
+/* ============ ORDENAÇÃO DA TABELA ============ */
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+th.sortable:hover {
+  color: var(--dark, #2E241C);
+}
+
+th.sort-active {
+  color: var(--green, #24412A);
+}
+
+.sort-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  vertical-align: middle;
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.25s ease;
+}
+
+.sort-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Seta visível quando a coluna está ativa */
+.sort-icon.asc,
+.sort-icon.desc {
+  opacity: 1;
+  color: var(--green, #24412A);
+}
+
+/* Seta apontando para cima (padrão — crescente) */
+.sort-icon.asc {
+  transform: rotate(0deg);
+}
+
+/* Seta apontando para baixo (decrescente) */
+.sort-icon.desc {
+  transform: rotate(180deg);
+}
+
+/* Hover na coluna realça a seta neutra */
+th.sortable:hover .sort-icon:not(.asc):not(.desc) {
+  opacity: 0.6;
+}

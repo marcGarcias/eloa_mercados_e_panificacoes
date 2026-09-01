@@ -73,7 +73,20 @@ export class UsersComponent implements OnInit {
     if (!this.sortField) return;
     const field = this.sortField;
     const dir = this.sortDirection === 'asc' ? 1 : -1;
+
+    // Peso de hierarquia para ordenação de função
+    const roleWeight: Record<string, number> = {
+      'SUPER_ADMIN': 1,
+      'ADMIN': 2,
+      'EDITOR': 3
+    };
+
     this.users = [...this.users].sort((a, b) => {
+      if (field === 'role') {
+        const aW = roleWeight[a.role] ?? 99;
+        const bW = roleWeight[b.role] ?? 99;
+        return (aW - bW) * dir;
+      }
       const aVal = a[field as keyof User] ?? '';
       const bVal = b[field as keyof User] ?? '';
       if (aVal < bVal) return -1 * dir;

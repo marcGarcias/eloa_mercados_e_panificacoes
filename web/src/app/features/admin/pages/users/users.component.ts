@@ -47,12 +47,39 @@ export class UsersComponent implements OnInit {
   readonly RoleTranslations = RoleTranslations;
   readonly StatusTranslations = StatusTranslations;
 
+  sortField: keyof User | 'lastLoginAt' | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
   get currentUser(): User | null {
     return this.authService.currentUser;
   }
 
   get isOwner(): boolean {
     return this.authService.hasRole(['SUPER_ADMIN']);
+  }
+
+  sortBy(field: keyof User | 'lastLoginAt'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.applySort();
+    this.cdr.markForCheck();
+  }
+
+  private applySort(): void {
+    if (!this.sortField) return;
+    const field = this.sortField;
+    const dir = this.sortDirection === 'asc' ? 1 : -1;
+    this.users = [...this.users].sort((a, b) => {
+      const aVal = a[field as keyof User] ?? '';
+      const bVal = b[field as keyof User] ?? '';
+      if (aVal < bVal) return -1 * dir;
+      if (aVal > bVal) return 1 * dir;
+      return 0;
+    });
   }
   
   ngOnInit(): void {

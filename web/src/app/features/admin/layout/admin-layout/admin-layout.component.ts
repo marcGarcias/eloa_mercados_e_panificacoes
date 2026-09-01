@@ -1,10 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
 import { RoleTranslations } from '../../../../models/user.model';
-import { BehaviorSubject } from 'rxjs';
 
 // ModalProdutoComponent removido do layout global:
 // agora e controlado diretamente pelo CatalogoComponent.
@@ -22,25 +21,6 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   router = inject(Router);
 
   readonly RoleTranslations = RoleTranslations;
-
-  private readonly isDropdownOpenSubject = new BehaviorSubject<boolean>(false);
-  readonly isDropdownOpen$ = this.isDropdownOpenSubject.asObservable();
-
-  toggleDropdown(): void {
-    this.isDropdownOpenSubject.next(!this.isDropdownOpenSubject.value);
-  }
-
-  closeDropdown(): void {
-    this.isDropdownOpenSubject.next(false);
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.account-actions')) {
-      this.closeDropdown();
-    }
-  }
 
   ngOnInit(): void {
     document.body.classList.add('admin-layout');

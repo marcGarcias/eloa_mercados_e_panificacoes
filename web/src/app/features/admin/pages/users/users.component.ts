@@ -74,13 +74,6 @@ export class UsersComponent implements OnInit {
     const field = this.sortField;
     const dir = this.sortDirection === 'asc' ? 1 : -1;
 
-    // Função: asc = menor privilégio primeiro (Editor → Admin → Proprietário)
-    const roleWeight: Record<string, number> = {
-      'EDITOR': 1,
-      'ADMIN': 2,
-      'SUPER_ADMIN': 3
-    };
-
     // Status: asc = Ativo primeiro
     const statusWeight: Record<string, number> = {
       'ACTIVE': 1,
@@ -89,7 +82,10 @@ export class UsersComponent implements OnInit {
 
     this.users = [...this.users].sort((a, b) => {
       if (field === 'role') {
-        return ((roleWeight[a.role] ?? 99) - (roleWeight[b.role] ?? 99)) * dir;
+        // Ordena pelo nome exibido em pt-BR: Administrador < Editor < Proprietário
+        const aLabel = this.RoleTranslations[a.role] ?? a.role;
+        const bLabel = this.RoleTranslations[b.role] ?? b.role;
+        return aLabel.localeCompare(bLabel, 'pt-BR') * dir;
       }
 
       if (field === 'status') {

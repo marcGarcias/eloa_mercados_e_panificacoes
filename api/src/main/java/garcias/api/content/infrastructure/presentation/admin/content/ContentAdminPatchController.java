@@ -1,40 +1,26 @@
-package garcias.api.content.infrastructure.presentation;
+package garcias.api.content.infrastructure.presentation.admin.content;
 
 import garcias.api.content.application.dto.SiteContentDto;
 import garcias.api.content.application.usecases.GetContentUseCase;
 import garcias.api.content.application.usecases.SaveContentUseCase;
 import garcias.api.content.infrastructure.mapper.ContentDtoMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ContentController {
+public class ContentAdminPatchController {
 
     private final GetContentUseCase getUseCase;
     private final SaveContentUseCase saveUseCase;
 
-    public ContentController(
+    public ContentAdminPatchController(
             GetContentUseCase getUseCase,
             SaveContentUseCase saveUseCase
     ) {
         this.getUseCase = getUseCase;
         this.saveUseCase = saveUseCase;
-    }
-
-    @GetMapping("/api/public/content")
-    public ResponseEntity<SiteContentDto> getPublicContent() {
-        return getUseCase.execute()
-                .map(ContentDtoMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
-    }
-
-    @GetMapping("/api/admin/content")
-    public ResponseEntity<SiteContentDto> getAdminContent() {
-        return getUseCase.execute()
-                .map(ContentDtoMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
     }
 
     @PatchMapping("/api/admin/content")
@@ -47,4 +33,3 @@ public class ContentController {
         return ResponseEntity.ok(ContentDtoMapper.toDto(saved));
     }
 }
-

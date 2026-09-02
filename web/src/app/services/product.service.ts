@@ -30,10 +30,6 @@ export class ProductService {
     );
   }
 
-  getCategories(): string[] {
-    return [];
-  }
-
   searchPublic(filters: {
     name?: string;
     categoryName?: string;
@@ -65,7 +61,6 @@ export class ProductService {
    * GET /api/admin/products?name=&categoryId=&status=&page=&size=
    *
    * @param filters - Filtros opcionais de busca
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   searchAdmin(filters: {
     name?: string;
@@ -88,7 +83,6 @@ export class ProductService {
    * POST /api/admin/products (multipart/form-data)
    *
    * @param payload - Dados do produto com foto WebP obrigatoria
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   create(payload: CreateProductPayload): Observable<ProductAdminResponse> {
     const formData = this.buildCreateFormData(payload);
@@ -102,7 +96,6 @@ export class ProductService {
    *
    * @param id - ID do produto
    * @param payload - Campos a atualizar (parcial)
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   update(id: number, payload: UpdateProductPayload): Observable<ProductAdminResponse> {
     const formData = this.buildUpdateFormData(payload);
@@ -114,7 +107,6 @@ export class ProductService {
    * DELETE /api/admin/products/{id}
    *
    * @param id - ID do produto
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);

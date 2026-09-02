@@ -2,6 +2,7 @@ package garcias.api.content.infrastructure.mapper;
 
 import garcias.api.content.application.dto.SiteContentDto;
 import garcias.api.content.domain.entities.SiteContent;
+import garcias.api.content.domain.valueobjects.*;
 import java.util.stream.Collectors;
 
 public class ContentDtoMapper {
@@ -11,68 +12,68 @@ public class ContentDtoMapper {
 
         var bannerDto = dto.getBanner() != null ? dto.getBanner() : new SiteContentDto.BannerDto();
         var bannerInds = bannerDto.getIndicadores() != null ? bannerDto.getIndicadores() : java.util.Collections.<SiteContentDto.IndicadorDto>emptyList();
-        var banner = new SiteContent.Banner(
+        var banner = new Banner(
                 bannerDto.getSelo(),
                 bannerDto.getTitulo(),
                 bannerDto.getSubtitulo(),
                 bannerDto.getDescricao(),
                 bannerInds.stream()
-                        .map(ind -> new SiteContent.Indicador(ind.getNome(), ind.getValor()))
+                        .map(ind -> new Indicador(ind.getNome(), ind.getValor()))
                         .collect(Collectors.toList())
         );
 
         var difDto = dto.getDiferenciais() != null ? dto.getDiferenciais() : new SiteContentDto.DiferenciaisDto();
         var difCards = difDto.getCards() != null ? difDto.getCards() : java.util.Collections.<SiteContentDto.CardDto>emptyList();
-        var diferenciais = new SiteContent.Diferenciais(
+        var diferenciais = new Diferenciais(
                 difDto.getSelo(),
                 difDto.getTitulo(),
                 difDto.getDescricao(),
                 difCards.stream()
-                        .map(c -> new SiteContent.Card(c.getTitulo(), c.getTexto()))
+                        .map(c -> new Card(c.getTitulo(), c.getTexto()))
                         .collect(Collectors.toList())
         );
 
         var catDto = dto.getCatalogo() != null ? dto.getCatalogo() : new SiteContentDto.CatalogoDto();
-        var catalogo = new SiteContent.Catalogo(
+        var catalogo = new Catalogo(
                 catDto.getSelo(),
                 catDto.getDescricao()
         );
 
         var sobreDto = dto.getSobre() != null ? dto.getSobre() : new SiteContentDto.SobreDto();
         var sobreLista = sobreDto.getLista() != null ? sobreDto.getLista() : java.util.Collections.<SiteContentDto.DescricaoItemDto>emptyList();
-        var sobre = new SiteContent.Sobre(
+        var sobre = new Sobre(
                 sobreDto.getSelo(),
                 sobreDto.getTitulo(),
                 sobreDto.getDescricao(),
                 sobreLista.stream()
-                        .map(item -> new SiteContent.DescricaoItem(item.getNome(), item.getDescricao()))
+                        .map(item -> new DescricaoItem(item.getNome(), item.getDescricao()))
                         .collect(Collectors.toList())
         );
 
         var estDto = dto.getEstatisticas() != null ? dto.getEstatisticas() : new SiteContentDto.EstatisticasDto();
         var estLista = estDto.getLista() != null ? estDto.getLista() : java.util.Collections.<SiteContentDto.IndicadorDto>emptyList();
-        var estatisticas = new SiteContent.Estatisticas(
+        var estatisticas = new Estatisticas(
                 estLista.stream()
-                        .map(est -> new SiteContent.Indicador(est.getNome(), est.getValor()))
+                        .map(est -> new Indicador(est.getNome(), est.getValor()))
                         .collect(Collectors.toList())
         );
 
         var ctaDto = dto.getCta() != null ? dto.getCta() : new SiteContentDto.CtaDto();
-        var cta = new SiteContent.Cta(
+        var cta = new Cta(
                 ctaDto.getSelo(),
                 ctaDto.getTitulo(),
                 ctaDto.getDescricao()
         );
 
         var rodDto = dto.getRodape() != null ? dto.getRodape() : new SiteContentDto.RodapeDto();
-        var rodape = new SiteContent.Rodape(
+        var rodape = new Rodape(
                 rodDto.getDescricao(),
                 rodDto.getTextoContato(),
                 rodDto.getTextoDireitos()
         );
 
         var dadDto = dto.getDados() != null ? dto.getDados() : new SiteContentDto.DadosDto();
-        var dados = new SiteContent.Dados(
+        var dados = new Dados(
                 dadDto.getEndereco(),
                 dadDto.getHorarioAbertura(),
                 dadDto.getHorarioFechamento(),

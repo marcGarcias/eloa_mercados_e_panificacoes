@@ -1,6 +1,5 @@
 package garcias.api.identity.authentication.application.services;
 
-import garcias.api.identity.authentication.application.dto.events.BootstrapUserRequestedEvent;
 import garcias.api.identity.authentication.application.dto.requests.BootstrapUserRequest;
 import garcias.api.identity.authentication.application.dto.responses.BootstrapUserResponse;
 import garcias.api.identity.authentication.application.ports.UserAuthenticationPort;

@@ -12,9 +12,11 @@ import java.util.Optional;
 public class UserAuthenticationAdapter implements UserAuthenticationPort {
 
     private final UserRepository userRepository;
+    private final garcias.api.identity.user.application.usecases.CreateUserUseCase createUserUseCase;
 
-    public UserAuthenticationAdapter(UserRepository userRepository) {
+    public UserAuthenticationAdapter(UserRepository userRepository, garcias.api.identity.user.application.usecases.CreateUserUseCase createUserUseCase) {
         this.userRepository = userRepository;
+        this.createUserUseCase = createUserUseCase;
     }
 
     @Override
@@ -31,5 +33,14 @@ public class UserAuthenticationAdapter implements UserAuthenticationPort {
     @Override
     public boolean existsAnyUser() {
         return userRepository.existsAnyUser();
+    }
+
+    @Override
+    public String createInitialUser(String name, String password) {
+        garcias.api.identity.user.application.dto.requests.CreateUserRequest request = 
+            new garcias.api.identity.user.application.dto.requests.CreateUserRequest(
+                name, password, garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN, garcias.api.identity.user.domain.enums.UserStatus.ACTIVE);
+        garcias.api.identity.user.domain.entities.User user = createUserUseCase.execute(request);
+        return user.getUserCode().value();
     }
 }

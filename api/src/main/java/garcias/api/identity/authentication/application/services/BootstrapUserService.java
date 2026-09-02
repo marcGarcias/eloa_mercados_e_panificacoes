@@ -22,11 +22,9 @@ public class BootstrapUserService implements BootstrapUserUseCase {
     private String serverCpf;
 
     public BootstrapUserService(
-            UserAuthenticationPort userAuthenticationPort,
-            ApplicationEventPublisher eventPublisher
+            UserAuthenticationPort userAuthenticationPort
     ) {
         this.userAuthenticationPort = userAuthenticationPort;
-        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -36,8 +34,7 @@ public class BootstrapUserService implements BootstrapUserUseCase {
             throw new BootstrapAlreadyCompletedException();
         }
 
-        // 1. Validar CPF (a formatação matemática já ocorreu via @CPF no DTO)
-        // Precisamos apenas checar se bate com a variável de ambiente
+        // 1. Validar CPF
         if (request.cpf() == null || !request.cpf().replaceAll("\\D", "").equals(this.serverCpf.replaceAll("\\D", ""))) {
             throw new garcias.api.identity.authentication.domain.exceptions.InvalidSetupCpfException();
         }
@@ -53,13 +50,8 @@ public class BootstrapUserService implements BootstrapUserUseCase {
             throw new garcias.api.identity.authentication.domain.exceptions.InvalidSetupAccessKeyException("Chave de acesso incorreta.");
         }
 
-        eventPublisher.publishEvent(
-                new BootstrapUserRequestedEvent(
-                        request.name(),
-                        request.password()
-                )
-        );
+        String userCode = userAuthenticationPort.createInitialUser(request.name(), request.password());
 
-        return new BootstrapUserResponse("Bootstrap process initiated successfully.");
+        return new BootstrapUserResponse("Bootstrap process initiated successfully.", userCode);
     }
 }

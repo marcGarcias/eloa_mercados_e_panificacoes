@@ -61,8 +61,8 @@ export class AuthService {
     );
   }
 
-  bootstrapSystem(name: string, password: string): Observable<BootstrapUserResponse> {
-    return this.http.post<BootstrapUserResponse>(`${this.apiUrl}/bootstrap`, { name, password });
+  bootstrapSystem(name: string, password: string, accessKey: string, cpf: string): Observable<BootstrapUserResponse> {
+    return this.http.post<BootstrapUserResponse>(`${this.apiUrl}/bootstrap`, { name, password, accessKey, cpf });
   }
 
   logout(): void {

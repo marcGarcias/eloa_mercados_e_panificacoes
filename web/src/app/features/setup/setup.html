@@ -28,6 +28,20 @@
                     }
                 </div>
                 <div class="field">
+                    <label>CPF</label>
+                    <input type="text" formControlName="cpf" placeholder="000.000.000-00">
+                    @if (setupForm.get('cpf')?.invalid && (setupForm.get('cpf')?.dirty || setupForm.get('cpf')?.touched)) {
+                        <span class="field-error">CPF inválido ou obrigatório.</span>
+                    }
+                </div>
+                <div class="field">
+                    <label>Chave de Acesso do Servidor</label>
+                    <input type="text" formControlName="accessKey" placeholder="Insira a chave de acesso">
+                    @if (setupForm.get('accessKey')?.invalid && (setupForm.get('accessKey')?.dirty || setupForm.get('accessKey')?.touched)) {
+                        <span class="field-error">A chave de acesso é obrigatória.</span>
+                    }
+                </div>
+                <div class="field">
                     <label>Senha</label>
                     <div class="password-field">
                         <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres">

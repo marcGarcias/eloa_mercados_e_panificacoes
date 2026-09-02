@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 @RestController
 public class ContentAdminPatchController {
@@ -25,7 +26,7 @@ public class ContentAdminPatchController {
 
     @PatchMapping("/api/admin/content")
     public ResponseEntity<SiteContentDto> patchAdminContent(
-            @RequestBody SiteContentDto patch
+            @Valid @RequestBody SiteContentDto patch
     ) {
         var existing = getUseCase.execute().orElse(null);
         var merged = ContentDtoMapper.merge(existing, patch);

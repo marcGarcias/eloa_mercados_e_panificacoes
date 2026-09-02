@@ -5,14 +5,12 @@ import garcias.api.identity.authentication.application.dto.responses.BootstrapUs
 import garcias.api.identity.authentication.application.ports.UserAuthenticationPort;
 import garcias.api.identity.authentication.application.usecases.BootstrapUserUseCase;
 import garcias.api.identity.authentication.domain.exceptions.BootstrapAlreadyCompletedException;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BootstrapUserService implements BootstrapUserUseCase {
 
     private final UserAuthenticationPort userAuthenticationPort;
-    private final ApplicationEventPublisher eventPublisher;
 
     @org.springframework.beans.factory.annotation.Value("${app.setup.access-key}")
     private String serverAccessKey;

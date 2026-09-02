@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -36,6 +36,7 @@ export class Setup {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   setupForm: FormGroup;
   isLoading = false;
@@ -86,16 +87,23 @@ export class Setup {
 
     this.authService.bootstrapSystem(name, password, accessKey, cpf).subscribe({
       next: (res) => {
+        console.log('Resposta do Setup API:', res);
         this.isLoading = false;
         this.userCodeGenerated = res.userCode;
+        if (!this.userCodeGenerated) {
+          this.errorMessage = 'A API não retornou o userCode. Reinicie o backend com as últimas alterações!';
+        }
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        console.error('Erro no Setup API:', err);
         this.isLoading = false;
         if (err.status === 409) {
           this.errorMessage = 'O sistema já possui um proprietário inicializado. Acesse o login.';
         } else {
           this.errorMessage = err.error?.message || 'Erro ao configurar o sistema. Verifique a conexão.';
         }
+        this.cdr.detectChanges();
       }
     });
   }

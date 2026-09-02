@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../models/user.model';
+import { User, CreateUserPayload, UpdateUserPayload } from '../models/user.model';
 import { SpringPage } from '../models/page.model';
 import { environment } from '../../environments/environment';
 
@@ -19,11 +19,11 @@ export class UserService {
     return this.http.get<SpringPage<User>>(this.apiUrl, { params });
   }
 
-  create(user: Partial<User>): Observable<void> {
+  create(user: CreateUserPayload): Observable<void> {
     return this.http.post<void>(this.apiUrl, user);
   }
 
-  updateData(id: string, user: Partial<User>): Observable<void> {
+  updateData(id: string, user: UpdateUserPayload): Observable<void> {
     // PATCH endpoint for data update
     return this.http.patch<void>(`${this.apiUrl}/${id}`, {
       name: user.name,

@@ -11,6 +11,19 @@ export interface User {
   password?: string;
 }
 
+export interface CreateUserPayload {
+  name: string;
+  role: UserRole;
+  status: UserStatus;
+  password?: string;
+}
+
+export interface UpdateUserPayload {
+  name: string;
+  role: UserRole;
+  status: UserStatus;
+}
+
 // Helpers para tradução na UI
 export const RoleTranslations: Record<UserRole, string> = {
   'SUPER_ADMIN': 'Proprietário',

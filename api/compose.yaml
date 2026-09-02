@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: eloa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: eloa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis:8
+    container_name: eloa-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eloa-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+
+      # PostgreSQL
+      DB_URL: jdbc:postgresql://postgres:5432/eloa
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+volumes:
+  postgres_data:
+  redis_data:

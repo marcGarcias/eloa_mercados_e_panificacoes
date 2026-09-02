@@ -8,6 +8,14 @@ export interface LoginResponse {
   accessToken: string;
 }
 
+export interface BootstrapUserResponse {
+  id: string;
+  name: string;
+  userCode: string;
+  role: string;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -51,6 +59,10 @@ export class AuthService {
         }
       })
     );
+  }
+
+  bootstrapSystem(name: string, password: string): Observable<BootstrapUserResponse> {
+    return this.http.post<BootstrapUserResponse>(`${this.apiUrl}/bootstrap`, { name, password });
   }
 
   logout(): void {

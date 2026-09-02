@@ -6,6 +6,84 @@
   padding: 1rem 0;
 }
 
+/* ============ BARRA DE BUSCA ============ */
+.search-bar-wrap {
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 340px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  width: 15px;
+  height: 15px;
+  stroke: var(--gray, #8A7F74);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 9px 36px 9px 36px;
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 10px;
+  background: var(--white, #fff);
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 13px;
+  color: var(--dark, #2E241C);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: var(--gray, #8A7F74);
+}
+
+.search-bar input:focus {
+  border-color: var(--tan, #BF9B79);
+  box-shadow: 0 0 0 3px rgba(191, 155, 121, 0.15);
+}
+
+.search-clear {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray, #8A7F74);
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.search-clear svg {
+  width: 13px;
+  height: 13px;
+}
+
+.search-clear:hover {
+  background: var(--secondary, #F5E9DD);
+  color: var(--dark, #2E241C);
+}
+
+@media (max-width: 767px) {
+  .search-bar {
+    max-width: 100%;
+  }
+}
+
 /* Alertas */
 .alert-danger {
   background: rgba(220, 53, 69, 0.08);
@@ -120,3 +198,191 @@
   padding: 30px 20px !important;
   font-size: 14px;
 }
+
+/* ============ ORDENAÇÃO DA TABELA ============ */
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+th.sortable:hover {
+  color: var(--dark, #2E241C);
+}
+
+th.sort-active {
+  color: var(--green, #24412A);
+}
+
+.sort-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  vertical-align: middle;
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.25s ease;
+}
+
+.sort-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Seta visível quando a coluna está ativa */
+.sort-icon.asc,
+.sort-icon.desc {
+  opacity: 1;
+  color: var(--green, #24412A);
+}
+
+/* Seta apontando para cima (padrão — crescente) */
+.sort-icon.asc {
+  transform: rotate(0deg);
+}
+
+/* Seta apontando para baixo (decrescente) */
+.sort-icon.desc {
+  transform: rotate(180deg);
+}
+
+/* ============ FILTRO DE FUNÇÃO ============ */
+.th-filter {
+  position: relative;
+  white-space: nowrap;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+  user-select: none;
+}
+
+.filter-btn svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.filter-btn:hover svg,
+.filter-btn.filter-active svg {
+  opacity: 1;
+}
+
+.filter-btn.filter-active {
+  color: var(--green, #24412A);
+}
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary, #CC9148);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: var(--white, #fff);
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(76, 45, 25, 0.13);
+  min-width: 190px;
+  z-index: 200;
+  overflow: hidden;
+  animation: fadeSlideDown 0.15s ease-out forwards;
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.filter-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--line, #E7DACB);
+  background: #FAF6F0;
+}
+
+.filter-dropdown-header span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray, #8A7F74);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-clear {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: var(--primary-dark, #B87D34);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.filter-clear:hover {
+  color: var(--dark, #2E241C);
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.filter-option:hover {
+  background: var(--secondary, #F5E9DD);
+}
+
+.filter-option input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--green, #24412A);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.filter-role-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark, #2E241C);
+}
+
+.filter-role-label[data-role="SUPER_ADMIN"] {
+  color: var(--green, #24412A);
+  font-weight: 600;
+}
+
+.filter-role-label[data-role="ADMIN"] {
+  color: var(--primary-dark, #B87D34);
+  font-weight: 600;
+}
+

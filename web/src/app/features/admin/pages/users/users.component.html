@@ -14,16 +14,85 @@
       </button>
     </div>
   </div>
-  
+
+  <div class="search-bar-wrap">
+    <div class="search-bar">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        id="users-search"
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Buscar por nome ou código..."
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button class="search-clear" *ngIf="searchQuery" (click)="searchQuery = ''" aria-label="Limpar busca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Nome</th>
-          <th>Código</th>
-          <th>Função</th>
-          <th>Status</th>
-          <th>Último Acesso</th>
+          <th class="sortable" (click)="sortBy('name')" [class.sort-active]="sortField === 'name'">
+            Nome
+            <span class="sort-icon" [class.asc]="sortField === 'name' && sortDirection === 'asc'" [class.desc]="sortField === 'name' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="sortable" (click)="sortBy('userCode')" [class.sort-active]="sortField === 'userCode'">
+            Código
+            <span class="sort-icon" [class.asc]="sortField === 'userCode' && sortDirection === 'asc'" [class.desc]="sortField === 'userCode' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="th-filter" (click)="$event.stopPropagation()">
+            <button class="filter-btn" (click)="toggleRoleFilterOpen($event)" [class.filter-active]="isRoleFilterActive">
+              Função
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+              <span class="filter-badge" *ngIf="isRoleFilterActive">{{ selectedRoles.size }}</span>
+            </button>
+            <div class="filter-dropdown" *ngIf="roleFilterOpen" (click)="$event.stopPropagation()">
+              <div class="filter-dropdown-header">
+                <span>Filtrar por função</span>
+                <button class="filter-clear" (click)="clearRoleFilter()" *ngIf="isRoleFilterActive">Limpar</button>
+              </div>
+              <label class="filter-option" *ngFor="let role of allRoles" (click)="toggleRoleFilter(role, $event)">
+                <input type="checkbox" [checked]="selectedRoles.has(role)" (click)="$event.stopPropagation()" (change)="toggleRoleFilter(role, $event)" readonly>
+                <span class="filter-role-label" [attr.data-role]="role">{{ RoleTranslations[role] }}</span>
+              </label>
+            </div>
+          </th>
+          <th class="sortable" (click)="sortBy('status')" [class.sort-active]="sortField === 'status'">
+            Status
+            <span class="sort-icon" [class.asc]="sortField === 'status' && sortDirection === 'asc'" [class.desc]="sortField === 'status' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
+          <th class="sortable" (click)="sortBy('lastLoginAt')" [class.sort-active]="sortField === 'lastLoginAt'">
+            Último Acesso
+            <span class="sort-icon" [class.asc]="sortField === 'lastLoginAt' && sortDirection === 'asc'" [class.desc]="sortField === 'lastLoginAt' && sortDirection === 'desc'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </span>
+          </th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -34,14 +103,9 @@
         <tr *ngIf="!isLoading && users.length === 0">
           <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
         </tr>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of filteredUsers">
           <td data-label="Nome">
-            <div class="user-cell">
-              <div class="avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</div>
-              <div>
-                <div class="user-name">{{ user.name }}</div>
-              </div>
-            </div>
+            <div class="user-name">{{ user.name }}</div>
           </td>
           <td data-label="Código">{{ user.userCode || '-' }}</td>
           <td data-label="Função">

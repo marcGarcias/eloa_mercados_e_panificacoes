@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -47,12 +47,120 @@ export class UsersComponent implements OnInit {
   readonly RoleTranslations = RoleTranslations;
   readonly StatusTranslations = StatusTranslations;
 
+  sortField: keyof User | 'lastLoginAt' | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Filtro multi-seleção de funções
+  readonly allRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'EDITOR'];
+  selectedRoles = new Set<UserRole>(['SUPER_ADMIN', 'ADMIN', 'EDITOR']);
+  roleFilterOpen = false;
+  searchQuery = '';
+
   get currentUser(): User | null {
     return this.authService.currentUser;
   }
 
   get isOwner(): boolean {
     return this.authService.hasRole(['SUPER_ADMIN']);
+  }
+
+  get isRoleFilterActive(): boolean {
+    return this.selectedRoles.size < this.allRoles.length;
+  }
+
+  get filteredUsers(): User[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.users.filter(u => {
+      const matchesRole = this.selectedRoles.has(u.role);
+      if (!q) return matchesRole;
+      const matchesSearch =
+        u.name?.toLowerCase().includes(q) ||
+        u.userCode?.toLowerCase().includes(q);
+      return matchesRole && matchesSearch;
+    });
+  }
+
+  toggleRoleFilterOpen(event: Event): void {
+    event.stopPropagation();
+    this.roleFilterOpen = !this.roleFilterOpen;
+    this.cdr.markForCheck();
+  }
+
+  toggleRoleFilter(role: UserRole, event: Event): void {
+    event.stopPropagation();
+    if (this.selectedRoles.has(role)) {
+      // Impede desmarcar tudo
+      if (this.selectedRoles.size > 1) {
+        this.selectedRoles.delete(role);
+      }
+    } else {
+      this.selectedRoles.add(role);
+    }
+    this.selectedRoles = new Set(this.selectedRoles); // força detecção
+    this.cdr.markForCheck();
+  }
+
+  clearRoleFilter(): void {
+    this.selectedRoles = new Set(this.allRoles);
+    this.roleFilterOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('document:click')
+  closeRoleFilter(): void {
+    if (this.roleFilterOpen) {
+      this.roleFilterOpen = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  sortBy(field: keyof User | 'lastLoginAt'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.applySort();
+    this.cdr.markForCheck();
+  }
+
+  private applySort(): void {
+    if (!this.sortField) return;
+    const field = this.sortField;
+    const dir = this.sortDirection === 'asc' ? 1 : -1;
+
+    // Status: asc = Ativo primeiro
+    const statusWeight: Record<string, number> = {
+      'ACTIVE': 1,
+      'INACTIVE': 2
+    };
+
+    this.users = [...this.users].sort((a, b) => {
+
+      if (field === 'status') {
+        return ((statusWeight[a.status] ?? 99) - (statusWeight[b.status] ?? 99)) * dir;
+      }
+
+      if (field === 'userCode') {
+        // Numérico: '0001' < '0010'
+        const aNum = parseInt(a.userCode ?? '0', 10);
+        const bNum = parseInt(b.userCode ?? '0', 10);
+        return (aNum - bNum) * dir;
+      }
+
+      if (field === 'lastLoginAt') {
+        // Nunca acessou vai para o final no crescente
+        const aTime = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
+        const bTime = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
+        return (aTime - bTime) * dir;
+      }
+
+      // Padrão: comparação textual (ex: nome A→Z)
+      const aVal = (a[field as keyof User] ?? '') as string;
+      const bVal = (b[field as keyof User] ?? '') as string;
+      return aVal.localeCompare(bVal, 'pt-BR') * dir;
+    });
   }
   
   ngOnInit(): void {

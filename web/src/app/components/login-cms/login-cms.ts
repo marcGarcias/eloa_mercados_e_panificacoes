@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -16,6 +16,7 @@ export class LoginCms {
   private authService = inject(AuthService);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   showPassword = false;
   loginError = '';
@@ -46,9 +47,11 @@ export class LoginCms {
         this.router.navigate(['/admin']).then(navigated => {
           if (!navigated) {
             this.isLoading = false;
+            this.cdr.detectChanges();
           }
         }).catch(() => {
           this.isLoading = false;
+          this.cdr.detectChanges();
         });
       },
       error: (err) => {
@@ -60,6 +63,7 @@ export class LoginCms {
           this.loginError = 'Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde.';
           this.toastService.error('Erro de conexão com o servidor. Tente novamente.', 'Falha no Login');
         }
+        this.cdr.detectChanges();
       }
     });
   }

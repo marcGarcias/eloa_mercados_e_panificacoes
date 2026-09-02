@@ -5,7 +5,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { UserService } from '../../../../services/user.service';
 import { ToastService } from '../../../../services/toast.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
-import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations } from '../../../../models/user.model';
+import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations, CreateUserPayload, UpdateUserPayload } from '../../../../models/user.model';
 import { catchError, of } from 'rxjs';
 import { SpringPage } from '../../../../models/page.model';
 
@@ -315,7 +315,7 @@ export class UsersComponent implements OnInit {
     if (this.isCreateMode) {
       this.editingUser.name = `${this.firstName.trim()} ${this.lastName.trim()}`;
       const createdUserName = this.editingUser.name;
-      this.userService.create(this.editingUser).subscribe({
+      this.userService.create(this.editingUser as CreateUserPayload).subscribe({
         next: () => {
           this.isModalOpen = false;
           this.isLoading = false;
@@ -353,7 +353,7 @@ export class UsersComponent implements OnInit {
 
   private updateUserDataOnly(id: string): void {
     const updatedUserName = this.editingUser.name;
-    this.userService.updateData(id, this.editingUser).subscribe({
+    this.userService.updateData(id, this.editingUser as UpdateUserPayload).subscribe({
       next: () => {
         this.isModalOpen = false;
         this.isLoading = false;

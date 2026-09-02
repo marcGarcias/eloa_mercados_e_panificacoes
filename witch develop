@@ -1,0 +1,20 @@
+  develop                                                  [m 4841b81 [[34morigin/develop[m: behind 2] fix(content): converter SiteContent em record para desserializacao nativa
+  feat/remove-profile-photo                                [m 0281756 [[34morigin/feat/remove-profile-photo[m] style(usuarios): estiliza barra de busca com foco, placeholder, botao limpar e responsividade mobile (largura 100%)
+  feat/toast-standardization                               [m 1b9adc6 [[34morigin/feat/toast-standardization[m] style(toast): redesenha notificacoes com glassmorphism, paleta tematica, responsividade mobile/desktop e offset para menu de navegacao inferior
+* [32mfix/auth-interceptor-403                                 [m b862fda [[34morigin/fix/auth-interceptor-403[m] fix(auth): trata resposta 403 no interceptor como token expirado, disparando silentRefresh antes de redirecionar para login
+  main                                                     [m 0ed9eab [[34morigin/main[m] Fix null handling in DTO mapping and add site_content migration
+  [31mremotes/origin/HEAD                                      [m -> origin/main
+  [31mremotes/origin/bugfix/product-creation-403               [m 6b0fb6a fix(api): corrige autorizacao 403 para produtos e categorias
+  [31mremotes/origin/develop                                   [m 3718959 Refactor layout and enhance user table with sorting and filtering
+  [31mremotes/origin/feat/remove-profile-photo                 [m 0281756 style(usuarios): estiliza barra de busca com foco, placeholder, botao limpar e responsividade mobile (largura 100%)
+  [31mremotes/origin/feat/toast-standardization                [m 1b9adc6 style(toast): redesenha notificacoes com glassmorphism, paleta tematica, responsividade mobile/desktop e offset para menu de navegacao inferior
+  [31mremotes/origin/feature/catalog-products                  [m 235c249 feat(catalog): integrar exclusao em lote e reordenacao com refinamentos de UX no catalogo
+  [31mremotes/origin/feature/home-public-catalog               [m a58d8d6 Merge branch 'develop' into feature/home-public-catalog
+  [31mremotes/origin/feature/implement-content-module          [m f443275 feat(web): integrar componentes públicos com conteúdo dinâmico da API
+  [31mremotes/origin/feature/refactor-admin-panel              [m 74aaa09 Merge branch 'develop' into feature/refactor-admin-panel
+  [31mremotes/origin/feature/refactor-mobile-first-lazy-loading[m 863932a Merge branch 'develop' into feature/refactor-mobile-first-lazy-loading
+  [31mremotes/origin/feature/render-deployment                 [m 35bd4a3 fix(api): configura cookies dinamicos e trata cookies de refresh ausentes
+  [31mremotes/origin/feature/restricted-tabs-cadeado           [m 286872e feat(web): restringe rota e aba de conteudo para super_admin e admin
+  [31mremotes/origin/fix/auth-interceptor-403                  [m b862fda fix(auth): trata resposta 403 no interceptor como token expirado, disparando silentRefresh antes de redirecionar para login
+  [31mremotes/origin/main                                      [m 0ed9eab Fix null handling in DTO mapping and add site_content migration
+  [31mremotes/origin/revert-71-feature/restricted-tabs-cadeado [m ea8ed81 Revert "Integrate batch deletion, reordering, and UX enhancements in catalog"

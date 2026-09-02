@@ -35,48 +35,48 @@ export class ContentComponent implements OnInit {
   private initForm() {
     this.contentForm = this.fb.group({
       banner: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        subtitulo: [''],
-        descricao: [''],
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        subtitulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(500)]],
         indicadores: this.fb.array([])
       }),
       diferenciais: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        descricao: [''],
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(500)]],
         cards: this.fb.array([])
       }),
       catalogo: this.fb.group({
-        selo: [''],
-        descricao: ['']
+        selo: ['', [Validators.maxLength(100)]],
+        descricao: ['', [Validators.maxLength(500)]]
       }),
       sobre: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        descricao: [''],
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(1000)]],
         lista: this.fb.array([])
       }),
       estatisticas: this.fb.group({
         lista: this.fb.array([])
       }),
       cta: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        descricao: ['']
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(500)]]
       }),
       rodape: this.fb.group({
-        descricao: [''],
-        textoContato: [''],
-        textoDireitos: ['']
+        descricao: ['', [Validators.maxLength(300)]],
+        textoContato: ['', [Validators.maxLength(150)]],
+        textoDireitos: ['', [Validators.maxLength(150)]]
       }),
       dados: this.fb.group({
-        endereco: [''],
+        endereco: ['', [Validators.maxLength(250)]],
         horarioAbertura: [''],
         horarioFechamento: [''],
-        diasFuncionamento: [''],
-        whatsapp: [''],
-        cnpj: ['']
+        diasFuncionamento: ['', [Validators.maxLength(100)]],
+        whatsapp: ['', [Validators.maxLength(30)]],
+        cnpj: ['', [Validators.pattern(/^[A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}$/)]]
       })
     });
   }
@@ -128,7 +128,9 @@ export class ContentComponent implements OnInit {
   private cleanPayload(obj: any): any {
     if (Array.isArray(obj)) {
       const arr = obj.map(v => this.cleanPayload(v)).filter(v => v !== null && v !== undefined && v !== '');
-      return arr.length > 0 ? arr : null;
+      // Retorna o array diretamente, mesmo se estiver vazio. 
+      // Array vazio significa que o usuário excluiu todos os itens.
+      return arr;
     } else if (obj !== null && typeof obj === 'object') {
       const cleaned: any = {};
       for (const key in obj) {

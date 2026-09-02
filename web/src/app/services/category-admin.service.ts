@@ -6,10 +6,12 @@ import { CategoryAdminResponse } from '../models/product.model';
 
 /**
  * Service para operacoes de categoria no contexto Admin.
- * Consome GET /api/admin/categories => CategoryAdmResponse { id, name }.
- *
- * Por enquanto retorna dados mock para desenvolvimento do front-end.
- * A integracao real com o backend sera feita em iteracao futura.
+ * Consome:
+ * GET /api/admin/categories
+ * POST /api/admin/categories
+ * PUT /api/admin/categories/{id}
+ * DELETE /api/admin/categories/{id}
+ * POST /api/admin/categories/batch-delete
  */
 @Injectable({ providedIn: 'root' })
 export class CategoryAdminService {
@@ -18,7 +20,7 @@ export class CategoryAdminService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Lista todas as categorias disponiveis para o formulario de produto.
+   * Lista todas as categorias.
    * Endpoint: GET /api/admin/categories
    */
   getAll(): Observable<CategoryAdminResponse[]> {
@@ -27,13 +29,31 @@ export class CategoryAdminService {
 
   /**
    * Cria uma nova categoria.
+   * Endpoint: POST /api/admin/categories
    */
   create(name: string): Observable<CategoryAdminResponse> {
     return this.http.post<CategoryAdminResponse>(this.apiUrl, { name });
   }
 
   /**
+   * Atualiza uma categoria.
+   * Endpoint: PUT /api/admin/categories/{id}
+   */
+  update(id: number, name: string): Observable<CategoryAdminResponse> {
+    return this.http.put<CategoryAdminResponse>(`${this.apiUrl}/${id}`, { name });
+  }
+
+  /**
+   * Remove uma categoria individualmente.
+   * Endpoint: DELETE /api/admin/categories/{id}
+   */
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
    * Remove múltiplas categorias em lote.
+   * Endpoint: POST /api/admin/categories/batch-delete
    */
   deleteCategories(ids: number[]): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids });

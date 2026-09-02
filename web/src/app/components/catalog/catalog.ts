@@ -27,7 +27,9 @@ export class CatalogComponent implements OnInit {
       this.products = p;
       this.filteredProducts = p;
     });
-    this.categories = this.productService.getCategories();
+    this.productService.getPublicCategories().subscribe(cats => {
+      this.categories = cats;
+    });
   }
 
   get isMobile() { return window.innerWidth <= 900; }

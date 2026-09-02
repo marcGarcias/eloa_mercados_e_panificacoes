@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { HeroComponent } from '../hero/hero.component';
@@ -30,14 +30,17 @@ import { SiteContent } from '../../models/content.model';
 export class Home implements OnInit {
   content: SiteContent | null = null;
   private contentService = inject(ContentService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.contentService.getContentPublic().subscribe({
       next: (data) => {
         this.content = data;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.content = null;
+        this.cdr.detectChanges();
       }
     });
   }

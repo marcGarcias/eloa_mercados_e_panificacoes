@@ -37,9 +37,6 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  // ----------------------------------------------------------------
-  // Abas do Painel de Catálogo (Produtos vs Categorias)
-  // ----------------------------------------------------------------
   activeTab: 'products' | 'categories' = 'products';
 
   setActiveTab(tab: 'products' | 'categories'): void {
@@ -50,9 +47,6 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ----------------------------------------------------------------
-  // Estado de Produtos
-  // ----------------------------------------------------------------
   products: Product[] = [];
   categories: string[] = [];
   activeFilter: string = 'Todos';
@@ -70,9 +64,6 @@ export class CatalogComponent implements OnInit {
   isCategoryDropdownOpen: boolean = false;
   categoryFilterSearch: string = '';
 
-  // ----------------------------------------------------------------
-  // Estado de Categorias (Aba de Gerenciamento)
-  // ----------------------------------------------------------------
   categoryList: CategoryAdminResponse[] = [];
   categorySearchTerm: string = '';
   categoryPage: number = 0;
@@ -83,17 +74,11 @@ export class CatalogComponent implements OnInit {
 
   private readonly categorySubject = new Subject<string>();
 
-  // ----------------------------------------------------------------
-  // Modais de Criação / Edição
-  // ----------------------------------------------------------------
   isProductModalOpen: boolean = false;
   isCategoryModalOpen: boolean = false;
   editingProduct: ProductAdminResponse | null = null;
   adminCategories: CategoryAdminResponse[] = [];
 
-  // ----------------------------------------------------------------
-  // Modo de Edição e Lote (Produtos)
-  // ----------------------------------------------------------------
   isEditMode: boolean = false;
   deletedProductIds: Set<number> = new Set();
   deletedCategoryNames: Set<string> = new Set();
@@ -132,9 +117,6 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------------------
-  // Paginação de Produtos
-  // ----------------------------------------------------------------
   nextPage(): void {
     if (this.page < this.totalPages - 1) {
       this.page++;
@@ -169,9 +151,6 @@ export class CatalogComponent implements OnInit {
     this.searchSubject.next(this.searchTerm);
   }
 
-  // ----------------------------------------------------------------
-  // Paginação de Categorias
-  // ----------------------------------------------------------------
   nextCategoryPage(): void {
     if (this.categoryPage < this.categoryTotalPages - 1) {
       this.categoryPage++;
@@ -197,9 +176,6 @@ export class CatalogComponent implements OnInit {
     this.categorySubject.next(this.categorySearchTerm);
   }
 
-  // ----------------------------------------------------------------
-  // Carregamento de dados de Produtos
-  // ----------------------------------------------------------------
   private loadProducts(): void {
     this.isLoading = true;
     this.cdr.markForCheck();
@@ -240,9 +216,6 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------------------
-  // Carregamento de dados de Categorias
-  // ----------------------------------------------------------------
   private loadAdminCategories(): void {
     this.categoryAdminService.getAll().subscribe(cats => {
       this.adminCategories = cats;
@@ -290,9 +263,6 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  // ----------------------------------------------------------------
-  // Filtros de Categoria em Produtos
-  // ----------------------------------------------------------------
   setFilter(cat: string): void {
     this.activeFilter = cat;
     this.page = 0;
@@ -325,9 +295,6 @@ export class CatalogComponent implements OnInit {
     return this.products.filter(p => p.id && !this.deletedProductIds.has(p.id));
   }
 
-  // ----------------------------------------------------------------
-  // Ações do Modal de Produto
-  // ----------------------------------------------------------------
   openCreateModal(): void {
     this.loadAdminCategories();
     this.editingProduct = null;
@@ -369,9 +336,6 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ----------------------------------------------------------------
-  // Ações de Categoria
-  // ----------------------------------------------------------------
   openCreateCategoryModal(): void {
     this.isCategoryModalOpen = true;
     this.cdr.markForCheck();
@@ -425,9 +389,6 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------------------
-  // Modo de Edição e Salvamento em Lote (Produtos)
-  // ----------------------------------------------------------------
   toggleEditMode(): void {
     if (this.isEditMode && this.hasChanges) {
       const discard = typeof window !== 'undefined' && window.confirm('Existem alterações não salvas. Deseja descartá-las?');
@@ -527,9 +488,6 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------------------
-  // Drag and Drop (Ordenação)
-  // ----------------------------------------------------------------
   onDrop(event: CdkDragDrop<Product[]>): void {
     if (!this.isEditMode || this.activeFilter !== 'Todos') return;
 

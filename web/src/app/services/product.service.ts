@@ -65,10 +65,6 @@ export class ProductService {
     return this.http.get<SpringPage<{ name: string }>>(categoriesUrl, { params });
   }
 
-  // ----------------------------------------------------------------
-  // Metodos Admin — alinhados com a API
-  // ----------------------------------------------------------------
-
   /**
    * Lista produtos com filtros e paginacao.
    * GET /api/admin/products?name=&categoryId=&status=&page=&size=
@@ -140,10 +136,6 @@ export class ProductService {
     return this.http.put<void>(`${this.apiUrl}/reorder`, { order: productIds });
   }
 
-  // ----------------------------------------------------------------
-  // Helpers Gerais
-  // ----------------------------------------------------------------
-
   /**
    * Converte o caminho da foto (/uploads/products/filename) para a URL de visualizacao.
    */
@@ -153,10 +145,6 @@ export class ProductService {
     const apiBase = environment?.apiUrl ?? '';
     return `${apiBase}/api/storage/images/${filename}`;
   }
-
-  // ----------------------------------------------------------------
-  // Helpers de FormData
-  // ----------------------------------------------------------------
 
   /**
    * Constroi FormData para criacao de produto (POST).

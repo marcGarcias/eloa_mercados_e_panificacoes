@@ -4,9 +4,7 @@
     <h2 class="title">Catálogo de Produtos</h2>
     <p class="subtitle">{{ catalogo?.descricao || 'Escolha seus favoritos e faça o pedido diretamente via WhatsApp.' }}</p>
 
-    <!-- Barra de Ferramentas / Filtros (Idêntico à imagem do Admin) -->
     <div class="catalog-toolbar">
-      <!-- Seletor Dropdown com Lista Pesquisável de Categorias -->
       <div class="category-dropdown-wrapper">
         <button 
           type="button" 
@@ -60,7 +58,6 @@
         </div>
       </div>
 
-      <!-- Barra de busca de produtos -->
       <div class="search-input-wrapper">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="7" />
@@ -85,7 +82,6 @@
       </div>
     </div>
 
-    <!-- Indicador de Categoria Ativa (se diferente de 'Todos') -->
     <div class="active-filter-row" *ngIf="activeCategory !== 'Todos'">
       <div class="active-filter-badge">
         <span>Categoria: <strong>{{ activeCategory }}</strong></span>
@@ -95,13 +91,11 @@
       </div>
     </div>
 
-    <!-- Loading State -->
     <div class="loading-state" *ngIf="isLoading">
       <div class="spinner"></div>
       <p>Carregando produtos...</p>
     </div>
 
-    <!-- Grid de Produtos -->
     <div class="grid" *ngIf="!isLoading && products.length > 0">
       <div class="card" *ngFor="let produto of products">
         <div class="photo">
@@ -118,7 +112,6 @@
       </div>
     </div>
 
-    <!-- Estado Vazio -->
     <div class="empty" *ngIf="!isLoading && products.length === 0">
       <div class="empty-icon">🍞</div>
       <h3>Nenhum produto encontrado</h3>
@@ -128,7 +121,6 @@
       </button>
     </div>
 
-    <!-- Paginação de Produtos -->
     <div class="pagination-section" *ngIf="totalPages > 1 && !isLoading">
       <div class="pagination-info">
         Página {{ page + 1 }} de {{ totalPages }}

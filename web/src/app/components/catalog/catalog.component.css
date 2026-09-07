@@ -32,9 +32,6 @@
   max-width: 540px;
 }
 
-/* ========================================================
-   TOOLBAR UNIFICADA (IDÊNTICO AO ADMIN)
-   ======================================================== */
 .catalog-toolbar {
   display: flex;
   flex-direction: column;
@@ -49,7 +46,6 @@
   }
 }
 
-/* --- SELETOR DROPDOWN DE CATEGORIAS (IDÊNTICO À IMAGEM) --- */
 .category-dropdown-wrapper {
   position: relative;
   flex-shrink: 0;
@@ -95,7 +91,6 @@
   transform: rotate(180deg);
 }
 
-/* Menu Dropdown com Lista e Busca */
 .category-dropdown-menu {
   position: absolute;
   top: calc(100% + 6px);
@@ -203,7 +198,6 @@
   color: #8a7f74;
 }
 
-/* --- BARRA DE PESQUISA DE PRODUTOS --- */
 .search-input-wrapper {
   position: relative;
   flex: 1;
@@ -257,22 +251,6 @@
   color: #2e241c;
 }
 
-.catalog-summary-pill {
-  font-size: 13px;
-  color: #6b635b;
-  font-weight: 500;
-  padding: 6px 14px;
-  background: #f0eae1;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.catalog-summary-pill span {
-  font-weight: 700;
-  color: var(--primary, #c07a45);
-}
-
-/* --- BADGE DE FILTRO ATIVO --- */
 .active-filter-row {
   margin-bottom: 20px;
   display: flex;
@@ -311,7 +289,6 @@
   color: #dc3545;
 }
 
-/* --- LOADING STATE --- */
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -335,7 +312,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* --- GRID DE CARDS --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -426,7 +402,6 @@
   color: #888;
 }
 
-/* --- ESTADO VAZIO --- */
 .empty {
   text-align: center;
   padding: 60px 20px;
@@ -468,9 +443,6 @@
   opacity: 0.9;
 }
 
-/* ========================================================
-   PAGINAÇÃO PREMIUM
-   ======================================================== */
 .pagination-section {
   display: flex;
   flex-direction: column;

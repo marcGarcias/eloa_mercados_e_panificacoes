@@ -299,7 +299,16 @@
                 </div>
                 <div class="field">
                     <label>CNPJ</label>
-                    <input type="text" formControlName="cnpj" placeholder="Ex: 00.000.000/0001-00">
+                    <input 
+                        type="text" 
+                        formControlName="cnpj" 
+                        placeholder="Ex: 00.000.000/0001-00"
+                        maxlength="18"
+                        [class.input-error]="contentForm.get('dados.cnpj')?.invalid && contentForm.get('dados.cnpj')?.touched">
+                    <small class="field-hint" *ngIf="!contentForm.get('dados.cnpj')?.invalid">Exibido no rodapé da página inicial</small>
+                    <span class="field-error" *ngIf="contentForm.get('dados.cnpj')?.invalid && contentForm.get('dados.cnpj')?.touched">
+                        Formato inválido (Ex: 00.000.000/0001-00)
+                    </span>
                 </div>
             </div>
         </div><!-- /dados -->

@@ -31,15 +31,37 @@ export class ToastService {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
-    toast.innerHTML = `
-      <img src="/assets/icons/toast-${type}.svg" class="toast-icon" alt="${type}" />
-      <div class="toast-content">
-        <div class="toast-title">${title}</div>
-        <div class="toast-msg">${message}</div>
-      </div>
-      <button class="toast-close" aria-label="Fechar">&times;</button>
-      <div class="toast-progress"></div>
-    `;
+    const iconImg = document.createElement('img');
+    iconImg.src = `/assets/icons/toast-${type}.svg`;
+    iconImg.className = 'toast-icon';
+    iconImg.alt = type;
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'toast-content';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'toast-title';
+    titleDiv.textContent = title;
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'toast-msg';
+    msgDiv.textContent = message;
+
+    contentDiv.appendChild(titleDiv);
+    contentDiv.appendChild(msgDiv);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'toast-close';
+    closeBtn.setAttribute('aria-label', 'Fechar');
+    closeBtn.innerHTML = '&times;';
+
+    const progressDiv = document.createElement('div');
+    progressDiv.className = 'toast-progress';
+
+    toast.appendChild(iconImg);
+    toast.appendChild(contentDiv);
+    toast.appendChild(closeBtn);
+    toast.appendChild(progressDiv);
 
     container.appendChild(toast);
 
@@ -47,8 +69,6 @@ export class ToastService {
     setTimeout(() => {
       toast.classList.add('show');
     }, 20);
-
-    const closeBtn = toast.querySelector('.toast-close');
     const removeToast = () => {
       toast.classList.remove('show');
       // Aguarda o término da transição de saída para remover do DOM

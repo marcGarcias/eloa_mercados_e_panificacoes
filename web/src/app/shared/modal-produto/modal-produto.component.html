@@ -41,8 +41,8 @@
         <div class="field" [class.has-error]="isFieldInvalid('categoryId')">
           <label for="mp-category">Categoria</label>
           <select id="mp-category" formControlName="categoryId">
-            <option value="" disabled>Selecione...</option>
-            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+            <option [ngValue]="null" disabled>Selecione...</option>
+            <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
           </select>
           <span class="field-error" *ngIf="isFieldInvalid('categoryId')">
             {{ getFieldError('categoryId') }}

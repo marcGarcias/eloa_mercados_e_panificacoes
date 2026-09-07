@@ -17,17 +17,24 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtAuthenticationFilter;
 
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Value("${app.cors.allowed-origins:http://localhost:4200,https://eloa-mercados-e-panificacoes.vercel.app}")
+    private String allowedOriginsConfig;
 
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -41,11 +48,14 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        List<String> origins = Arrays.stream(allowedOriginsConfig.split(","))
+                .map(String::trim)
+                .map(origin -> origin.replaceAll("/+$", ""))
+                .filter(origin -> !origin.isEmpty())
+                .toList();
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:4200",
-                "https://eloa-mercados-e-panificacoes.vercel.app"
-        ));
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

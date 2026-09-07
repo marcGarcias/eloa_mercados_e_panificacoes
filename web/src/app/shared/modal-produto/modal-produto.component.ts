@@ -18,6 +18,8 @@ import {
   UpdateProductPayload,
 } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
+import { CategoryAdminService } from '../../services/category-admin.service';
+import { ToastService } from '../../services/toast.service';
 import { finalize } from 'rxjs';
 
 /**
@@ -26,7 +28,7 @@ import { finalize } from 'rxjs';
  * Modo CRIACAO: @Input product = null
  *   - Titulo: "Novo produto"
  *   - Campos: name, categoryId, weight, photo (WebP obrigatoria)
- *   - Submit: monta CreateProductPayload
+ *   - Submit: valida integridade e existência das categorias na API antes de criar
  *
  * Modo EDICAO: @Input product = ProductAdminResponse
  *   - Titulo: "Editar produto"
@@ -83,6 +85,8 @@ export class ModalProdutoComponent implements OnChanges {
   constructor(
     private readonly fb: FormBuilder,
     private readonly productService: ProductService,
+    private readonly categoryAdminService: CategoryAdminService,
+    private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef,
   ) {
     this.form = this.buildForm();
@@ -133,6 +137,14 @@ export class ModalProdutoComponent implements OnChanges {
       return;
     }
 
+    const MAX_SIZE_MB = 10;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) {
+      this.photoError = `A imagem não pode ultrapassar ${MAX_SIZE_MB}MB. Tamanho selecionado: ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.selectedPhoto = file;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -175,58 +187,82 @@ export class ModalProdutoComponent implements OnChanges {
     if (this.photoError) return;
 
     const formValue = this.form.getRawValue();
+    this.isSubmitting = true;
+    this.cdr.markForCheck();
 
-    if (this.isEditMode && this.product) {
-      const payload: UpdateProductPayload = {};
-      if (formValue.name)       payload.name       = formValue.name;
-      if (formValue.weight)     payload.weight     = Number(formValue.weight);
-      if (formValue.categoryId) payload.categoryId = Number(formValue.categoryId);
-      if (formValue.status)     payload.status     = formValue.status;
-      
-      if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
+    // NOVA VERIFICAÇÃO: Checa se as categorias existem e busca a lista atualizada na API antes de criar
+    this.categoryAdminService.getAll().subscribe({
+      next: (freshCategories) => {
+        this.categories = freshCategories;
+        const targetCategoryId = Number(formValue.categoryId);
+        const categoryExists = freshCategories.some(cat => cat.id === targetCategoryId);
 
-      // Log do FormData para verificacao (remover na integracao real)
-      const fd = this.productService.buildUpdateFormData(payload);
-      console.log('[MODAL] PATCH FormData entries:');
-      fd.forEach((value, key) => console.log(' ', key, '=', value));
-
-      this.isSubmitting = true;
-      this.cdr.markForCheck();
-      this.productService.update(this.product.id, payload).pipe(
-        finalize(() => {
+        if (!categoryExists) {
           this.isSubmitting = false;
+          this.toastService.error('A categoria selecionada não foi encontrada ou foi removida. Selecione uma categoria válida.', 'Categoria não encontrada');
+          this.form.get('categoryId')?.setErrors({ notFound: true });
           this.cdr.markForCheck();
-        })
-      ).subscribe({
-        next: (updated) => { this.saved.emit(updated); },
-        error: (err) => { console.error('[MODAL] Erro ao atualizar produto:', err); }
-      });
+          return;
+        }
 
-    } else {
-      const payload: CreateProductPayload = {
-        name:       formValue.name,
-        weight:     Number(formValue.weight),
-        categoryId: Number(formValue.categoryId),
-        photo:      this.selectedPhoto!,
-      };
+        if (this.isEditMode && this.product) {
+          const payload: UpdateProductPayload = {};
+          if (formValue.name)       payload.name       = formValue.name;
+          if (formValue.weight)     payload.weight     = Number(formValue.weight);
+          if (formValue.categoryId) payload.categoryId = targetCategoryId;
+          if (formValue.status)     payload.status     = formValue.status;
+          if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
 
-      // Log do FormData para verificacao (remover na integracao real)
-      const fd = this.productService.buildCreateFormData(payload);
-      console.log('[MODAL] POST FormData entries:');
-      fd.forEach((value, key) => console.log(' ', key, '=', value));
+          const fd = this.productService.buildUpdateFormData(payload);
+          console.log('[MODAL] PATCH FormData entries:');
+          fd.forEach((value, key) => console.log(' ', key, '=', value));
 
-      this.isSubmitting = true;
-      this.cdr.markForCheck();
-      this.productService.create(payload).pipe(
-        finalize(() => {
-          this.isSubmitting = false;
-          this.cdr.markForCheck();
-        })
-      ).subscribe({
-        next: (created) => { this.saved.emit(created); },
-        error: (err) => { console.error('[MODAL] Erro ao criar produto:', err); }
-      });
-    }
+          this.productService.update(this.product.id, payload).pipe(
+            finalize(() => {
+              this.isSubmitting = false;
+              this.cdr.markForCheck();
+            })
+          ).subscribe({
+            next: (updated) => { this.saved.emit(updated); },
+            error: (err) => {
+              console.error('[MODAL] Erro ao atualizar produto:', err);
+              this.toastService.error(err.error?.message || 'Erro ao atualizar produto.', 'Erro');
+            }
+          });
+
+        } else {
+          const payload: CreateProductPayload = {
+            name:       formValue.name,
+            weight:     Number(formValue.weight),
+            categoryId: targetCategoryId,
+            photo:      this.selectedPhoto!,
+          };
+
+          const fd = this.productService.buildCreateFormData(payload);
+          console.log('[MODAL] POST FormData entries:');
+          fd.forEach((value, key) => console.log(' ', key, '=', value));
+
+          this.productService.create(payload).pipe(
+            finalize(() => {
+              this.isSubmitting = false;
+              this.cdr.markForCheck();
+            })
+          ).subscribe({
+            next: (created) => { this.saved.emit(created); },
+            error: (err) => {
+              console.error('[MODAL] Erro ao criar produto:', err);
+              this.toastService.error(err.error?.message || 'Erro ao criar produto.', 'Erro');
+            }
+          });
+        }
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        console.error('[MODAL] Erro ao verificar categorias na API:', err);
+        this.toastService.error('Não foi possível verificar as categorias na API. Tente novamente.', 'Falha de Verificação');
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   // ----------------------------------------------------------------
@@ -242,6 +278,7 @@ export class ModalProdutoComponent implements OnChanges {
     const ctrl = this.form.get(field);
     if (!ctrl || !ctrl.errors) return '';
     if (ctrl.errors['required'])  return 'Campo obrigatorio.';
+    if (ctrl.errors['notFound'])  return 'Categoria inexistente. Selecione uma da lista.';
     if (ctrl.errors['min'])       return `Valor minimo: ${ctrl.errors['min'].min}.`;
     if (ctrl.errors['minlength']) return `Minimo de ${ctrl.errors['minlength'].requiredLength} caracteres.`;
     return 'Valor invalido.';
@@ -254,7 +291,7 @@ export class ModalProdutoComponent implements OnChanges {
   private buildForm(): FormGroup {
     return this.fb.group({
       name:       ['', [Validators.required, Validators.minLength(2)]],
-      categoryId: ['', Validators.required],
+      categoryId: [null, [Validators.required, (ctrl: AbstractControl) => (Number(ctrl.value) > 0 ? null : { required: true })]],
       weight:     ['', [Validators.required, Validators.min(0.001)]],
       // Campos exclusivos do modo edicao
       status:   [ProductStatus.ACTIVE],
@@ -277,7 +314,7 @@ export class ModalProdutoComponent implements OnChanges {
       this.photoPreviewUrl = this.product.photo || null;
     } else {
       this.form.reset({
-        name: '', categoryId: '', weight: '', status: ProductStatus.ACTIVE
+        name: '', categoryId: null, weight: '', status: ProductStatus.ACTIVE
       });
     }
 

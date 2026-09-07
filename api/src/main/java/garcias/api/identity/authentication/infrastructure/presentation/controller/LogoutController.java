@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogoutController {
 
     private final LogoutUseCase logoutUseCase;
+    private final garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator;
 
     @Value("${cookie.secure}")
     private boolean cookieSecure;
@@ -34,8 +35,12 @@ public class LogoutController {
     @Value("${cookie.same-site}")
     private String cookieSameSite;
 
-    public LogoutController(LogoutUseCase logoutUseCase) {
+    public LogoutController(
+            LogoutUseCase logoutUseCase,
+            garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator
+    ) {
         this.logoutUseCase = logoutUseCase;
+        this.csrfOriginValidator = csrfOriginValidator;
     }
 
     @Operation(
@@ -57,8 +62,11 @@ public class LogoutController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            jakarta.servlet.http.HttpServletRequest request,
             HttpServletResponse response
     ) {
+
+        csrfOriginValidator.validate(request);
 
         if (refreshToken != null && !refreshToken.isBlank()) {
             logoutUseCase.executeByToken(refreshToken);

@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { Router, type CanActivateFn, type CanMatchFn } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserRole } from '../../models/user.model';
-import { map, filter, take, switchMap, of } from 'rxjs';
+import { map, filter, take, switchMap, of, timeout } from 'rxjs';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
@@ -19,12 +19,13 @@ export const authGuard: CanActivateFn = (route, state) => {
         return of(true); // Nenhuma restrição de role
       }
 
-      // Se temos permissões exigidas, aguardamos o currentUser ser carregado pela chamada /me
+      // Se temos permissões exigidas, aguardamos o currentUser com timeout de segurança
       return authService.currentUser$.pipe(
-        filter(user => user !== null), // Aguarda até que não seja null
-        take(1), // Pega apenas o primeiro valor válido e completa
+        filter(user => user !== null),
+        take(1),
+        timeout({ each: 3000, with: () => of(null) }),
         map(user => {
-          if (requiredRoles.includes(user!.role)) {
+          if (user && requiredRoles.includes(user.role)) {
             return true; // Tem permissão
           }
           // Se não tem permissão, volta pra home do admin
@@ -53,8 +54,9 @@ export const authMatchGuard: CanMatchFn = (route, segments) => {
       return authService.currentUser$.pipe(
         filter(user => user !== null),
         take(1),
+        timeout({ each: 3000, with: () => of(null) }),
         map(user => {
-          return requiredRoles.includes(user!.role);
+          return user ? requiredRoles.includes(user.role) : false;
         })
       );
     })

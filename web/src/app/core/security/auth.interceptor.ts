@@ -2,9 +2,12 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { catchError, switchMap } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { catchError, switchMap, take } from 'rxjs/operators';
+import { Subject, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+let isRefreshing = false;
+let refreshTokenSubject = new Subject<string>();
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -13,12 +16,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
   const apiUrl = environment?.apiUrl ?? '';
 
-  // Habilitamos withCredentials para enviar o cookie HttpOnly (refresh_token) para o backend
+  // Habilita withCredentials para envio do cookie HttpOnly (refresh_token)
   let authReq = req.clone({
     withCredentials: true
   });
 
-  // Anexa o token apenas se a requisição for para a nossa própria API, evitando vazamentos
+  // Anexa o token apenas se a requisição for para a nossa própria API
   if (token && req.url.startsWith(`${apiUrl}/api/`)) {
     authReq = authReq.clone({
       setHeaders: {
@@ -29,29 +32,72 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error) => {
-      if (error.status === 401) {
-        const isAuthRoute = req.url.includes('/api/auth/login') || req.url.includes('/api/auth/logout') || req.url.includes('/api/auth/refresh');
-        
-        if (!isAuthRoute) {
-          return authService.silentRefresh().pipe(
-            switchMap((success) => {
-              if (success) {
-                const newToken = authService.getToken();
-                const newReq = req.clone({
-                  withCredentials: true,
-                  setHeaders: { Authorization: `Bearer ${newToken}` }
-                });
-                return next(newReq);
-              } else {
-                authService.logout();
-                router.navigate(['/login-cms']);
-                return throwError(() => error);
-              }
+      // Extrai pathname preciso para evitar falsos positivos
+      const pathname = req.url.startsWith('http')
+        ? new URL(req.url).pathname
+        : req.url;
+      const isAuthRoute = pathname.startsWith('/api/auth/');
+
+      // Se for 401 e não for rota de autenticação (/api/auth/login, /refresh, /logout)
+      if (error.status === 401 && !isAuthRoute) {
+        if (isRefreshing) {
+          // Requisições concorrentes aguardam o novo token emitido pelo refresh principal
+          return refreshTokenSubject.pipe(
+            take(1),
+            switchMap((newToken) => {
+              const retryReq = req.clone({
+                withCredentials: true,
+                setHeaders: { Authorization: `Bearer ${newToken}` }
+              });
+              return next(retryReq);
             })
           );
         }
+
+        isRefreshing = true;
+
+        return authService.silentRefresh().pipe(
+          switchMap((success) => {
+            if (success) {
+              const newToken = authService.getToken();
+              if (newToken) {
+                // Notifica todas as requisições em espera com o novo token
+                refreshTokenSubject.next(newToken);
+                refreshTokenSubject.complete();
+                isRefreshing = false;
+                refreshTokenSubject = new Subject<string>();
+
+                const retryReq = req.clone({
+                  withCredentials: true,
+                  setHeaders: { Authorization: `Bearer ${newToken}` }
+                });
+                return next(retryReq);
+              }
+            }
+
+            // Se o refresh não tiver sucesso, notifica os followers com erro e desloga
+            refreshTokenSubject.error(error);
+            isRefreshing = false;
+            refreshTokenSubject = new Subject<string>();
+            authService.logout();
+            router.navigate(['/login-cms']);
+            return throwError(() => error);
+          }),
+          catchError((refreshErr) => {
+            // Em caso de exceção de rede ou erro na chamada de refresh
+            refreshTokenSubject.error(refreshErr);
+            isRefreshing = false;
+            refreshTokenSubject = new Subject<string>();
+            authService.logout();
+            router.navigate(['/login-cms']);
+            return throwError(() => refreshErr);
+          })
+        );
       }
+
+      // Se for 403 Forbidden ou qualquer outro erro, apenas propaga adiante (NÃO faz refresh)
       return throwError(() => error);
     })
   );
 };
+

@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RefreshTokenController {
 
     private final RefreshTokenUseCase refreshTokenUseCase;
+    private final garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties jwtProperties;
+    private final garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator;
 
     @Value("${cookie.secure}")
     private boolean cookieSecure;
@@ -37,8 +39,14 @@ public class RefreshTokenController {
     @Value("${cookie.same-site}")
     private String cookieSameSite;
 
-    public RefreshTokenController(RefreshTokenUseCase refreshTokenUseCase) {
+    public RefreshTokenController(
+            RefreshTokenUseCase refreshTokenUseCase,
+            garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties jwtProperties,
+            garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator
+    ) {
         this.refreshTokenUseCase = refreshTokenUseCase;
+        this.jwtProperties = jwtProperties;
+        this.csrfOriginValidator = csrfOriginValidator;
     }
 
     @Operation(
@@ -90,8 +98,11 @@ public class RefreshTokenController {
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponse> refresh(
             @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            jakarta.servlet.http.HttpServletRequest request,
             HttpServletResponse response
     ) {
+
+        csrfOriginValidator.validate(request);
 
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new MissingRefreshTokenException();
@@ -107,7 +118,7 @@ public class RefreshTokenController {
                 .secure(cookieSecure)
                 .sameSite(cookieSameSite)
                 .path("/api/auth")
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(jwtProperties.getRefreshTokenExpiration())
                 .build();
 
         response.addHeader(

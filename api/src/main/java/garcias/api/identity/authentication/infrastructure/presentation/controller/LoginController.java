@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final LoginUseCase loginUseCase;
+    private final garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties jwtProperties;
 
     @Value("${cookie.secure}")
     private boolean cookieSecure;
@@ -35,8 +36,12 @@ public class LoginController {
     @Value("${cookie.same-site}")
     private String cookieSameSite;
 
-    public LoginController(LoginUseCase loginUseCase) {
+    public LoginController(
+            LoginUseCase loginUseCase,
+            garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties jwtProperties
+    ) {
         this.loginUseCase = loginUseCase;
+        this.jwtProperties = jwtProperties;
     }
 
     @Operation(
@@ -122,7 +127,7 @@ public class LoginController {
                 .secure(cookieSecure)
                 .sameSite(cookieSameSite)
                 .path("/api/auth")
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(jwtProperties.getRefreshTokenExpiration())
                 .build();
 
         response.addHeader(

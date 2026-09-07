@@ -102,7 +102,7 @@ public class ProductPublicSearchController {
                 categoryName != null
                         ? new CategoryName(categoryName)
                         : null,
-                status
+                ProductStatus.ACTIVE
         );
 
         Page<Product> products =

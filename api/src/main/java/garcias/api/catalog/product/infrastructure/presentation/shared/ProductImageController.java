@@ -64,14 +64,10 @@ public class ProductImageController {
         Resource resource =
                 loadProductImageUseCase.execute(filename);
 
-        MediaType mediaType =
-                MediaTypeFactory
-                        .getMediaType(resource)
-                        .orElse(MediaType.APPLICATION_OCTET_STREAM);
-
         return ResponseEntity
                 .ok()
-                .contentType(mediaType)
+                .contentType(MediaType.parseMediaType("image/webp"))
+                .header("X-Content-Type-Options", "nosniff")
                 .cacheControl(
                         CacheControl.maxAge(30, TimeUnit.DAYS)
                 )

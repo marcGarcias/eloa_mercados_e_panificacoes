@@ -1,8 +1,3 @@
-// ===================================================
-// Tipos legados (compatibilidade com componentes públicos)
-// ===================================================
-
-/** @deprecated Use ProductAdminResponse para o contexto admin */
 export interface Product {
   id?: number;
   nome: string;
@@ -12,10 +7,6 @@ export interface Product {
   imagem: string | null;
   order?: number;
 }
-
-// ===================================================
-// Tipos Admin — alinhados com a API (ProductAdminResponse)
-// ===================================================
 
 /** Espelho do enum ProductStatus do backend */
 export enum ProductStatus {

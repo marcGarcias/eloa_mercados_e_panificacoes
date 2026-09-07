@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../../services/product.service';
@@ -28,49 +28,56 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ----------------------------------------------------------------
-  // Estado de listagem (legado mock — substituir por API futuramente)
-  // ----------------------------------------------------------------
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.category-dropdown-wrapper')) {
+      this.isCategoryDropdownOpen = false;
+      this.cdr.markForCheck();
+    }
+  }
 
-  /** Produtos carregados do mock (legado). Substituir por ProductAdminResponse[] na integracao */
+  activeTab: 'products' | 'categories' = 'products';
+
+  setActiveTab(tab: 'products' | 'categories'): void {
+    this.activeTab = tab;
+    if (tab === 'categories' && this.categoryList.length === 0) {
+      this.loadPagedCategories();
+    }
+    this.cdr.markForCheck();
+  }
+
   products: Product[] = [];
-
-  /** Categorias para filtros de listagem (legado string) */
   categories: string[] = [];
-
-  /** Filtro ativo na listagem */
   activeFilter: string = 'Todos';
-
-  /** Termo de busca por nome */
   searchTerm: string = '';
 
-  // Atributos de paginação e loading
   isLoading: boolean = false;
   page: number = 0;
   size: number = 12;
   totalPages: number = 0;
+  totalElements: number = 0;
 
   private readonly searchSubject = new Subject<string>();
 
-  // ----------------------------------------------------------------
-  // Estado do modal de produto e categoria
-  // ----------------------------------------------------------------
+  // Dropdown de seleção de categoria na aba de produtos
+  isCategoryDropdownOpen: boolean = false;
+  categoryFilterSearch: string = '';
 
-  /** Controla visibilidade do modal de produto */
+  categoryList: CategoryAdminResponse[] = [];
+  categorySearchTerm: string = '';
+  categoryPage: number = 0;
+  categorySize: number = 10;
+  categoryTotalPages: number = 0;
+  categoryTotalElements: number = 0;
+  isCategoryLoading: boolean = false;
+
+  private readonly categorySubject = new Subject<string>();
+
   isProductModalOpen: boolean = false;
-
-  /** Controla visibilidade do modal de categoria */
   isCategoryModalOpen: boolean = false;
-
-  /** Produto sendo editado; null = modo criacao */
   editingProduct: ProductAdminResponse | null = null;
-
-  /** Categorias para o select do modal (com id+name, da API admin) */
   adminCategories: CategoryAdminResponse[] = [];
-
-  // ----------------------------------------------------------------
-  // Estado do Modo de Edição
-  // ----------------------------------------------------------------
 
   isEditMode: boolean = false;
   deletedProductIds: Set<number> = new Set();
@@ -91,6 +98,7 @@ export class CatalogComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.loadAdminCategories();
+    this.loadPagedCategories();
 
     this.searchSubject.pipe(
       debounceTime(400),
@@ -98,6 +106,14 @@ export class CatalogComponent implements OnInit {
     ).subscribe(() => {
       this.page = 0;
       this.loadProducts();
+    });
+
+    this.categorySubject.pipe(
+      debounceTime(350),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.categoryPage = 0;
+      this.loadPagedCategories();
     });
   }
 
@@ -115,13 +131,50 @@ export class CatalogComponent implements OnInit {
     }
   }
 
+  goToPage(p: number): void {
+    if (p >= 0 && p < this.totalPages && p !== this.page) {
+      this.page = p;
+      this.loadProducts();
+    }
+  }
+
+  getPageNumbers(currentPage: number, totalPages: number): number[] {
+    const delta = 2;
+    const range: number[] = [];
+    for (let i = Math.max(0, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
   onSearchChange(): void {
     this.searchSubject.next(this.searchTerm);
   }
 
-  // ----------------------------------------------------------------
-  // Carregamento de dados
-  // ----------------------------------------------------------------
+  nextCategoryPage(): void {
+    if (this.categoryPage < this.categoryTotalPages - 1) {
+      this.categoryPage++;
+      this.loadPagedCategories();
+    }
+  }
+
+  prevCategoryPage(): void {
+    if (this.categoryPage > 0) {
+      this.categoryPage--;
+      this.loadPagedCategories();
+    }
+  }
+
+  goToCategoryPage(p: number): void {
+    if (p >= 0 && p < this.categoryTotalPages && p !== this.categoryPage) {
+      this.categoryPage = p;
+      this.loadPagedCategories();
+    }
+  }
+
+  onCategorySearchChange(): void {
+    this.categorySubject.next(this.categorySearchTerm);
+  }
 
   private loadProducts(): void {
     this.isLoading = true;
@@ -152,9 +205,9 @@ export class CatalogComponent implements OnInit {
           order: p.position
         }));
         
-        // Ordena os produtos pela posicao
         this.products.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
         this.totalPages = page.totalPages;
+        this.totalElements = page.totalElements;
         this.updateFilterCategories();
       },
       error: () => {
@@ -168,6 +221,31 @@ export class CatalogComponent implements OnInit {
       this.adminCategories = cats;
       this.updateFilterCategories();
       this.cdr.markForCheck();
+    });
+  }
+
+  loadPagedCategories(): void {
+    this.isCategoryLoading = true;
+    this.cdr.markForCheck();
+
+    this.categoryAdminService.search(
+      this.categoryPage,
+      this.categorySize,
+      this.categorySearchTerm.trim() || undefined
+    ).pipe(
+      finalize(() => {
+        this.isCategoryLoading = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
+      next: (page) => {
+        this.categoryList = page.content;
+        this.categoryTotalPages = page.totalPages;
+        this.categoryTotalElements = page.totalElements;
+      },
+      error: () => {
+        this.toastService.error('Falha ao buscar lista paginada de categorias.', 'Erro');
+      }
     });
   }
 
@@ -185,15 +263,29 @@ export class CatalogComponent implements OnInit {
     }
   }
 
-  // ----------------------------------------------------------------
-  // Filtros de listagem
-  // ----------------------------------------------------------------
-
   setFilter(cat: string): void {
     this.activeFilter = cat;
     this.page = 0;
+    this.isCategoryDropdownOpen = false;
     this.loadProducts();
   }
+
+  toggleCategoryDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.isCategoryDropdownOpen = !this.isCategoryDropdownOpen;
+    if (this.isCategoryDropdownOpen) {
+      this.categoryFilterSearch = '';
+    }
+  }
+
+  get filteredAdminCategoriesForDropdown(): CategoryAdminResponse[] {
+    if (!this.categoryFilterSearch.trim()) {
+      return this.adminCategories;
+    }
+    const q = this.categoryFilterSearch.toLowerCase().trim();
+    return this.adminCategories.filter(c => c.name.toLowerCase().includes(q));
+  }
+
 
   get visibleCategories(): string[] {
     return this.categories.filter(c => !this.deletedCategoryNames.has(c));
@@ -203,23 +295,13 @@ export class CatalogComponent implements OnInit {
     return this.products.filter(p => p.id && !this.deletedProductIds.has(p.id));
   }
 
-  // ----------------------------------------------------------------
-  // Acoes do modal de produto
-  // ----------------------------------------------------------------
-
-  /** Abre modal em modo criacao */
   openCreateModal(): void {
     this.loadAdminCategories();
-    this.editingProduct       = null;
-    this.isProductModalOpen   = true;
+    this.editingProduct = null;
+    this.isProductModalOpen = true;
     this.cdr.markForCheck();
   }
 
-  /**
-   * Abre modal em modo edicao com o produto selecionado.
-   * Por ora converte Product (legado) para ProductAdminResponse parcial.
-   * Substituir por chamada direta com ProductAdminResponse na integracao real.
-   */
   openEditModal(product: Product): void {
     this.loadAdminCategories();
     let weightNum = parseFloat(product.peso) || 0;
@@ -228,38 +310,31 @@ export class CatalogComponent implements OnInit {
     }
 
     this.editingProduct = {
-      id:           product.id ?? 0,
-      name:         product.nome,
-      weight:       weightNum,
-      position:     product.order ?? 0,
-      photo:        product.imagem ?? '',
+      id: product.id ?? 0,
+      name: product.nome,
+      weight: weightNum,
+      position: product.order ?? 0,
+      photo: product.imagem ?? '',
       categoryName: product.categoria,
-      status:       product.status === 'ativo' ? ProductStatus.ACTIVE : ProductStatus.INACTIVE,
+      status: product.status === 'ativo' ? ProductStatus.ACTIVE : ProductStatus.INACTIVE,
     };
     this.isProductModalOpen = true;
     this.cdr.markForCheck();
   }
 
-  /** Chamado apos salvar com sucesso */
   onProductSaved(product: ProductAdminResponse): void {
-    console.log('[CatalogoComponent] Produto salvo:', product);
     this.toastService.success(`O produto "${product.name}" foi salvo com sucesso.`, 'Produto Salvo');
     this.isProductModalOpen = false;
-    this.editingProduct     = null;
+    this.editingProduct = null;
     this.loadProducts();
     this.cdr.markForCheck();
   }
 
-  /** Chamado ao fechar o modal sem salvar */
   onProductModalClosed(): void {
     this.isProductModalOpen = false;
-    this.editingProduct     = null;
+    this.editingProduct = null;
     this.cdr.markForCheck();
   }
-
-  // ----------------------------------------------------------------
-  // Acoes do modal de categoria
-  // ----------------------------------------------------------------
 
   openCreateCategoryModal(): void {
     this.isCategoryModalOpen = true;
@@ -267,7 +342,6 @@ export class CatalogComponent implements OnInit {
   }
 
   onCategorySaved(category: CategoryAdminResponse): void {
-    console.log('[CatalogoComponent] Categoria salva:', category);
     this.toastService.success(`A categoria "${category.name}" foi criada com sucesso.`, 'Categoria Criada');
     this.isCategoryModalOpen = false;
     if (!this.adminCategories.some(c => c.id === category.id)) {
@@ -275,6 +349,7 @@ export class CatalogComponent implements OnInit {
       this.updateFilterCategories();
     }
     this.loadAdminCategories();
+    this.loadPagedCategories();
     this.loadProducts();
     this.cdr.markForCheck();
   }
@@ -284,9 +359,35 @@ export class CatalogComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ----------------------------------------------------------------
-  // Modo de Edição e Salvamento em Lote
-  // ----------------------------------------------------------------
+  deleteCategoryDirectly(cat: CategoryAdminResponse): void {
+    const confirmDelete = window.confirm(`Deseja realmente excluir a categoria "${cat.name}"?`);
+    if (!confirmDelete) return;
+
+    this.isCategoryLoading = true;
+    this.cdr.markForCheck();
+
+    this.categoryAdminService.delete(cat.id).pipe(
+      finalize(() => {
+        this.isCategoryLoading = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
+      next: () => {
+        this.toastService.success(`Categoria "${cat.name}" removida com sucesso.`, 'Categoria Excluída');
+        if (this.activeFilter === cat.name) {
+          this.activeFilter = 'Todos';
+        }
+        this.loadAdminCategories();
+        this.loadPagedCategories();
+        this.loadProducts();
+      },
+      error: (err) => {
+        const rawMsg = err?.error?.message;
+        const msg = rawMsg || `Não foi possível excluir a categoria "${cat.name}". Verifique se há produtos vinculados a ela.`;
+        this.toastService.error(msg, 'Erro ao Excluir');
+      }
+    });
+  }
 
   toggleEditMode(): void {
     if (this.isEditMode && this.hasChanges) {
@@ -297,7 +398,6 @@ export class CatalogComponent implements OnInit {
     }
     this.isEditMode = !this.isEditMode;
     if (!this.isEditMode) {
-      // Descarta alterações e recarrega tudo
       this.deletedProductIds.clear();
       this.deletedCategoryNames.clear();
       this.hasOrderChanges = false;
@@ -314,7 +414,6 @@ export class CatalogComponent implements OnInit {
   markCategoryForDeletion(name: string, event: Event): void {
     event.stopPropagation();
 
-    // Bloquear exclusão se houver produtos vinculados à categoria
     const hasLinkedProducts = this.products.some(
       p => p.categoria === name && p.id && !this.deletedProductIds.has(p.id)
     );
@@ -325,7 +424,6 @@ export class CatalogComponent implements OnInit {
     }
 
     this.deletedCategoryNames.add(name);
-    // Se excluiu o filtro ativo, muda para 'Todos'
     if (this.activeFilter === name) {
       this.activeFilter = 'Todos';
     }
@@ -338,13 +436,10 @@ export class CatalogComponent implements OnInit {
     this.isLoading = true;
     this.cdr.markForCheck();
 
-    // 1. Produtos para deletar
     const productsToDelete = Array.from(this.deletedProductIds);
-    // 2. Categorias para deletar (encontrar o ID a partir do nome)
     const categoryIdsToDelete = Array.from(this.deletedCategoryNames)
       .map(name => this.adminCategories.find(c => c.name === name)?.id)
       .filter(id => id != null) as number[];
-    // 3. Produtos atualizados (ordem) - exclui os que foram deletados e envia apenas lista ordenada de IDs
     const productsToUpdateOrder = this.products
       .filter(p => p.id && !this.deletedProductIds.has(p.id))
       .map(p => p.id!);
@@ -379,10 +474,11 @@ export class CatalogComponent implements OnInit {
         this.deletedProductIds.clear();
         this.deletedCategoryNames.clear();
         this.hasOrderChanges = false;
-        this.page = 0; // Reseta para primeira página após salvar em lote
+        this.page = 0;
         
         this.loadProducts();
         this.loadAdminCategories();
+        this.loadPagedCategories();
       },
       error: (err) => {
         const rawMsg = err?.error?.message;
@@ -392,17 +488,11 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------------------
-  // Drag and Drop (Ordenacao)
-  // ----------------------------------------------------------------
-
   onDrop(event: CdkDragDrop<Product[]>): void {
-    // Só permite reordenar se estiver visualizando "Todos" e em modo edição
     if (!this.isEditMode || this.activeFilter !== 'Todos') return;
 
     moveItemInArray(this.products, event.previousIndex, event.currentIndex);
     
-    // Atualiza a propriedade 'order' localmente para todos
     this.products.forEach((p, index) => {
       p.order = index;
     });

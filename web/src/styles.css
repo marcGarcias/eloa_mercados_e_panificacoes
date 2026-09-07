@@ -128,9 +128,7 @@ a {
 }
 
 
-/* ===================================================
-   ADMIN PANEL STYLES - scoped under body.admin-layout
-   =================================================== */
+/* Admin Layout Styles */
 body.admin-layout {
 :root {
             --primary: #CC9148;
@@ -175,7 +173,7 @@ body.admin-layout {
             background: none;
         }
 
-        /* ============ LAYOUT ============ */
+        /* Layout */
 
         .app {
             min-height: 100vh;
@@ -183,7 +181,7 @@ body.admin-layout {
             flex-direction: column;
         }
 
-        /* ============ TOPBAR ============ */
+        /* Topbar */
 
         .topbar {
             background: var(--white);
@@ -319,7 +317,7 @@ body.admin-layout {
             color: #A5402F;
         }
 
-        /* ============ MAIN ============ */
+        /* Main */
 
         main {
             max-width: 1280px;
@@ -397,7 +395,7 @@ body.admin-layout {
             font-size: 12px;
         }
 
-        /* ============ TOOLBAR ============ */
+        /* Toolbar */
 
         .toolbar {
             display: flex;
@@ -481,7 +479,7 @@ body.admin-layout {
             flex-shrink: 0;
         }
 
-        /* ============ PRODUCT GRID ============ */
+        /* Product Grid */
 
         .grid {
             display: grid;
@@ -640,7 +638,7 @@ body.admin-layout {
             color: #A5402F;
         }
 
-        /* ============ TABLE (Usuários) ============ */
+        /* Table */
 
         .table-wrap {
             background: transparent;
@@ -772,7 +770,7 @@ body.admin-layout {
             min-width: 76px;
         }
 
-        /* ============ CONTEÚDO ============ */
+        /* Conteúdo */
 
         .content-grid {
             display: grid;
@@ -992,7 +990,7 @@ body.admin-layout {
             display: block;
         }
 
-        /* ============ MODAL ============ */
+        /* Modal */
 
         .overlay {
             position: fixed;
@@ -1204,7 +1202,7 @@ body.admin-layout {
             color: var(--dark);
         }
 
-        /* ============ RESPONSIVE (MOBILE-FIRST) ============ */
+        /* Responsive */
 
         /* Estilos padrão para Mobile (375px a 743px) */
         .grid {
@@ -1502,7 +1500,7 @@ body.admin-layout {
         }
 }
 
-/* ============ TOAST NOTIFICATIONS (GLOBAL) ============ */
+/* Toast Notifications */
 :root {
     --toast-success: #24412A;
     --toast-error: #A5402F;

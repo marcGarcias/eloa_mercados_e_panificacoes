@@ -1,12 +1,7 @@
-/* ===================================================
-   UsersComponent — Estilos em CSS Puro (Tema Claro/Premium)
-   =================================================== */
-
 .users-container {
   padding: 1rem 0;
 }
 
-/* ============ BARRA DE BUSCA ============ */
 .search-bar-wrap {
   margin-bottom: 20px;
 }
@@ -198,8 +193,6 @@
   padding: 30px 20px !important;
   font-size: 14px;
 }
-
-/* ============ ORDENAÇÃO DA TABELA ============ */
 th.sortable {
   cursor: pointer;
   user-select: none;
@@ -245,8 +238,6 @@ th.sort-active {
 .sort-icon.desc {
   transform: rotate(180deg);
 }
-
-/* ============ FILTRO DE FUNÇÃO ============ */
 .th-filter {
   position: relative;
   white-space: nowrap;

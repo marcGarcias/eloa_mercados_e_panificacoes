@@ -36,6 +36,10 @@ public class DeleteUserService implements DeleteUserUseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
+        if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN) {
+            throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
+        }
+
         eventPublisher.publishEvent(
                 new UserDeactivatedEvent(user.getUserCode().value())
         );

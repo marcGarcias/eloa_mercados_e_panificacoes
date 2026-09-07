@@ -69,6 +69,10 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
 
 
         if (request.status() != null) {
+            if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+                    && request.status() == UserStatus.INACTIVE) {
+                throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
+            }
 
             user.changeStatus(
                     request.status()

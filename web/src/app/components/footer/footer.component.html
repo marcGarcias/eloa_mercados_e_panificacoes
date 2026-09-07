@@ -10,8 +10,8 @@
                     </div>
                 </div>
                 <p class="footer-desc">{{ rodape?.descricao || 'Pães frescos, doces, salgados e produtos de qualidade produzidos todos os dias com cuidado e tradição.' }}</p>
-                <div class="footer-cnpj" *ngIf="dados?.cnpj">
-                    CNPJ: {{ dados?.cnpj }}
+                <div class="footer-cnpj" *ngIf="dados?.cnpj as cnpj">
+                    CNPJ: {{ cnpj }}
                 </div>
             </div>
 
@@ -58,7 +58,7 @@
 
         <div class="copy">
             <span>{{ rodape?.textoDireitos || '© 2026 Eloa Mercados. Todos os direitos reservados.' }}</span>
-            <span class="copy-cnpj" *ngIf="dados?.cnpj"> &bull; CNPJ: {{ dados?.cnpj }}</span>
+            <span class="copy-cnpj" *ngIf="dados?.cnpj as cnpj"> &bull; CNPJ: {{ cnpj }}</span>
         </div>
     </div>
 </footer>

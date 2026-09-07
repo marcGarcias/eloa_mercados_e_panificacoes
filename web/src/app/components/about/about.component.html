@@ -7,8 +7,8 @@
             <div class="section-tag">{{ sobre?.selo || 'Nossa História' }}</div>
             <h2 class="title" [innerHTML]="sobre?.titulo || 'Tradição e qualidade<br>em cada pão'"></h2>
             <p class="subtitle">{{ sobre?.descricao || 'A Eloa Mercados & Panificações nasceu do amor pela boa panificação. Há mais de uma década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.' }}</p>
-            <ul *ngIf="sobre?.lista && (sobre?.lista?.length || 0) > 0; else defaultItems">
-                <li *ngFor="let item of sobre?.lista">
+            <ul *ngIf="sobre?.lista as lista; else defaultItems">
+                <li *ngFor="let item of lista">
                     <span class="check">✓</span>
                     <span><strong>{{ item.nome }}</strong> — {{ item.descricao }}</span>
                 </li>

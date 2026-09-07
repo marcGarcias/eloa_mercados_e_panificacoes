@@ -73,6 +73,17 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
+    public org.springframework.data.domain.Page<Category> findAll(String name, org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<CategoryJpaEntity> pageResult;
+        if (name != null && !name.trim().isEmpty()) {
+            pageResult = repository.findByNameContainingIgnoreCase(name.trim(), pageable);
+        } else {
+            pageResult = repository.findAll(pageable);
+        }
+        return pageResult.map(CategoryMapper::toDomain);
+    }
+
+    @Override
     public void delete(Category category) {
 
         if (category == null || category.getId().isEmpty()) {

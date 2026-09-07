@@ -43,20 +43,21 @@ public class CsrfOriginValidator {
         }
 
         if (referer != null && !referer.isBlank()) {
+            String normalizedRefererOrigin;
             try {
                 URI refererUri = URI.create(referer.trim());
                 String refererOrigin = refererUri.getScheme() + "://" + refererUri.getHost()
                         + (refererUri.getPort() != -1 ? ":" + refererUri.getPort() : "");
-                String normalizedRefererOrigin = refererOrigin.toLowerCase();
-
-                boolean isAllowed = allowedOrigins.contains(normalizedRefererOrigin);
-                if (!isAllowed) {
-                    throw new InvalidOriginException("Referer não autorizado: " + referer);
-                }
-                return;
-            } catch (Exception e) {
+                normalizedRefererOrigin = refererOrigin.toLowerCase();
+            } catch (IllegalArgumentException e) {
                 throw new InvalidOriginException("Formato de Referer inválido.");
             }
+
+            boolean isAllowed = allowedOrigins.contains(normalizedRefererOrigin);
+            if (!isAllowed) {
+                throw new InvalidOriginException("Referer não autorizado: " + referer);
+            }
+            return;
         }
 
         // Se ambos Origin e Referer estiverem ausentes, exige obrigatoriamente X-Requested-With

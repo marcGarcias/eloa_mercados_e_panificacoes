@@ -120,10 +120,10 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return ResponseEntity
-                .status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .status(HttpStatus.CONTENT_TOO_LARGE)
                 .body(
                         new ErrorResponse(
-                                HttpStatus.PAYLOAD_TOO_LARGE.value(),
+                                HttpStatus.CONTENT_TOO_LARGE.value(),
                                 "O arquivo enviado excede o limite máximo permitido pelo servidor (10MB).",
                                 request.getRequestURI(),
                                 LocalDateTime.now()

@@ -2,7 +2,6 @@ package garcias.api.catalog.product.application.services.product;
 
 import garcias.api.catalog.product.application.dto.requests.PageRequestFilter;
 import garcias.api.catalog.product.application.usecases.product.SearchProductsUseCase;
-import garcias.api.catalog.category.domain.persistence.CategoryRepository;
 import garcias.api.catalog.product.domain.entities.Product;
 import garcias.api.catalog.product.domain.repositories.ProductRepository;
 import garcias.api.catalog.product.domain.valueobjects.ProductFilter;
@@ -17,14 +16,12 @@ public class SearchProductsService implements SearchProductsUseCase {
 
 
     private final ProductRepository productRepository;
-    private  final CategoryRepository categoryRepository;
 
 
     public SearchProductsService(
-            ProductRepository productRepository, CategoryRepository categoryRepository
+            ProductRepository productRepository
     ) {
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
     }
 
 

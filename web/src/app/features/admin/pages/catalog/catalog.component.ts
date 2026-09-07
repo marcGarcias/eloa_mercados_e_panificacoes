@@ -297,8 +297,8 @@ export class CatalogComponent implements OnInit {
 
   openCreateModal(): void {
     this.loadAdminCategories();
-    this.editingProduct = null;
-    this.isProductModalOpen = true;
+    this.editingProduct       = null;
+    this.isProductModalOpen   = true;
     this.cdr.markForCheck();
   }
 
@@ -349,7 +349,6 @@ export class CatalogComponent implements OnInit {
       this.updateFilterCategories();
     }
     this.loadAdminCategories();
-    this.loadPagedCategories();
     this.loadProducts();
     this.cdr.markForCheck();
   }

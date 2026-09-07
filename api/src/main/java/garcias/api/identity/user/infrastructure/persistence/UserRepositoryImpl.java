@@ -6,6 +6,7 @@ import garcias.api.identity.user.domain.valueobjects.UserCode;
 import garcias.api.identity.user.infrastructure.mapper.UserMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class UserRepositoryImpl
                 .stream()
                 .map(UserJpaEntity::getUserCode)
                 .map(Long::valueOf)
-                .max(Long::compare)
+                .max(Comparator.naturalOrder())
                 .orElse(0L)
                 + 1;
     }

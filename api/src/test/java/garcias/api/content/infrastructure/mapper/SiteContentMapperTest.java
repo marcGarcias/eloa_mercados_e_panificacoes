@@ -2,6 +2,7 @@ package garcias.api.content.infrastructure.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import garcias.api.content.domain.entities.SiteContent;
+import garcias.api.content.domain.valueobjects.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,14 +12,14 @@ public class SiteContentMapperTest {
     public void testSerializationAndDeserialization() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         
-        SiteContent.Banner banner = new SiteContent.Banner("selo-banner", "titulo-banner", "sub", "desc", java.util.Collections.emptyList());
-        SiteContent.Diferenciais dif = new SiteContent.Diferenciais("selo-dif", "titulo-dif", "desc", java.util.Collections.emptyList());
-        SiteContent.Catalogo cat = new SiteContent.Catalogo("selo-cat", "desc");
-        SiteContent.Sobre sobre = new SiteContent.Sobre("selo-sobre", "titulo-sobre", "desc", java.util.Collections.emptyList());
-        SiteContent.Estatisticas est = new SiteContent.Estatisticas(java.util.Collections.emptyList());
-        SiteContent.Cta cta = new SiteContent.Cta("selo-cta", "titulo-cta", "desc");
-        SiteContent.Rodape rod = new SiteContent.Rodape("desc", "contato", "direitos");
-        SiteContent.Dados dados = new SiteContent.Dados("end", "9", "18", "seg-sex", "123", "123");
+        Banner banner = new Banner("selo-banner", "titulo-banner", "sub", "desc", java.util.Collections.emptyList());
+        Diferenciais dif = new Diferenciais("selo-dif", "titulo-dif", "desc", java.util.Collections.emptyList());
+        Catalogo cat = new Catalogo("selo-cat", "desc");
+        Sobre sobre = new Sobre("selo-sobre", "titulo-sobre", "desc", java.util.Collections.emptyList());
+        Estatisticas est = new Estatisticas(java.util.Collections.emptyList());
+        Cta cta = new Cta("selo-cta", "titulo-cta", "desc");
+        Rodape rod = new Rodape("desc", "contato", "direitos");
+        Dados dados = new Dados("end", "9", "18", "seg-sex", "123", "123");
         
         SiteContent content = new SiteContent(banner, dif, cat, sobre, est, cta, rod, dados);
         

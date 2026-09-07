@@ -209,6 +209,7 @@ export class CatalogComponent implements OnInit {
 
   /** Abre modal em modo criacao */
   openCreateModal(): void {
+    this.loadAdminCategories();
     this.editingProduct       = null;
     this.isProductModalOpen   = true;
     this.cdr.markForCheck();
@@ -220,6 +221,7 @@ export class CatalogComponent implements OnInit {
    * Substituir por chamada direta com ProductAdminResponse na integracao real.
    */
   openEditModal(product: Product): void {
+    this.loadAdminCategories();
     let weightNum = parseFloat(product.peso) || 0;
     if (product.peso.toLowerCase().endsWith('g') && !product.peso.toLowerCase().endsWith('kg')) {
       weightNum = weightNum / 1000;
@@ -268,8 +270,12 @@ export class CatalogComponent implements OnInit {
     console.log('[CatalogoComponent] Categoria salva:', category);
     this.toastService.success(`A categoria "${category.name}" foi criada com sucesso.`, 'Categoria Criada');
     this.isCategoryModalOpen = false;
-    this.loadAdminCategories(); // Recarrega categorias da API
-    this.loadProducts(); // No mundo real, caso mude algo global
+    if (!this.adminCategories.some(c => c.id === category.id)) {
+      this.adminCategories = [...this.adminCategories, category];
+      this.updateFilterCategories();
+    }
+    this.loadAdminCategories();
+    this.loadProducts();
     this.cdr.markForCheck();
   }
 

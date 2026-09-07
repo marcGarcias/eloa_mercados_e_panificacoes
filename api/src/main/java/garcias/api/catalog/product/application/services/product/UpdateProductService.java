@@ -18,12 +18,16 @@ public class UpdateProductService implements UpdateProductUseCase {
 
 
     private final ProductRepository productRepository;
+    private final garcias.api.catalog.category.domain.persistence.CategoryRepository categoryRepository;
     private final ImageStorage imageStorage;
 
     public UpdateProductService(
-            ProductRepository productRepository, ImageStorage imageStorage
+            ProductRepository productRepository,
+            garcias.api.catalog.category.domain.persistence.CategoryRepository categoryRepository,
+            ImageStorage imageStorage
     ) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.imageStorage = imageStorage;
     }
 
@@ -80,10 +84,11 @@ public class UpdateProductService implements UpdateProductUseCase {
 
 
         if (request.categoryId() != null) {
+            CategoryId newCategoryId = new CategoryId(request.categoryId());
+            categoryRepository.findById(newCategoryId)
+                    .orElseThrow(() -> new ObjectNotFoundException(request.categoryId()));
 
-            product.changeCategory(
-                    new CategoryId(request.categoryId())
-            );
+            product.changeCategory(newCategoryId);
         }
 
 

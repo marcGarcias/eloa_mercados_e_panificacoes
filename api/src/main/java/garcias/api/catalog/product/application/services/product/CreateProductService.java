@@ -12,6 +12,8 @@ import garcias.api.catalog.product.domain.valueobjects.ProductName;
 import garcias.api.catalog.product.domain.valueobjects.ProductPhoto;
 import garcias.api.catalog.product.domain.valueobjects.ProductWeight;
 import org.springframework.context.ApplicationEventPublisher;
+import garcias.api.catalog.category.domain.persistence.CategoryRepository;
+import garcias.api.shared.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +21,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateProductService implements CreateProductUseCase {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final ImageStorage imageStorage;
     private final WebpImageValidator webpImageValidator;
 
 
     public CreateProductService(
             ProductRepository productRepository,
-            ImageStorage imageStorage,
+            CategoryRepository categoryRepository,
             ApplicationEventPublisher publisher,
-            WebpImageValidator webpImageValidator
+            WebpImageValidator webpImageValidator,
+            ImageStorage imageStorage
     ) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.imageStorage = imageStorage;
         this.webpImageValidator = webpImageValidator;
     }
@@ -43,14 +48,19 @@ public class CreateProductService implements CreateProductUseCase {
 
         try {
 
+            CategoryId categoryId =
+                    new CategoryId(request.categoryId());
+
+            categoryRepository
+                    .findById(categoryId)
+                    .orElseThrow(() ->
+                            new ObjectNotFoundException(request.categoryId())
+                    );
+
             webpImageValidator.validate(request.photo());
 
 
             imagePath = imageStorage.save(request.photo());
-
-
-            CategoryId categoryId =
-                    new CategoryId(request.categoryId());
 
 
             CatalogPosition position =

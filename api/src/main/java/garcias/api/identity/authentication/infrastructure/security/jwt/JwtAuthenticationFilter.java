@@ -1,6 +1,8 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
 import garcias.api.identity.authentication.application.security.AccessTokenManager;
+import garcias.api.identity.authentication.infrastructure.security.CustomAuthenticationEntryPoint;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +20,14 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AccessTokenManager accessTokenManager;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-    public JwtAuthenticationFilter(AccessTokenManager accessTokenManager) {
+    public JwtAuthenticationFilter(
+            AccessTokenManager accessTokenManager,
+            CustomAuthenticationEntryPoint authenticationEntryPoint
+    ) {
         this.accessTokenManager = accessTokenManager;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Override
@@ -40,14 +47,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authorizationHeader.substring(7);
 
         if (!accessTokenManager.isValid(token)) {
-            filterChain.doFilter(request, response);
+            SecurityContextHolder.clearContext();
+            authenticationEntryPoint.commence(
+                    request,
+                    response,
+                    new InsufficientAuthenticationException("Access token is invalid or expired.")
+            );
             return;
         }
 
         String status = accessTokenManager.extractStatus(token);
 
         if (!"ACTIVE".equals(status)) {
-            filterChain.doFilter(request, response);
+            SecurityContextHolder.clearContext();
+            authenticationEntryPoint.commence(
+                    request,
+                    response,
+                    new InsufficientAuthenticationException("User account is not active.")
+            );
             return;
         }
 

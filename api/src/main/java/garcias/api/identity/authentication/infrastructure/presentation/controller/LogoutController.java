@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,42 +41,28 @@ public class LogoutController {
     @Operation(
             summary = "Logout user",
             description = """
-        Invalidates the user's refresh token and clears the cookie.
+        Invalidates the user's refresh token session and clears the cookie.
         
-        This endpoint requires authentication. It reads the authenticated user's code
-        and deletes all associated refresh tokens from the server, preventing new 
-        access tokens from being generated. It also returns a Set-Cookie header to 
-        clear the refresh token from the client's browser.
+        Reads the 'refresh_token' cookie and deletes its record from the server, 
+        preventing new access tokens from being generated for this session. 
+        Always returns a Set-Cookie header to clear the refresh token from the browser.
         """
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "204",
                     description = "Logged out successfully. Refresh token cookie is cleared."
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized. Invalid or missing access token.",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    name = "Unauthorized",
-                                    value = """
-                                            {
-                                              "message": "Invalid credentials."
-                                            }
-                                            """
-                            )
-                    )
             )
     })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal String userCode,
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
             HttpServletResponse response
     ) {
 
-        logoutUseCase.execute(userCode);
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            logoutUseCase.executeByToken(refreshToken);
+        }
 
         ResponseCookie clearCookie = ResponseCookie
                 .from("refresh_token", "")

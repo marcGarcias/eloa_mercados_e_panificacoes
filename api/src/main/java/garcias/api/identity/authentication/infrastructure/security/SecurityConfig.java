@@ -17,10 +17,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtAuthenticationFilter;
 
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import garcias.api.shared.ratelimit.RateLimitFilter;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,6 +32,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final RateLimitFilter rateLimitFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -37,10 +41,12 @@ public class SecurityConfig {
     private String allowedOriginsConfig;
 
     public SecurityConfig(
+            @Autowired(required = false) RateLimitFilter rateLimitFilter,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             CustomAuthenticationEntryPoint authenticationEntryPoint,
             CustomAccessDeniedHandler accessDeniedHandler
     ) {
+        this.rateLimitFilter = rateLimitFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
@@ -69,7 +75,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
     ) throws Exception {
-        return http
+        http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -116,13 +122,20 @@ public class SecurityConfig {
 
                         .anyRequest()
                         .authenticated()
-                )
+                );
 
+        if (rateLimitFilter != null) {
+            http.addFilterBefore(
+                    rateLimitFilter,
+                    JwtAuthenticationFilter.class
+            );
+        }
+
+        return http
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 )
-
                 .build();
     }
 }

@@ -27,7 +27,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     public RateLimitFilter(
             RateLimiterService rateLimiterService,
             RateLimitProperties properties,
-            ObjectMapper objectMapper
+            @org.springframework.beans.factory.annotation.Autowired(required = false) ObjectMapper objectMapper
     ) {
         this.rateLimiterService = rateLimiterService;
         this.properties = properties;

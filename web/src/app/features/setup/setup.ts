@@ -2,6 +2,7 @@ import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { finalize } from 'rxjs';
 
 function cpfValidator(control: AbstractControl): ValidationErrors | null {
   const cpf = control.value?.replace(/\D/g, '');
@@ -85,23 +86,24 @@ export class Setup {
     
     const { name, password, accessKey, cpf } = this.setupForm.value;
 
-    this.authService.bootstrapSystem(name, password, accessKey, cpf).subscribe({
-      next: (res) => {
+    this.authService.bootstrapSystem(name, password, accessKey, cpf).pipe(
+      finalize(() => {
         this.isLoading = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (res) => {
         this.userCodeGenerated = res.userCode;
         if (!this.userCodeGenerated) {
           this.errorMessage = 'Não foi possível gerar o código de acesso. Por favor, tente novamente ou contate o suporte.';
         }
-        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.isLoading = false;
         if (err.status === 409) {
           this.errorMessage = 'O sistema já possui um proprietário inicializado. Acesse o login.';
         } else {
           this.errorMessage = err.error?.message || 'Erro ao configurar o sistema. Verifique a conexão.';
         }
-        this.cdr.detectChanges();
       }
     });
   }

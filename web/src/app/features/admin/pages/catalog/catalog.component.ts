@@ -9,7 +9,7 @@ import { ModalProdutoComponent } from '../../../../shared/modal-produto/modal-pr
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { forkJoin, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-catalog',
@@ -135,7 +135,12 @@ export class CatalogComponent implements OnInit {
       size: this.size,
       categoryId,
       name
-    }).subscribe({
+    }).pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: (page) => {
         this.products = page.content.map(p => ({
           id: p.id,
@@ -150,14 +155,10 @@ export class CatalogComponent implements OnInit {
         // Ordena os produtos pela posicao
         this.products.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
         this.totalPages = page.totalPages;
-        this.isLoading = false;
         this.updateFilterCategories();
-        this.cdr.markForCheck();
       },
       error: () => {
-        this.isLoading = false;
         this.toastService.error('Falha ao carregar os produtos do catálogo.', 'Erro');
-        this.cdr.markForCheck();
       }
     });
   }
@@ -360,7 +361,12 @@ export class CatalogComponent implements OnInit {
       return;
     }
 
-    forkJoin(requests).subscribe({
+    forkJoin(requests).pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: () => {
         this.toastService.success('As alterações do catálogo foram salvas com sucesso.', 'Catálogo Atualizado');
         this.isEditMode = false;
@@ -371,14 +377,11 @@ export class CatalogComponent implements OnInit {
         
         this.loadProducts();
         this.loadAdminCategories();
-        this.cdr.markForCheck();
       },
       error: (err) => {
-        this.isLoading = false;
         const rawMsg = err?.error?.message;
         const msg = rawMsg || 'Falha ao salvar as alterações do catálogo.';
         this.toastService.error(msg, 'Erro ao Salvar');
-        this.cdr.markForCheck();
       }
     });
   }

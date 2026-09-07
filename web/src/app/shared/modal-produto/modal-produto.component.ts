@@ -18,6 +18,7 @@ import {
   UpdateProductPayload,
 } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
+import { finalize } from 'rxjs';
 
 /**
  * Modal dual-mode de produto.
@@ -189,11 +190,16 @@ export class ModalProdutoComponent implements OnChanges {
       console.log('[MODAL] PATCH FormData entries:');
       fd.forEach((value, key) => console.log(' ', key, '=', value));
 
-      // TODO: Integrar com ProductService.update(this.product.id, payload)
       this.isSubmitting = true;
-      this.productService.update(this.product.id, payload).subscribe({
-        next: (updated) => { this.isSubmitting = false; this.saved.emit(updated); },
-        error: () => { this.isSubmitting = false; }
+      this.cdr.markForCheck();
+      this.productService.update(this.product.id, payload).pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: (updated) => { this.saved.emit(updated); },
+        error: (err) => { console.error('[MODAL] Erro ao atualizar produto:', err); }
       });
 
     } else {
@@ -209,11 +215,16 @@ export class ModalProdutoComponent implements OnChanges {
       console.log('[MODAL] POST FormData entries:');
       fd.forEach((value, key) => console.log(' ', key, '=', value));
 
-      // TODO: Integrar com ProductService.create(payload)
       this.isSubmitting = true;
-      this.productService.create(payload).subscribe({
-        next: (created) => { this.isSubmitting = false; this.saved.emit(created); },
-        error: () => { this.isSubmitting = false; }
+      this.cdr.markForCheck();
+      this.productService.create(payload).pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: (created) => { this.saved.emit(created); },
+        error: (err) => { console.error('[MODAL] Erro ao criar produto:', err); }
       });
     }
   }

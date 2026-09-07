@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContentService } from '../../../../services/content.service';
 import { SiteContent } from '../../../../models/content.model';
 import { ToastService } from '../../../../services/toast.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-content',
@@ -20,6 +21,7 @@ export class ContentComponent implements OnInit {
   private fb = inject(FormBuilder);
   private contentService = inject(ContentService);
   private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor() {}
 
@@ -151,18 +153,23 @@ export class ContentComponent implements OnInit {
       return;
     }
     this.isSaving = true;
+    this.cdr.markForCheck();
     
     // Limpa o payload de strings vazias para o comportamento de PATCH
     const rawData = this.contentForm.value;
     const contentData = this.cleanPayload(rawData) || {};
     
-    this.contentService.saveContent(contentData).subscribe({
-      next: () => {
+    this.contentService.saveContent(contentData).pipe(
+      finalize(() => {
         this.isSaving = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
+      next: () => {
         this.toastService.success('Conteúdo salvo com sucesso!');
+        this.contentForm.markAsPristine();
       },
       error: () => {
-        this.isSaving = false;
         this.toastService.error('Erro ao salvar o conteúdo. Tente novamente.');
       }
     });

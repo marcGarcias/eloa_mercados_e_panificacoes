@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryAdminService } from '../../services/category-admin.service';
 import { CategoryAdminResponse } from '../../models/product.model';
+import { finalize } from 'rxjs';
 
 /**
  * Modal de criacao de categoria.
@@ -79,16 +80,20 @@ export class ModalCategoriaComponent implements OnChanges {
 
     const name: string = this.form.value.name.trim();
     this.isSubmitting = true;
+    this.cdr.markForCheck();
 
-    this.categoryAdminService.create(name).subscribe({
-      next: (created) => {
+    this.categoryAdminService.create(name).pipe(
+      finalize(() => {
         this.isSubmitting = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
+      next: (created) => {
         console.log('[ModalCategoriaComponent] Categoria criada:', created);
         this.saved.emit(created);
       },
-      error: () => {
-        this.isSubmitting = false;
-        this.cdr.markForCheck();
+      error: (err) => {
+        console.error('[ModalCategoriaComponent] Erro ao criar categoria:', err);
       }
     });
   }

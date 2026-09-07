@@ -6,7 +6,7 @@ import { UserService } from '../../../../services/user.service';
 import { ToastService } from '../../../../services/toast.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations, CreateUserPayload, UpdateUserPayload } from '../../../../models/user.model';
-import { catchError, of } from 'rxjs';
+import { catchError, of, finalize } from 'rxjs';
 import { SpringPage } from '../../../../models/page.model';
 
 @Component({
@@ -315,17 +315,19 @@ export class UsersComponent implements OnInit {
     if (this.isCreateMode) {
       this.editingUser.name = `${this.firstName.trim()} ${this.lastName.trim()}`;
       const createdUserName = this.editingUser.name;
-      this.userService.create(this.editingUser as CreateUserPayload).subscribe({
+      this.userService.create(this.editingUser as CreateUserPayload).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
         next: () => {
           this.isModalOpen = false;
-          this.isLoading = false;
           this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
           this.loadUsers();
         },
         error: (err) => {
           this.errorMessage = this.translateErrorMessage(err);
-          this.isLoading = false;
-          this.cdr.markForCheck();
         }
       });
     } else {
@@ -353,17 +355,19 @@ export class UsersComponent implements OnInit {
 
   private updateUserDataOnly(id: string): void {
     const updatedUserName = this.editingUser.name;
-    this.userService.updateData(id, this.editingUser as UpdateUserPayload).subscribe({
+    this.userService.updateData(id, this.editingUser as UpdateUserPayload).pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: () => {
         this.isModalOpen = false;
-        this.isLoading = false;
         this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
         this.loadUsers();
       },
       error: (err) => {
         this.errorMessage = this.translateErrorMessage(err);
-        this.isLoading = false;
-        this.cdr.markForCheck();
       }
     });
   }
@@ -385,19 +389,21 @@ export class UsersComponent implements OnInit {
     
     const deletedUserName = this.userToDelete.name;
     
-    this.userService.delete(this.userToDelete.id).subscribe({
+    this.userService.delete(this.userToDelete.id).pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: () => {
         this.isDeleteModalOpen = false;
-        this.isLoading = false;
         this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
         this.userToDelete = null;
         this.loadUsers();
       },
       error: (err) => {
-        this.isLoading = false;
         const errorMsg = this.translateErrorMessage(err);
         this.toastService.error(errorMsg, 'Erro ao Excluir');
-        this.cdr.markForCheck();
       }
     });
   }

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from './components/header/header';
 import { HeroComponent } from './components/hero/hero';
-import { CatalogComponent } from './components/catalog/catalog';
+import { CatalogComponent } from './components/catalog/catalog.component';
 import { AboutComponent } from './components/about/about';
 import { ContactComponent } from './components/contact/contact';
 

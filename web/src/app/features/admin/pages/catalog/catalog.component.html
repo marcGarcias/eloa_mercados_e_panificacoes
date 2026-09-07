@@ -1,173 +1,401 @@
 <section class="view active" id="view-catalogo">
   <div class="page-head">
     <div>
-      <h1>Catalogo</h1>
-      <p>Gerencie os produtos disponiveis no cardapio.</p>
+      <h1>Catálogo</h1>
+      <p>Gerencie produtos e categorias do cardápio.</p>
     </div>
+
     <div class="head-actions">
-      <button class="btn btn-ghost" type="button" (click)="toggleEditMode()" [class.active]="isEditMode">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-        </svg>
-        {{ isEditMode ? 'Sair da Edição' : 'Editar Catálogo' }}
-      </button>
-      <button *ngIf="isEditMode" class="btn btn-solid" style="background-color: var(--danger, #dc3545)" type="button" (click)="saveChanges()" [disabled]="!hasChanges">
-        Salvar Alterações
-      </button>
-      <button *ngIf="!isEditMode" class="btn btn-ghost" id="btn-nova-categoria" type="button" (click)="openCreateCategoryModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Categoria
-      </button>
-      <button *ngIf="!isEditMode" class="btn btn-solid" id="btn-novo-produto" type="button" (click)="openCreateModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Produto
-      </button>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <div class="chips" id="filters">
-      <button
-        *ngFor="let cat of visibleCategories"
-        class="chip"
-        [class.active]="cat === activeFilter"
-        (click)="setFilter(cat)"
-        type="button"
-      >
-        {{ cat }}
-        <svg *ngIf="isEditMode && cat !== 'Todos'" (click)="markCategoryForDeletion(cat, $event)" style="width: 14px; height: 14px; margin-left: 6px; cursor: pointer; color: var(--danger, #dc3545);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="7" />
-        <path d="M21 21l-4.3-4.3" />
-      </svg>
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Buscar produto..."
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="onSearchChange()"
-      />
-    </div>
-  </div>
-
-  <div class="drag-hint" id="drag-hint" *ngIf="isEditMode && activeFilter === 'Todos'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="9" cy="6" r="1" />
-      <circle cx="15" cy="6" r="1" />
-      <circle cx="9" cy="12" r="1" />
-      <circle cx="15" cy="12" r="1" />
-      <circle cx="9" cy="18" r="1" />
-      <circle cx="15" cy="18" r="1" />
-    </svg>
-    Arraste os cards para definir a ordem de exibicao no site.
-  </div>
-
-  <!-- Loading State -->
-  <div class="loading-state" *ngIf="isLoading" style="text-align: center; padding: 60px 0; color: var(--text-muted, #6c757d);">
-    <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px; margin-bottom: 12px;">
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-    </svg>
-    <p>Carregando catálogo...</p>
-  </div>
-
-  <div 
-    class="grid" 
-    id="products" 
-    *ngIf="!isLoading && filteredProducts.length > 0; else emptyState"
-    cdkDropList 
-    cdkDropListOrientation="mixed"
-    [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos' || isMobile"
-    (cdkDropListDropped)="onDrop($event)"
-  >
-    <div *ngFor="let p of filteredProducts; let idx = index" class="card" cdkDrag>
-      <!-- Drag handle (Apenas Desktop) -->
-      <div *ngIf="isEditMode && !isMobile" class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
-          <circle cx="9" cy="6" r="1.5" />
-          <circle cx="15" cy="6" r="1.5" />
-          <circle cx="9" cy="12" r="1.5" />
-          <circle cx="15" cy="12" r="1.5" />
-          <circle cx="9" cy="18" r="1.5" />
-          <circle cx="15" cy="18" r="1.5" />
-        </svg>
-      </div>
-
-      <!-- Setas de reordenação (Apenas Mobile no modo Edição + Filtro Todos) -->
-      <div *ngIf="isEditMode && isMobile && activeFilter === 'Todos'" class="mobile-order-controls">
-        <button class="order-btn" type="button" (click)="moveProductUp(idx, $event)" [disabled]="idx === 0" title="Mover para cima">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
-            <polyline points="18 15 12 9 6 15"></polyline>
+      <!-- Ações da aba Produtos -->
+      <ng-container *ngIf="activeTab === 'products'">
+        <button class="btn btn-ghost" type="button" (click)="toggleEditMode()" [class.active]="isEditMode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
+          {{ isEditMode ? 'Sair da Edição' : 'Editar Catálogo' }}
         </button>
-        <button class="order-btn" type="button" (click)="moveProductDown(idx, $event)" [disabled]="idx === filteredProducts.length - 1" title="Mover para baixo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+        <button *ngIf="isEditMode" class="btn btn-solid btn-danger-action" type="button" (click)="saveChanges()" [disabled]="!hasChanges">
+          Salvar Alterações
+        </button>
+        <button *ngIf="!isEditMode" class="btn btn-solid" id="btn-novo-produto" type="button" (click)="openCreateModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Novo Produto
+        </button>
+      </ng-container>
+
+      <!-- Ações da aba Categorias -->
+      <ng-container *ngIf="activeTab === 'categories'">
+        <button class="btn btn-solid" id="btn-nova-categoria" type="button" (click)="openCreateCategoryModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Nova Categoria
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Abas de Navegação Principal -->
+  <div class="tab-navigation">
+    <button 
+      type="button" 
+      class="tab-item" 
+      [class.active]="activeTab === 'products'" 
+      (click)="setActiveTab('products')"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m7.5 4.27 9 5.15" />
+        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+        <path d="m3.3 7 8.7 5 8.7-5" />
+        <path d="M12 22V12" />
+      </svg>
+      Produtos
+      <span class="tab-count" *ngIf="totalElements > 0">{{ totalElements }}</span>
+    </button>
+
+    <button 
+      type="button" 
+      class="tab-item" 
+      [class.active]="activeTab === 'categories'" 
+      (click)="setActiveTab('categories')"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="7" height="7" x="3" y="3" rx="1" />
+        <rect width="7" height="7" x="14" y="3" rx="1" />
+        <rect width="7" height="7" x="14" y="14" rx="1" />
+        <rect width="7" height="7" x="3" y="14" rx="1" />
+      </svg>
+      Gerenciar Categorias
+      <span class="tab-count" *ngIf="categoryTotalElements > 0">{{ categoryTotalElements }}</span>
+    </button>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- ABA 1: PRODUTOS                                          -->
+  <!-- ======================================================== -->
+  <div *ngIf="activeTab === 'products'" class="tab-content">
+    <div class="toolbar">
+      <!-- Seletor Dropdown com Lista Pesquisável de Categorias -->
+      <div class="category-dropdown-wrapper">
+        <button 
+          type="button" 
+          class="category-select-trigger" 
+          (click)="toggleCategoryDropdown($event)"
+          title="Selecionar categoria"
+        >
+          <span class="selected-cat-name">{{ activeFilter === 'Todos' ? 'Todas as Categorias' : activeFilter }}</span>
+          <svg class="chevron-icon" [class.rotated]="isCategoryDropdownOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
-      </div>
-      <div class="card-media" style="background: #F5E9DD">
-        <div class="no-image" style="color: #BF9B79" *ngIf="!p.imagem">
-          <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" style="width:26px;height:26px;opacity:0.7" />
-          <span>Sem imagem</span>
+
+        <div class="category-dropdown-menu" *ngIf="isCategoryDropdownOpen" (click)="$event.stopPropagation()">
+          <div class="dropdown-search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Pesquisar entre {{ adminCategories.length }} categorias..." 
+              [(ngModel)]="categoryFilterSearch"
+              autofocus
+            />
+          </div>
+
+          <div class="dropdown-list">
+            <button 
+              type="button" 
+              class="dropdown-item" 
+              [class.active]="activeFilter === 'Todos'"
+              (click)="setFilter('Todos')"
+            >
+              Todas as Categorias
+            </button>
+            <button 
+              type="button" 
+              *ngFor="let cat of filteredAdminCategoriesForDropdown" 
+              class="dropdown-item" 
+              [class.active]="activeFilter === cat.name"
+              (click)="setFilter(cat.name)"
+            >
+              {{ cat.name }}
+            </button>
+            <div class="dropdown-empty" *ngIf="filteredAdminCategoriesForDropdown.length === 0">
+              Nenhuma categoria encontrada
+            </div>
+          </div>
         </div>
-        <img *ngIf="p.imagem" [src]="p.imagem" [alt]="p.nome" style="width:100%;height:100%;object-fit:cover" loading="lazy" />
-        <span
-          class="card-status"
-          [ngClass]="p.status === 'ativo' ? 'status-ativo' : 'status-inativo'"
-        >
-          {{ p.status === 'ativo' ? 'Ativo' : 'Inativo' }}
-        </span>
       </div>
-      <div class="card-body">
-        <div class="card-cat">{{ p.categoria }}</div>
-        <div class="card-name">{{ p.nome }}</div>
-        <div class="card-meta">
-          <div class="card-weight">{{ p.peso }}</div>
-          <div class="card-actions">
-            <button class="icon-btn" title="Editar produto" type="button" (click)="openEditModal(p)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-            </button>
-            <button *ngIf="isEditMode" class="icon-btn danger" title="Excluir produto" type="button" (click)="p.id && markProductForDeletion(p.id)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 6h18" />
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6" />
-              </svg>
-            </button>
+
+      <div class="active-filter-badge" *ngIf="activeFilter !== 'Todos'">
+        <span>Categoria: <strong>{{ activeFilter }}</strong></span>
+        <button type="button" class="btn-clear-badge" (click)="setFilter('Todos')" title="Remover filtro">×</button>
+      </div>
+
+      <!-- Barra de busca de produtos -->
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar produto..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+        />
+      </div>
+    </div>
+
+    <!-- Dica de arrastar e soltar -->
+    <div class="drag-hint" id="drag-hint" *ngIf="isEditMode && activeFilter === 'Todos'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="6" r="1" />
+        <circle cx="15" cy="6" r="1" />
+        <circle cx="9" cy="12" r="1" />
+        <circle cx="15" cy="12" r="1" />
+        <circle cx="9" cy="18" r="1" />
+        <circle cx="15" cy="18" r="1" />
+      </svg>
+      Arraste os cards para definir a ordem de exibição no site.
+    </div>
+
+    <!-- Loading State Produtos -->
+    <div class="loading-state" *ngIf="isLoading">
+      <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      <p>Carregando produtos do catálogo...</p>
+    </div>
+
+    <!-- Grade de Produtos -->
+    <div 
+      class="grid" 
+      id="products" 
+      *ngIf="!isLoading && filteredProducts.length > 0; else emptyProductsState"
+      cdkDropList 
+      cdkDropListOrientation="mixed"
+      [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos' || isMobile"
+      (cdkDropListDropped)="onDrop($event)"
+    >
+      <div *ngFor="let p of filteredProducts; let idx = index" class="card" cdkDrag>
+        <!-- Drag handle (Desktop) -->
+        <div *ngIf="isEditMode && !isMobile" class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+            <circle cx="9" cy="6" r="1.5" />
+            <circle cx="15" cy="6" r="1.5" />
+            <circle cx="9" cy="12" r="1.5" />
+            <circle cx="15" cy="12" r="1.5" />
+            <circle cx="9" cy="18" r="1.5" />
+            <circle cx="15" cy="18" r="1.5" />
+          </svg>
+        </div>
+
+        <!-- Setas de reordenação mobile -->
+        <div *ngIf="isEditMode && isMobile && activeFilter === 'Todos'" class="mobile-order-controls">
+          <button class="order-btn" type="button" (click)="moveProductUp(idx, $event)" [disabled]="idx === 0" title="Mover para cima">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+          </button>
+          <button class="order-btn" type="button" (click)="moveProductDown(idx, $event)" [disabled]="idx === filteredProducts.length - 1" title="Mover para baixo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div class="card-media" style="background: #F5E9DD">
+          <div class="no-image" style="color: #BF9B79" *ngIf="!p.imagem">
+            <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" style="width:26px;height:26px;opacity:0.7" />
+            <span>Sem imagem</span>
+          </div>
+          <img *ngIf="p.imagem" [src]="p.imagem" [alt]="p.nome" style="width:100%;height:100%;object-fit:cover" loading="lazy" />
+          <span
+            class="card-status"
+            [ngClass]="p.status === 'ativo' ? 'status-ativo' : 'status-inativo'"
+          >
+            {{ p.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+          </span>
+        </div>
+
+        <div class="card-body">
+          <div class="card-cat">{{ p.categoria }}</div>
+          <div class="card-name">{{ p.nome }}</div>
+          <div class="card-meta">
+            <div class="card-weight">{{ p.peso }}</div>
+            <div class="card-actions">
+              <button class="icon-btn" title="Editar produto" type="button" (click)="openEditModal(p)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
+              <button *ngIf="isEditMode" class="icon-btn danger" title="Excluir produto" type="button" (click)="p.id && markProductForDeletion(p.id)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <ng-template #emptyProductsState>
+      <div class="empty" id="empty-state" *ngIf="!isLoading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <p>Nenhum produto encontrado com os filtros selecionados.</p>
+      </div>
+    </ng-template>
+
+    <!-- Paginação de Produtos -->
+    <div class="pagination-section" *ngIf="totalPages > 1 && !isLoading">
+      <div class="pagination-info">
+        Página {{ page + 1 }} de {{ totalPages }} <span class="bullet">•</span> {{ totalElements }} produtos
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn nav-btn" [disabled]="page === 0" (click)="prevPage()" title="Página anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Anterior
+        </button>
+
+        <div class="page-numbers">
+          <button 
+            *ngFor="let pNum of getPageNumbers(page, totalPages)" 
+            class="page-btn num-btn" 
+            [class.active]="pNum === page"
+            (click)="goToPage(pNum)"
+          >
+            {{ pNum + 1 }}
+          </button>
+        </div>
+
+        <button class="page-btn nav-btn" [disabled]="page >= totalPages - 1" (click)="nextPage()" title="Próxima página">
+          Próxima
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 
-  <ng-template #emptyState>
-    <div class="empty" id="empty-state" *ngIf="!isLoading" style="display: block">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="7" />
-        <path d="M21 21l-4.3-4.3" />
-      </svg>
-      <p>Nenhum produto encontrado.</p>
+  <!-- ======================================================== -->
+  <!-- ABA 2: GERENCIAR CATEGORIAS                              -->
+  <!-- ======================================================== -->
+  <div *ngIf="activeTab === 'categories'" class="tab-content categories-management">
+    <div class="categories-toolbar">
+      <div class="search full-width">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Buscar categoria por nome..."
+          [(ngModel)]="categorySearchTerm"
+          (ngModelChange)="onCategorySearchChange()"
+        />
+      </div>
     </div>
-  </ng-template>
 
-  <!-- Pagination Controls -->
-  <div class="pagination-controls" *ngIf="totalPages > 1 && !isLoading">
-    <button [disabled]="page === 0" (click)="prevPage()">Anterior</button>
-    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
-    <button [disabled]="page >= totalPages - 1" (click)="nextPage()">Próxima</button>
+    <!-- Loading State Categorias -->
+    <div class="loading-state" *ngIf="isCategoryLoading">
+      <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      <p>Carregando categorias...</p>
+    </div>
+
+    <!-- Tabela / Lista Paginada de Categorias -->
+    <div class="categories-table-container" *ngIf="!isCategoryLoading && categoryList.length > 0; else emptyCategoriesState">
+      <table class="categories-table">
+        <thead>
+          <tr>
+            <th class="col-id">#ID</th>
+            <th class="col-name">Nome da Categoria</th>
+            <th class="col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cat of categoryList">
+            <td class="col-id font-mono">#{{ cat.id }}</td>
+            <td class="col-name">
+              <span class="category-pill">{{ cat.name }}</span>
+            </td>
+            <td class="col-actions">
+              <button 
+                type="button" 
+                class="btn-delete-cat" 
+                (click)="deleteCategoryDirectly(cat)"
+                title="Excluir categoria"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6" />
+                </svg>
+                <span>Excluir</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #emptyCategoriesState>
+      <div class="empty" *ngIf="!isCategoryLoading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <p>Nenhuma categoria encontrada.</p>
+      </div>
+    </ng-template>
+
+    <!-- Paginação de Categorias -->
+    <div class="pagination-section" *ngIf="categoryTotalPages > 1 && !isCategoryLoading">
+      <div class="pagination-info">
+        Página {{ categoryPage + 1 }} de {{ categoryTotalPages }} <span class="bullet">•</span> {{ categoryTotalElements }} categorias
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn nav-btn" [disabled]="categoryPage === 0" (click)="prevCategoryPage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Anterior
+        </button>
+
+        <div class="page-numbers">
+          <button 
+            *ngFor="let pNum of getPageNumbers(categoryPage, categoryTotalPages)" 
+            class="page-btn num-btn" 
+            [class.active]="pNum === categoryPage"
+            (click)="goToCategoryPage(pNum)"
+          >
+            {{ pNum + 1 }}
+          </button>
+        </div>
+
+        <button class="page-btn nav-btn" [disabled]="categoryPage >= categoryTotalPages - 1" (click)="nextCategoryPage()">
+          Próxima
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </section>
 

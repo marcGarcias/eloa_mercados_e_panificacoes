@@ -39,9 +39,9 @@ export class ProductService {
     const publicUrl = (environment?.apiUrl ?? '') + '/api/public/products';
     let params = new HttpParams()
       .set('page', String(filters.page ?? 0))
-      .set('size', String(filters.size ?? 999));
-    if (filters.name)         params = params.set('name', filters.name);
-    if (filters.categoryName) params = params.set('categoryName', filters.categoryName);
+      .set('size', String(filters.size ?? 12));
+    if (filters.name && filters.name.trim()) params = params.set('name', filters.name.trim());
+    if (filters.categoryName && filters.categoryName !== 'Todos') params = params.set('categoryName', filters.categoryName);
     return this.http.get<SpringPage<ProductPublicResponse>>(publicUrl, { params });
   }
 
@@ -50,6 +50,19 @@ export class ProductService {
     return this.http.get<{ name: string }[]>(categoriesUrl).pipe(
       map(list => list.map(c => c.name))
     );
+  }
+
+  getPublicCategoriesPaged(filters: {
+    page?: number;
+    size?: number;
+    name?: string;
+  } = {}): Observable<SpringPage<{ name: string }>> {
+    const categoriesUrl = (environment?.apiUrl ?? '') + '/api/public/categories';
+    let params = new HttpParams()
+      .set('page', String(filters.page ?? 0))
+      .set('size', String(filters.size ?? 12));
+    if (filters.name && filters.name.trim()) params = params.set('name', filters.name.trim());
+    return this.http.get<SpringPage<{ name: string }>>(categoriesUrl, { params });
   }
 
   // ----------------------------------------------------------------

@@ -229,9 +229,9 @@ $RECYCLE.BIN/
 # ----------------------------
 
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
+Icon$'\r'
+!web/src/assets/icons/**
+!web/src/app/shared/components/icon/**
 ._*
 
 .DocumentRevisions-V100

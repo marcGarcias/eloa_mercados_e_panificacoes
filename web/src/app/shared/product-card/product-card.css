@@ -34,7 +34,7 @@
   color: var(--color-tan);
   opacity: .55;
 }
-.no-image svg { width: 100%; height: 100%; }
+.no-image svg, .no-image img { width: 100%; height: 100%; object-fit: contain; }
 .info {
   padding: var(--spacing-md);
   display: flex;

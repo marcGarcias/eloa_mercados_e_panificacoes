@@ -24,12 +24,7 @@
           <img [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
           } @else {
           <span class="no-image">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="9" cy="9" r="1.5" />
-              <path d="M21 15l-5-5-4 4-2-2-5 5" />
-            </svg>
+            <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" class="no-image-icon">
           </span>
           }
         </div>

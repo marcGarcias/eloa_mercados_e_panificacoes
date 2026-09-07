@@ -1,7 +1,9 @@
 <div class="card">
   <div class="photo">
     <img *ngIf="product.imagem" [src]="product.imagem" [alt]="product.nome" loading="lazy">
-    <span *ngIf="!product.imagem" class="no-image" [innerHTML]="noImageIcon"></span>
+    <span *ngIf="!product.imagem" class="no-image">
+      <img src="/assets/icons/placeholder-product.svg" alt="Sem foto do produto" class="no-image-icon">
+    </span>
   </div>
   <div class="info">
     <div class="category">{{ product.categoria }}</div>

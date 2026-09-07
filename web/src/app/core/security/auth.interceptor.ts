@@ -21,12 +21,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     withCredentials: true
   });
 
-  // Anexa o token apenas se a requisição for para a nossa própria API
-  if (token && req.url.startsWith(`${apiUrl}/api/`)) {
+  // Anexa X-Requested-With e o token Bearer para requisições à nossa própria API
+  if (req.url.startsWith(`${apiUrl}/api/`)) {
+    const headers: { [key: string]: string } = {
+      'X-Requested-With': 'XMLHttpRequest'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
     authReq = authReq.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
+      setHeaders: headers
     });
   }
 

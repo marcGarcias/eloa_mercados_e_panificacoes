@@ -3,6 +3,8 @@ package garcias.api.catalog.category.domain.persistence;
 import garcias.api.catalog.category.domain.entities.Category;
 import garcias.api.catalog.category.domain.valueobjects.CategoryId;
 import garcias.api.catalog.category.domain.valueobjects.CategoryName;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,8 @@ public interface CategoryRepository {
     boolean existsByName(CategoryName name);
 
     List<Category> findAll();
+
+    Page<Category> findAll(String name, Pageable pageable);
 
     void delete(Category category);
 }

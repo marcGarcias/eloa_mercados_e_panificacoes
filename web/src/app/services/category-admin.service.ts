@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CategoryAdminResponse } from '../models/product.model';
+import { CategoryAdminResponse, SpringPage } from '../models/product.model';
 
 /**
  * Service para operacoes de categoria no contexto Admin.
@@ -25,6 +25,20 @@ export class CategoryAdminService {
    */
   getAll(): Observable<CategoryAdminResponse[]> {
     return this.http.get<CategoryAdminResponse[]>(this.apiUrl);
+  }
+
+  /**
+   * Busca categorias de forma paginada com filtro opcional por nome.
+   * Endpoint: GET /api/admin/categories?page=0&size=10&name=
+   */
+  search(page: number = 0, size: number = 10, name?: string): Observable<SpringPage<CategoryAdminResponse>> {
+    let params = new HttpParams()
+      .set('page', String(page))
+      .set('size', String(size));
+    if (name && name.trim()) {
+      params = params.set('name', name.trim());
+    }
+    return this.http.get<SpringPage<CategoryAdminResponse>>(this.apiUrl, { params });
   }
 
   /**

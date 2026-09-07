@@ -113,10 +113,6 @@ export class ModalProdutoComponent implements OnChanges {
     }
   }
 
-  // ----------------------------------------------------------------
-  // Controle de foto
-  // ----------------------------------------------------------------
-
   onPhotoChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
@@ -160,10 +156,6 @@ export class ModalProdutoComponent implements OnChanges {
     this.photoError = null;
     this.cdr.markForCheck();
   }
-
-  // ----------------------------------------------------------------
-  // Acoes do modal
-  // ----------------------------------------------------------------
 
   close(): void {
     this.closed.emit();
@@ -265,10 +257,6 @@ export class ModalProdutoComponent implements OnChanges {
     });
   }
 
-  // ----------------------------------------------------------------
-  // Helpers de template
-  // ----------------------------------------------------------------
-
   isFieldInvalid(field: string): boolean {
     const ctrl = this.form.get(field);
     return !!(ctrl && ctrl.invalid && ctrl.touched);
@@ -283,10 +271,6 @@ export class ModalProdutoComponent implements OnChanges {
     if (ctrl.errors['minlength']) return `Minimo de ${ctrl.errors['minlength'].requiredLength} caracteres.`;
     return 'Valor invalido.';
   }
-
-  // ----------------------------------------------------------------
-  // Internos
-  // ----------------------------------------------------------------
 
   private buildForm(): FormGroup {
     return this.fb.group({

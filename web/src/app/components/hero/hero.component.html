@@ -19,8 +19,8 @@
             <div class="search">
                 <input id="search" type="text" placeholder="Buscar pão, bolo, salgado...">
             </div>
-            <div class="hero-stats" *ngIf="banner?.indicadores && (banner?.indicadores?.length || 0) > 0; else defaultStats">
-                <div class="stat-item" *ngFor="let ind of banner?.indicadores">
+            <div class="hero-stats" *ngIf="banner?.indicadores as indicadores; else defaultStats">
+                <div class="stat-item" *ngFor="let ind of indicadores">
                     <span class="stat-num">{{ ind.valor }}</span>
                     <span class="stat-label" [innerHTML]="ind.nome"></span>
                 </div>

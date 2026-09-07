@@ -4,29 +4,105 @@
     <h2 class="title">Catálogo de Produtos</h2>
     <p class="subtitle">{{ catalogo?.descricao || 'Escolha seus favoritos e faça o pedido diretamente via WhatsApp.' }}</p>
 
-    <div class="filters" [class.open]="filtersOpen()">
-      @for (cat of categories; track cat.id) {
-      <button class="filter" [class.active]="activeCategory() === cat.id" (click)="setCategory(cat.id)">
-        {{ cat.label }}
-      </button>
-      }
+    <div class="catalog-toolbar">
+      <div class="category-dropdown-wrapper">
+        <button 
+          type="button" 
+          class="category-select-trigger" 
+          (click)="toggleCategoryDropdown($event)"
+          title="Selecionar categoria"
+        >
+          <span class="selected-cat-name">{{ activeCategory === 'Todos' ? 'Todas as Categorias' : activeCategory }}</span>
+          <svg class="chevron-icon" [class.rotated]="isCategoryDropdownOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <div class="category-dropdown-menu" *ngIf="isCategoryDropdownOpen" (click)="$event.stopPropagation()">
+          <div class="dropdown-search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Pesquisar entre {{ totalCategoriesCount }} categorias..." 
+              [(ngModel)]="categorySearchQuery" 
+              (input)="filterCategoryDropdown()"
+              autofocus
+            />
+          </div>
+
+          <div class="dropdown-list">
+            <button 
+              type="button" 
+              class="dropdown-item" 
+              [class.active]="activeCategory === 'Todos'"
+              (click)="selectCategory('Todos')"
+            >
+              Todas as Categorias
+            </button>
+            <button 
+              type="button" 
+              *ngFor="let cat of filteredCategories" 
+              class="dropdown-item" 
+              [class.active]="activeCategory === cat"
+              (click)="selectCategory(cat)"
+            >
+              {{ cat }}
+            </button>
+            <div class="dropdown-empty" *ngIf="filteredCategories.length === 0">
+              Nenhuma categoria encontrada
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input 
+          id="catalog-search"
+          type="text" 
+          placeholder="Buscar produto por nome..." 
+          [(ngModel)]="searchQuery" 
+          (input)="onSearchChange()" 
+        />
+        <button 
+          *ngIf="searchQuery" 
+          type="button" 
+          class="clear-search-btn" 
+          (click)="searchQuery = ''; onSearchChange()"
+          title="Limpar busca"
+        >
+          ×
+        </button>
+      </div>
     </div>
 
-    <div class="grid">
-      @if (filteredProducts().length === 0) {
-      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#777;font-size:18px;">Nenhum produto encontrado.
+    <div class="active-filter-row" *ngIf="activeCategory !== 'Todos'">
+      <div class="active-filter-badge">
+        <span>Categoria: <strong>{{ activeCategory }}</strong></span>
+        <button type="button" class="btn-clear-badge" (click)="selectCategory('Todos')" title="Remover filtro de categoria">
+          ×
+        </button>
       </div>
-      } @else {
-      @for (produto of filteredProducts(); track produto.nome) {
-      <div class="card">
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Carregando produtos...</p>
+    </div>
+
+    <div class="grid" *ngIf="!isLoading && products.length > 0">
+      <div class="card" *ngFor="let produto of products">
         <div class="photo">
-          @if (produto.imagem) {
-          <img [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
-          } @else {
-          <span class="no-image">
+          <img *ngIf="produto.imagem" [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
+          <span class="no-image" *ngIf="!produto.imagem">
             <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" class="no-image-icon">
           </span>
-          }
         </div>
         <div class="info">
           <div class="category">{{ produto.categoria }}</div>
@@ -34,8 +110,47 @@
           <div class="weight">{{ produto.peso }}</div>
         </div>
       </div>
-      }
-      }
+    </div>
+
+    <div class="empty" *ngIf="!isLoading && products.length === 0">
+      <div class="empty-icon">🍞</div>
+      <h3>Nenhum produto encontrado</h3>
+      <p>Não encontramos nenhum item correspondente aos critérios de busca.</p>
+      <button type="button" class="btn-reset-filters" (click)="selectCategory('Todos'); searchQuery = ''; onSearchChange()">
+        Limpar Filtros
+      </button>
+    </div>
+
+    <div class="pagination-section" *ngIf="totalPages > 1 && !isLoading">
+      <div class="pagination-info">
+        Página {{ page + 1 }} de {{ totalPages }}
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn nav-btn" [disabled]="page === 0" (click)="prevPage()" title="Página anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Anterior
+        </button>
+
+        <div class="page-numbers">
+          <button 
+            *ngFor="let pNum of getPageNumbers(page, totalPages)" 
+            class="page-btn num-btn" 
+            [class.active]="pNum === page"
+            (click)="goToPage(pNum)"
+          >
+            {{ pNum + 1 }}
+          </button>
+        </div>
+
+        <button class="page-btn nav-btn" [disabled]="page >= totalPages - 1" (click)="nextPage()" title="Próxima página">
+          Próxima
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </section>

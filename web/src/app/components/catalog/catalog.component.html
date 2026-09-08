@@ -74,7 +74,7 @@
           *ngIf="searchQuery" 
           type="button" 
           class="clear-search-btn" 
-          (click)="searchQuery = ''; onSearchChange()"
+          (click)="clearSearch()"
           title="Limpar busca"
         >
           ×
@@ -116,7 +116,7 @@
       <div class="empty-icon">🍞</div>
       <h3>Nenhum produto encontrado</h3>
       <p>Não encontramos nenhum item correspondente aos critérios de busca.</p>
-      <button type="button" class="btn-reset-filters" (click)="selectCategory('Todos'); searchQuery = ''; onSearchChange()">
+      <button type="button" class="btn-reset-filters" (click)="resetFilters()">
         Limpar Filtros
       </button>
     </div>

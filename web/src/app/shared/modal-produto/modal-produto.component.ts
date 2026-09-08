@@ -4,6 +4,7 @@ import {
   Output,
   EventEmitter,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -20,7 +21,7 @@ import {
 import { ProductService } from '../../services/product.service';
 import { CategoryAdminService } from '../../services/category-admin.service';
 import { ToastService } from '../../services/toast.service';
-import { finalize } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 /**
  * Modal dual-mode de produto.
@@ -48,7 +49,8 @@ import { finalize } from 'rxjs';
   styleUrls: ['./modal-produto.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalProdutoComponent implements OnChanges {
+export class ModalProdutoComponent implements OnChanges, OnDestroy {
+  private readonly subs = new Subscription();
 
   /** Produto a editar. null = modo criacao */
   @Input() product: ProductAdminResponse | null = null;
@@ -113,6 +115,10 @@ export class ModalProdutoComponent implements OnChanges {
     }
   }
 
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+
   onPhotoChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
@@ -170,10 +176,12 @@ export class ModalProdutoComponent implements OnChanges {
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.cdr.markForCheck();
       return;
     }
     if (!this.isEditMode && !this.selectedPhoto) {
       this.photoError = 'A foto do produto e obrigatoria.';
+      this.cdr.markForCheck();
       return;
     }
     if (this.photoError) return;
@@ -182,79 +190,84 @@ export class ModalProdutoComponent implements OnChanges {
     this.isSubmitting = true;
     this.cdr.markForCheck();
 
-    // NOVA VERIFICAÇÃO: Checa se as categorias existem e busca a lista atualizada na API antes de criar
-    this.categoryAdminService.getAll().subscribe({
-      next: (freshCategories) => {
-        this.categories = freshCategories;
-        const targetCategoryId = Number(formValue.categoryId);
-        const categoryExists = freshCategories.some(cat => cat.id === targetCategoryId);
+    this.subs.add(
+      this.categoryAdminService.getAll().subscribe({
+        next: (freshCategories) => {
+          this.categories = freshCategories;
+          const targetCategoryId = Number(formValue.categoryId);
+          const categoryExists = freshCategories.some(cat => cat.id === targetCategoryId);
 
-        if (!categoryExists) {
+          if (!categoryExists) {
+            this.isSubmitting = false;
+            this.toastService.error('A categoria selecionada não foi encontrada ou foi removida. Selecione uma categoria válida.', 'Categoria não encontrada');
+            this.form.get('categoryId')?.setErrors({ notFound: true });
+            this.cdr.markForCheck();
+            return;
+          }
+
+          if (this.isEditMode && this.product) {
+            const payload: UpdateProductPayload = {};
+            if (formValue.name)       payload.name       = formValue.name;
+            if (formValue.weight)     payload.weight     = Number(formValue.weight);
+            if (formValue.categoryId) payload.categoryId = targetCategoryId;
+            if (formValue.status)     payload.status     = formValue.status;
+            if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
+
+            this.subs.add(
+              this.productService.update(this.product.id, payload).pipe(
+                finalize(() => {
+                  this.isSubmitting = false;
+                  this.cdr.markForCheck();
+                })
+              ).subscribe({
+                next: (updated) => { 
+                  this.saved.emit(updated);
+                  this.cdr.markForCheck();
+                },
+                error: (err) => {
+                  console.error('[MODAL] Erro ao atualizar produto:', err);
+                  this.toastService.error(err.error?.message || 'Erro ao atualizar produto.', 'Erro');
+                  this.cdr.markForCheck();
+                }
+              })
+            );
+
+          } else {
+            const payload: CreateProductPayload = {
+              name:       formValue.name,
+              weight:     Number(formValue.weight),
+              categoryId: targetCategoryId,
+              photo:      this.selectedPhoto!,
+            };
+
+            this.subs.add(
+              this.productService.create(payload).pipe(
+                finalize(() => {
+                  this.isSubmitting = false;
+                  this.cdr.markForCheck();
+                })
+              ).subscribe({
+                next: (created) => { 
+                  this.saved.emit(created);
+                  this.cdr.markForCheck();
+                },
+                error: (err) => {
+                  console.error('[MODAL] Erro ao criar produto:', err);
+                  this.toastService.error(err.error?.message || 'Erro ao criar produto.', 'Erro');
+                  this.cdr.markForCheck();
+                }
+              })
+            );
+          }
+        },
+        error: (err) => {
           this.isSubmitting = false;
-          this.toastService.error('A categoria selecionada não foi encontrada ou foi removida. Selecione uma categoria válida.', 'Categoria não encontrada');
-          this.form.get('categoryId')?.setErrors({ notFound: true });
+          console.error('[MODAL] Erro ao verificar categorias na API:', err);
+          this.toastService.error('Não foi possível verificar as categorias na API. Tente novamente.', 'Falha de Verificação');
           this.cdr.markForCheck();
-          return;
         }
-
-        if (this.isEditMode && this.product) {
-          const payload: UpdateProductPayload = {};
-          if (formValue.name)       payload.name       = formValue.name;
-          if (formValue.weight)     payload.weight     = Number(formValue.weight);
-          if (formValue.categoryId) payload.categoryId = targetCategoryId;
-          if (formValue.status)     payload.status     = formValue.status;
-          if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
-
-          const fd = this.productService.buildUpdateFormData(payload);
-          console.log('[MODAL] PATCH FormData entries:');
-          fd.forEach((value, key) => console.log(' ', key, '=', value));
-
-          this.productService.update(this.product.id, payload).pipe(
-            finalize(() => {
-              this.isSubmitting = false;
-              this.cdr.markForCheck();
-            })
-          ).subscribe({
-            next: (updated) => { this.saved.emit(updated); },
-            error: (err) => {
-              console.error('[MODAL] Erro ao atualizar produto:', err);
-              this.toastService.error(err.error?.message || 'Erro ao atualizar produto.', 'Erro');
-            }
-          });
-
-        } else {
-          const payload: CreateProductPayload = {
-            name:       formValue.name,
-            weight:     Number(formValue.weight),
-            categoryId: targetCategoryId,
-            photo:      this.selectedPhoto!,
-          };
-
-          const fd = this.productService.buildCreateFormData(payload);
-          console.log('[MODAL] POST FormData entries:');
-          fd.forEach((value, key) => console.log(' ', key, '=', value));
-
-          this.productService.create(payload).pipe(
-            finalize(() => {
-              this.isSubmitting = false;
-              this.cdr.markForCheck();
-            })
-          ).subscribe({
-            next: (created) => { this.saved.emit(created); },
-            error: (err) => {
-              console.error('[MODAL] Erro ao criar produto:', err);
-              this.toastService.error(err.error?.message || 'Erro ao criar produto.', 'Erro');
-            }
-          });
-        }
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        console.error('[MODAL] Erro ao verificar categorias na API:', err);
-        this.toastService.error('Não foi possível verificar as categorias na API. Tente novamente.', 'Falha de Verificação');
-        this.cdr.markForCheck();
-      }
-    });
+      })
+    );
   }
 
   isFieldInvalid(field: string): boolean {

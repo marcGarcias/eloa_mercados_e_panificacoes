@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../../services/product.service';
@@ -8,7 +8,7 @@ import { Product, ProductAdminResponse, CategoryAdminResponse, ProductStatus } f
 import { ModalProdutoComponent } from '../../../../shared/modal-produto/modal-produto.component';
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { forkJoin, Subject } from 'rxjs';
+import { forkJoin, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 
 @Component({
@@ -19,7 +19,7 @@ import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
   styleUrls: ['./catalog.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CatalogComponent implements OnInit {
+export class CatalogComponent implements OnInit, OnDestroy {
   isMobile: boolean = window.innerWidth < 768;
 
   @HostListener('window:resize')
@@ -32,8 +32,10 @@ export class CatalogComponent implements OnInit {
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (!target.closest('.category-dropdown-wrapper')) {
-      this.isCategoryDropdownOpen = false;
-      this.cdr.markForCheck();
+      if (this.isCategoryDropdownOpen) {
+        this.isCategoryDropdownOpen = false;
+        this.cdr.markForCheck();
+      }
     }
   }
 
@@ -59,6 +61,7 @@ export class CatalogComponent implements OnInit {
   totalElements: number = 0;
 
   private readonly searchSubject = new Subject<string>();
+  private readonly subs = new Subscription();
 
   // Dropdown de seleção de categoria na aba de produtos
   isCategoryDropdownOpen: boolean = false;
@@ -100,21 +103,29 @@ export class CatalogComponent implements OnInit {
     this.loadAdminCategories();
     this.loadPagedCategories();
 
-    this.searchSubject.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.page = 0;
-      this.loadProducts();
-    });
+    this.subs.add(
+      this.searchSubject.pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      ).subscribe(() => {
+        this.page = 0;
+        this.loadProducts();
+      })
+    );
 
-    this.categorySubject.pipe(
-      debounceTime(350),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.categoryPage = 0;
-      this.loadPagedCategories();
-    });
+    this.subs.add(
+      this.categorySubject.pipe(
+        debounceTime(350),
+        distinctUntilChanged()
+      ).subscribe(() => {
+        this.categoryPage = 0;
+        this.loadPagedCategories();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   nextPage(): void {
@@ -183,75 +194,93 @@ export class CatalogComponent implements OnInit {
     const categoryId = this.adminCategories.find(c => c.name === this.activeFilter)?.id;
     const name = this.searchTerm.trim() || undefined;
 
-    this.productService.searchAdmin({ 
-      page: this.page, 
-      size: this.size,
-      categoryId,
-      name
-    }).pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      this.productService.searchAdmin({ 
+        page: this.page, 
+        size: this.size,
+        categoryId,
+        name
+      }).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: (page) => {
+          this.products = page.content.map(p => ({
+            id: p.id,
+            nome: p.name,
+            categoria: p.categoryName,
+            peso: this.formatWeight(p.weight),
+            status: p.status === ProductStatus.ACTIVE ? 'ativo' : 'inativo',
+            imagem: this.productService.getProductImageUrl(p.photo),
+            order: p.position
+          }));
+          
+          this.products.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          this.totalPages = page.totalPages;
+          this.totalElements = page.totalElements;
+          this.updateFilterCategories();
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.error('Falha ao carregar os produtos do catálogo.', 'Erro');
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: (page) => {
-        this.products = page.content.map(p => ({
-          id: p.id,
-          nome: p.name,
-          categoria: p.categoryName,
-          peso: this.formatWeight(p.weight),
-          status: p.status === ProductStatus.ACTIVE ? 'ativo' : 'inativo',
-          imagem: this.productService.getProductImageUrl(p.photo),
-          order: p.position
-        }));
-        
-        this.products.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        this.totalPages = page.totalPages;
-        this.totalElements = page.totalElements;
-        this.updateFilterCategories();
-      },
-      error: () => {
-        this.toastService.error('Falha ao carregar os produtos do catálogo.', 'Erro');
-      }
-    });
+    );
   }
 
   private loadAdminCategories(): void {
-    this.categoryAdminService.getAll().subscribe(cats => {
-      this.adminCategories = cats;
-      this.updateFilterCategories();
-      this.cdr.markForCheck();
-    });
+    this.subs.add(
+      this.categoryAdminService.getAll().subscribe({
+        next: (cats) => {
+          this.adminCategories = cats;
+          this.updateFilterCategories();
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.adminCategories = [];
+          this.updateFilterCategories();
+          this.cdr.markForCheck();
+        }
+      })
+    );
   }
 
   loadPagedCategories(): void {
     this.isCategoryLoading = true;
     this.cdr.markForCheck();
 
-    this.categoryAdminService.search(
-      this.categoryPage,
-      this.categorySize,
-      this.categorySearchTerm.trim() || undefined
-    ).pipe(
-      finalize(() => {
-        this.isCategoryLoading = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      this.categoryAdminService.search(
+        this.categoryPage,
+        this.categorySize,
+        this.categorySearchTerm.trim() || undefined
+      ).pipe(
+        finalize(() => {
+          this.isCategoryLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: (page) => {
+          this.categoryList = page.content;
+          this.categoryTotalPages = page.totalPages;
+          this.categoryTotalElements = page.totalElements;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.error('Falha ao buscar lista paginada de categorias.', 'Erro');
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: (page) => {
-        this.categoryList = page.content;
-        this.categoryTotalPages = page.totalPages;
-        this.categoryTotalElements = page.totalElements;
-      },
-      error: () => {
-        this.toastService.error('Falha ao buscar lista paginada de categorias.', 'Erro');
-      }
-    });
+    );
   }
 
   private updateFilterCategories(): void {
     const catNames = this.adminCategories.map(c => c.name);
     this.categories = ['Todos', ...catNames];
+    this.cdr.markForCheck();
   }
 
   private formatWeight(weight: number): string {
@@ -268,6 +297,7 @@ export class CatalogComponent implements OnInit {
     this.page = 0;
     this.isCategoryDropdownOpen = false;
     this.loadProducts();
+    this.cdr.markForCheck();
   }
 
   toggleCategoryDropdown(event?: Event): void {
@@ -276,6 +306,7 @@ export class CatalogComponent implements OnInit {
     if (this.isCategoryDropdownOpen) {
       this.categoryFilterSearch = '';
     }
+    this.cdr.markForCheck();
   }
 
   get filteredAdminCategoriesForDropdown(): CategoryAdminResponse[] {
@@ -365,27 +396,31 @@ export class CatalogComponent implements OnInit {
     this.isCategoryLoading = true;
     this.cdr.markForCheck();
 
-    this.categoryAdminService.delete(cat.id).pipe(
-      finalize(() => {
-        this.isCategoryLoading = false;
-        this.cdr.markForCheck();
-      })
-    ).subscribe({
-      next: () => {
-        this.toastService.success(`Categoria "${cat.name}" removida com sucesso.`, 'Categoria Excluída');
-        if (this.activeFilter === cat.name) {
-          this.activeFilter = 'Todos';
+    this.subs.add(
+      this.categoryAdminService.delete(cat.id).pipe(
+        finalize(() => {
+          this.isCategoryLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.toastService.success(`Categoria "${cat.name}" removida com sucesso.`, 'Categoria Excluída');
+          if (this.activeFilter === cat.name) {
+            this.activeFilter = 'Todos';
+          }
+          this.loadAdminCategories();
+          this.loadPagedCategories();
+          this.loadProducts();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const rawMsg = err?.error?.message;
+          const msg = rawMsg || `Não foi possível excluir a categoria "${cat.name}". Verifique se há produtos vinculados a ela.`;
+          this.toastService.error(msg, 'Erro ao Excluir');
+          this.cdr.markForCheck();
         }
-        this.loadAdminCategories();
-        this.loadPagedCategories();
-        this.loadProducts();
-      },
-      error: (err) => {
-        const rawMsg = err?.error?.message;
-        const msg = rawMsg || `Não foi possível excluir a categoria "${cat.name}". Verifique se há produtos vinculados a ela.`;
-        this.toastService.error(msg, 'Erro ao Excluir');
-      }
-    });
+      })
+    );
   }
 
   toggleEditMode(): void {
@@ -461,30 +496,34 @@ export class CatalogComponent implements OnInit {
       return;
     }
 
-    forkJoin(requests).pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      forkJoin(requests).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.toastService.success('As alterações do catálogo foram salvas com sucesso.', 'Catálogo Atualizado');
+          this.isEditMode = false;
+          this.deletedProductIds.clear();
+          this.deletedCategoryNames.clear();
+          this.hasOrderChanges = false;
+          this.page = 0;
+          
+          this.loadProducts();
+          this.loadAdminCategories();
+          this.loadPagedCategories();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const rawMsg = err?.error?.message;
+          const msg = rawMsg || 'Falha ao salvar as alterações do catálogo.';
+          this.toastService.error(msg, 'Erro ao Salvar');
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: () => {
-        this.toastService.success('As alterações do catálogo foram salvas com sucesso.', 'Catálogo Atualizado');
-        this.isEditMode = false;
-        this.deletedProductIds.clear();
-        this.deletedCategoryNames.clear();
-        this.hasOrderChanges = false;
-        this.page = 0;
-        
-        this.loadProducts();
-        this.loadAdminCategories();
-        this.loadPagedCategories();
-      },
-      error: (err) => {
-        const rawMsg = err?.error?.message;
-        const msg = rawMsg || 'Falha ao salvar as alterações do catálogo.';
-        this.toastService.error(msg, 'Erro ao Salvar');
-      }
-    });
+    );
   }
 
   onDrop(event: CdkDragDrop<Product[]>): void {

@@ -1,6 +1,8 @@
 import { Injectable, inject, RendererFactory2, Renderer2 } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
+import { SiteContent, SiteData } from '../models/content.model';
+import { Product } from '../models/product.model';
 
 export interface SeoConfig {
   title?: string;
@@ -90,6 +92,29 @@ export class SeoService {
   }
 
   /**
+   * Atualiza dinamicamente metadados e Schema.org com base nos dados do banco de dados (SiteContent)
+   */
+  updateFromSiteContent(content: SiteContent): void {
+    if (!content) return;
+
+    const bannerDesc = content.banner?.descricao || content.sobre?.descricao || '';
+    const cleanDesc = bannerDesc.length > 155 ? bannerDesc.substring(0, 152) + '...' : bannerDesc;
+
+    // Atualiza metatags com os textos frescos do BD
+    this.updateMetaTags({
+      title: content.banner?.titulo ? `${content.banner.titulo} - Catálogo & Pedidos WhatsApp` : 'Catálogo de Panificação & Pedidos via WhatsApp',
+      description: cleanDesc || 'Catálogo de produtos da Eloá Mercados & Panificações. Pães, doces, bolos, salgados e insumos de panificação. Consulte e faça seu pedido pelo WhatsApp.',
+      canonicalUrl: this.baseUrl,
+      ogTitle: `${this.siteName} | ${content.banner?.titulo || 'Catálogo de Produtos & Pedidos WhatsApp'}`,
+      ogDescription: cleanDesc || 'Consulte nossa linha completa de panificação e confeitaria. Faça seu pedido diretamente pelo WhatsApp com nossa equipe.',
+      ogImage: this.defaultOgImage
+    });
+
+    // Atualiza dados estruturados com dados cadastrais e de atendimento do BD
+    this.setHomeStructuredData(content.dados);
+  }
+
+  /**
    * Define a tag canonical absoluta no head
    */
   setCanonicalUrl(url: string): void {
@@ -120,8 +145,18 @@ export class SeoService {
 
   /**
    * Configura os dados estruturados da Home (Organization + LocalBusiness / Atendimento via WhatsApp)
+   * Recebe opcionalmente os dados dinâmicos do Banco de Dados para personalização em tempo real.
    */
-  setHomeStructuredData(): void {
+  setHomeStructuredData(siteData?: SiteData): void {
+    const rawPhone = siteData?.whatsapp || '+55-11-99999-9999';
+    const formattedPhone = this.formatPhoneNumber(rawPhone);
+    const addressObj = this.parseAddress(siteData?.endereco);
+    const openingHours = this.parseOpeningHours(
+      siteData?.diasFuncionamento,
+      siteData?.horarioAbertura,
+      siteData?.horarioFechamento
+    );
+
     const homeSchema = {
       "@context": "https://schema.org",
       "@graph": [
@@ -130,6 +165,7 @@ export class SeoService {
           "@id": `${this.baseUrl}/#organization`,
           "name": "Eloá Mercados & Panificações",
           "legalName": "Eloá Mercados e Panificações Ltda.",
+          "taxID": siteData?.cnpj || undefined,
           "url": this.baseUrl,
           "logo": {
             "@type": "ImageObject",
@@ -151,7 +187,7 @@ export class SeoService {
           "contactPoint": [
             {
               "@type": "ContactPoint",
-              "telephone": "+55-11-99999-9999",
+              "telephone": formattedPhone,
               "contactType": "sales",
               "areaServed": "BR",
               "availableLanguage": ["Portuguese"]
@@ -164,36 +200,16 @@ export class SeoService {
           "name": "Eloá Mercados & Panificações - Catálogo & Pedidos via WhatsApp",
           "image": `${this.baseUrl}/assets/images/fachada-fabrica-eloa.webp`,
           "url": this.baseUrl,
-          "telephone": "+55-11-99999-9999",
+          "telephone": formattedPhone,
           "priceRange": "$$",
           "servesCuisine": "Panificação, Confeitaria e Produtos para Revenda",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Av. Principal das Indústrias, 1000",
-            "addressLocality": "São Paulo",
-            "addressRegion": "SP",
-            "postalCode": "01000-000",
-            "addressCountry": "BR"
-          },
+          "address": addressObj,
           "geo": {
             "@type": "GeoCoordinates",
             "latitude": -23.550520,
             "longitude": -46.633308
           },
-          "openingHoursSpecification": [
-            {
-              "@type": "OpeningHoursSpecification",
-              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-              "opens": "07:00",
-              "closes": "18:00"
-            },
-            {
-              "@type": "OpeningHoursSpecification",
-              "dayOfWeek": ["Saturday"],
-              "opens": "07:00",
-              "closes": "13:00"
-            }
-          ],
+          "openingHoursSpecification": openingHours,
           "areaServed": [
             { "@type": "AdministrativeArea", "name": "Grande São Paulo" },
             { "@type": "AdministrativeArea", "name": "Região Metropolitana de Campinas" },
@@ -208,6 +224,62 @@ export class SeoService {
     };
 
     this.setJsonLd('json-ld-home', homeSchema);
+  }
+
+  /**
+   * Atualiza os dados estruturados do Catálogo de Produtos e Categorias dinamicamente a partir do BD
+   */
+  updateCatalogStructuredData(products: Product[], categories?: string[]): void {
+    if (!products || products.length === 0) return;
+
+    const itemListElements = products.slice(0, 30).map((prod, index) => {
+      const prodUrl = `${this.baseUrl}/#catalog`;
+      return {
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "Product",
+          "name": prod.nome,
+          "description": `${prod.nome} - Linha de panificação e confeitaria Eloá. Disponível sob consulta para pedidos e cotações via WhatsApp.`,
+          "image": prod.imagem || this.defaultOgImage,
+          "category": prod.categoria || 'Panificação',
+          "brand": {
+            "@type": "Brand",
+            "name": "Eloá"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": prodUrl,
+            "availability": "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition",
+            "priceSpecification": {
+              "@type": "PriceSpecification",
+              "priceCurrency": "BRL",
+              "description": "Produto sob consulta. Pedidos e cotações via WhatsApp."
+            },
+            "seller": {
+              "@id": `${this.baseUrl}/#organization`
+            }
+          }
+        }
+      };
+    });
+
+    const catalogSchema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ItemList",
+          "@id": `${this.baseUrl}/#catalog-list`,
+          "name": "Catálogo de Produtos Eloá Panificações",
+          "description": "Vitrine de produtos de panificação, confeitaria e atacado para pedidos via WhatsApp.",
+          "numberOfItems": products.length,
+          "itemListElement": itemListElements
+        }
+      ]
+    };
+
+    this.setJsonLd('json-ld-catalog', catalogSchema);
   }
 
   /**
@@ -288,5 +360,94 @@ export class SeoService {
     };
 
     this.setJsonLd('json-ld-product', productSchema);
+  }
+
+  // --- MÉTODOS DE APOIO / NORMALIZAÇÃO DE DADOS ---
+
+  /**
+   * Normaliza números de telefone para o padrão internacional E.164 (+55-11-99999-9999)
+   */
+  private formatPhoneNumber(raw?: string): string {
+    if (!raw) return '+55-11-99999-9999';
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length === 11) {
+      // Ex: 11999998888 -> +55-11-99999-8888
+      return `+55-${digits.substring(0, 2)}-${digits.substring(2, 7)}-${digits.substring(7)}`;
+    } else if (digits.length === 10) {
+      // Ex: 1133334444 -> +55-11-3333-4444
+      return `+55-${digits.substring(0, 2)}-${digits.substring(2, 6)}-${digits.substring(6)}`;
+    } else if (digits.length === 13 && digits.startsWith('55')) {
+      // Ex: 5511999998888 -> +55-11-99999-8888
+      return `+55-${digits.substring(2, 4)}-${digits.substring(4, 9)}-${digits.substring(9)}`;
+    }
+    return raw;
+  }
+
+  /**
+   * Faz o parse da string de endereço do BD para o objeto Schema.org PostalAddress
+   */
+  private parseAddress(rawAddress?: string): object {
+    if (!rawAddress) {
+      return {
+        "@type": "PostalAddress",
+        "streetAddress": "Av. Principal das Indústrias, 1000",
+        "addressLocality": "São Paulo",
+        "addressRegion": "SP",
+        "postalCode": "01000-000",
+        "addressCountry": "BR"
+      };
+    }
+
+    return {
+      "@type": "PostalAddress",
+      "streetAddress": rawAddress,
+      "addressLocality": "São Paulo",
+      "addressRegion": "SP",
+      "postalCode": "01000-000",
+      "addressCountry": "BR"
+    };
+  }
+
+  /**
+   * Mapeia os horários salvos no BD para o formato OpeningHoursSpecification do Schema.org
+   */
+  private parseOpeningHours(dias?: string, abre?: string, fecha?: string): object[] {
+    const opens = abre || '07:00';
+    const closes = fecha || '18:00';
+    const diasStr = (dias || 'Segunda a Sexta').toLowerCase();
+
+    const specs: object[] = [];
+
+    if ((diasStr.includes('segunda') && diasStr.includes('sábado')) || diasStr.includes('sabado')) {
+      specs.push({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": opens,
+        "closes": closes
+      });
+    } else if (diasStr.includes('todos') || diasStr.includes('diari') || diasStr.includes('domingo')) {
+      specs.push({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": opens,
+        "closes": closes
+      });
+    } else {
+      // Padrão: Segunda a Sexta + Sábado reduzido
+      specs.push({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": opens,
+        "closes": closes
+      });
+      specs.push({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Saturday"],
+        "opens": opens,
+        "closes": "13:00"
+      });
+    }
+
+    return specs;
   }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 import { ProductService } from '../../services/product.service';
+import { SeoService } from '../../services/seo.service';
 import { Product } from '../../models/product.model';
 import { ContentCatalogo } from '../../models/content.model';
 
@@ -42,6 +43,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly productService: ProductService,
+    private readonly seoService: SeoService,
     private readonly elementRef: ElementRef,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -115,6 +117,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
           imagem: this.productService.getProductImageUrl(p.photoUrl),
           order: Number(p.position)
         }));
+        this.seoService.updateCatalogStructuredData(this.products, this.categories);
         this.cdr.markForCheck();
       },
       error: () => {

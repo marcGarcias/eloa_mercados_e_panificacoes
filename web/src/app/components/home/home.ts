@@ -56,6 +56,9 @@ export class Home implements OnInit, OnDestroy {
       ).subscribe({
         next: (data) => {
           this.content = data;
+          if (data) {
+            this.seoService.updateFromSiteContent(data);
+          }
           this.cdr.detectChanges();
         },
         error: () => {

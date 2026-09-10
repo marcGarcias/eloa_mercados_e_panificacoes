@@ -184,6 +184,24 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimitExceededException(
+            RateLimitExceededException exception,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(exception.getRetryAfterSeconds()))
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.TOO_MANY_REQUESTS.value(),
+                                exception.getMessage(),
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(
             Exception exception,

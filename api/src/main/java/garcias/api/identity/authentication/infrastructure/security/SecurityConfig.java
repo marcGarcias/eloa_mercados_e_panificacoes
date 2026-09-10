@@ -1,9 +1,13 @@
 package garcias.api.identity.authentication.infrastructure.security;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,22 +17,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtAuthenticationFilter;
-
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
-import java.util.List;
+import garcias.api.shared.ratelimit.RateLimitFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final RateLimitFilter rateLimitFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -37,10 +36,12 @@ public class SecurityConfig {
     private String allowedOriginsConfig;
 
     public SecurityConfig(
+            @Autowired(required = false) RateLimitFilter rateLimitFilter,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             CustomAuthenticationEntryPoint authenticationEntryPoint,
             CustomAccessDeniedHandler accessDeniedHandler
     ) {
+        this.rateLimitFilter = rateLimitFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
@@ -69,7 +70,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
     ) throws Exception {
-        return http
+        http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -116,13 +117,20 @@ public class SecurityConfig {
 
                         .anyRequest()
                         .authenticated()
-                )
+                );
 
+        if (rateLimitFilter != null) {
+            http.addFilterAfter(
+                    rateLimitFilter,
+                    CorsFilter.class
+            );
+        }
+
+        return http
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 )
-
                 .build();
     }
 }

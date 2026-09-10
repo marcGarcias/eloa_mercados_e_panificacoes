@@ -9,6 +9,7 @@ import { StatsComponent } from '../stats/stats.component';
 import { CtaComponent } from '../cta/cta.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ContentService } from '../../services/content.service';
+import { SeoService } from '../../services/seo.service';
 import { SiteContent } from '../../models/content.model';
 import { finalize, Subscription } from 'rxjs';
 
@@ -31,10 +32,22 @@ import { finalize, Subscription } from 'rxjs';
 export class Home implements OnInit, OnDestroy {
   content: SiteContent | null = null;
   private readonly contentService = inject(ContentService);
+  private readonly seoService = inject(SeoService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly subs = new Subscription();
 
   ngOnInit(): void {
+    // Configura SEO e Schema.org da Home (Catálogo & Pedidos via WhatsApp)
+    this.seoService.updateMetaTags({
+      title: 'Catálogo de Panificação & Pedidos via WhatsApp',
+      description: 'Catálogo de produtos da Eloá Mercados & Panificações. Pães, doces, bolos, salgados e insumos de panificação. Consulte e faça seu pedido pelo WhatsApp.',
+      canonicalUrl: 'https://eloapanificacoes.com.br/',
+      ogTitle: 'Eloá Mercados & Panificações | Catálogo & Pedidos via WhatsApp',
+      ogDescription: 'Consulte nossa linha completa de panificação e confeitaria. Faça seu pedido diretamente pelo WhatsApp com nossa equipe.',
+      ogImage: 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.jpg'
+    });
+    this.seoService.setHomeStructuredData();
+
     this.subs.add(
       this.contentService.getContentPublic().pipe(
         finalize(() => {
@@ -43,6 +56,9 @@ export class Home implements OnInit, OnDestroy {
       ).subscribe({
         next: (data) => {
           this.content = data;
+          if (data) {
+            this.seoService.updateFromSiteContent(data);
+          }
           this.cdr.detectChanges();
         },
         error: () => {
@@ -57,3 +73,4 @@ export class Home implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
 }
+

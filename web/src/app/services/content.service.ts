@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SiteContent } from '../models/content.model';
 
@@ -17,7 +17,9 @@ export class ContentService {
 
   getContentPublic(): Observable<SiteContent> {
     const publicUrl = (environment?.apiUrl ?? '') + '/api/public/content';
-    return this.http.get<SiteContent>(publicUrl);
+    return this.http.get<SiteContent>(publicUrl).pipe(
+      timeout(4000)
+    );
   }
 
   saveContent(newContent: SiteContent): Observable<SiteContent> {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, map } from 'rxjs';
+import { Observable, of, map, timeout } from 'rxjs';
 import {
   Product,
   ProductAdminResponse,
@@ -42,12 +42,15 @@ export class ProductService {
       .set('size', String(filters.size ?? 12));
     if (filters.name && filters.name.trim()) params = params.set('name', filters.name.trim());
     if (filters.categoryName && filters.categoryName !== 'Todos') params = params.set('categoryName', filters.categoryName);
-    return this.http.get<SpringPage<ProductPublicResponse>>(publicUrl, { params });
+    return this.http.get<SpringPage<ProductPublicResponse>>(publicUrl, { params }).pipe(
+      timeout(4000)
+    );
   }
 
   getPublicCategories(): Observable<string[]> {
     const categoriesUrl = (environment?.apiUrl ?? '') + '/api/public/categories';
     return this.http.get<{ name: string }[]>(categoriesUrl).pipe(
+      timeout(4000),
       map(list => list.map(c => c.name))
     );
   }

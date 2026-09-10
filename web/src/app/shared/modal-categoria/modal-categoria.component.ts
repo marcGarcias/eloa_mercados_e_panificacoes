@@ -4,6 +4,7 @@ import {
   Output,
   EventEmitter,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -12,7 +13,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryAdminService } from '../../services/category-admin.service';
 import { CategoryAdminResponse } from '../../models/product.model';
-import { finalize } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 /**
  * Modal de criacao de categoria.
@@ -30,7 +31,8 @@ import { finalize } from 'rxjs';
   styleUrls: ['./modal-categoria.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalCategoriaComponent implements OnChanges {
+export class ModalCategoriaComponent implements OnChanges, OnDestroy {
+  private readonly subs = new Subscription();
 
   /** Controla visibilidade do modal */
   @Input() isOpen: boolean = false;
@@ -62,6 +64,10 @@ export class ModalCategoriaComponent implements OnChanges {
     }
   }
 
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+
   close(): void {
     this.closed.emit();
   }
@@ -75,6 +81,7 @@ export class ModalCategoriaComponent implements OnChanges {
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -82,20 +89,23 @@ export class ModalCategoriaComponent implements OnChanges {
     this.isSubmitting = true;
     this.cdr.markForCheck();
 
-    this.categoryAdminService.create(name).pipe(
-      finalize(() => {
-        this.isSubmitting = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      this.categoryAdminService.create(name).pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: (created) => {
+          this.saved.emit(created);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('[ModalCategoriaComponent] Erro ao criar categoria:', err);
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: (created) => {
-        console.log('[ModalCategoriaComponent] Categoria criada:', created);
-        this.saved.emit(created);
-      },
-      error: (err) => {
-        console.error('[ModalCategoriaComponent] Erro ao criar categoria:', err);
-      }
-    });
+    );
   }
 
   isFieldInvalid(field: string): boolean {

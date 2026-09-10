@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { HeroComponent } from '../hero/hero.component';
@@ -10,6 +10,7 @@ import { CtaComponent } from '../cta/cta.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ContentService } from '../../services/content.service';
 import { SiteContent } from '../../models/content.model';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -27,21 +28,32 @@ import { SiteContent } from '../../models/content.model';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   content: SiteContent | null = null;
-  private contentService = inject(ContentService);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly contentService = inject(ContentService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly subs = new Subscription();
 
   ngOnInit(): void {
-    this.contentService.getContentPublic().subscribe({
-      next: (data) => {
-        this.content = data;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.content = null;
-        this.cdr.detectChanges();
-      }
-    });
+    this.subs.add(
+      this.contentService.getContentPublic().pipe(
+        finalize(() => {
+          this.cdr.detectChanges();
+        })
+      ).subscribe({
+        next: (data) => {
+          this.content = data;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.content = null;
+          this.cdr.detectChanges();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }

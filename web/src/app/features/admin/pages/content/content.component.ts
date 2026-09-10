@@ -1,10 +1,10 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContentService } from '../../../../services/content.service';
 import { SiteContent } from '../../../../models/content.model';
 import { ToastService } from '../../../../services/toast.service';
-import { finalize } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-content',
@@ -13,15 +13,16 @@ import { finalize } from 'rxjs';
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.css']
 })
-export class ContentComponent implements OnInit {
+export class ContentComponent implements OnInit, OnDestroy {
   contentForm!: FormGroup;
   isSaving = false;
   openSection: string | null = null;
 
-  private fb = inject(FormBuilder);
-  private contentService = inject(ContentService);
-  private toastService = inject(ToastService);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly fb = inject(FormBuilder);
+  private readonly contentService = inject(ContentService);
+  private readonly toastService = inject(ToastService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly subs = new Subscription();
 
   constructor() {}
 
@@ -30,11 +31,16 @@ export class ContentComponent implements OnInit {
     this.loadContent();
   }
 
-  toggleSection(section: string) {
-    this.openSection = this.openSection === section ? null : section;
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
-  private initForm() {
+  toggleSection(section: string): void {
+    this.openSection = this.openSection === section ? null : section;
+    this.cdr.markForCheck();
+  }
+
+  private initForm(): void {
     this.contentForm = this.fb.group({
       banner: this.fb.group({
         selo: ['', [Validators.maxLength(100)]],
@@ -102,17 +108,17 @@ export class ContentComponent implements OnInit {
     });
   }
 
-  private clearFormArrays() {
+  private clearFormArrays(): void {
     this.bannerIndicadores.clear();
     this.diferenciaisCards.clear();
     this.sobreLista.clear();
     this.estatisticasLista.clear();
   }
 
-  get bannerIndicadores() { return this.contentForm.get('banner.indicadores') as FormArray; }
-  get diferenciaisCards() { return this.contentForm.get('diferenciais.cards') as FormArray; }
-  get sobreLista() { return this.contentForm.get('sobre.lista') as FormArray; }
-  get estatisticasLista() { return this.contentForm.get('estatisticas.lista') as FormArray; }
+  get bannerIndicadores(): FormArray { return this.contentForm.get('banner.indicadores') as FormArray; }
+  get diferenciaisCards(): FormArray { return this.contentForm.get('diferenciais.cards') as FormArray; }
+  get sobreLista(): FormArray { return this.contentForm.get('sobre.lista') as FormArray; }
+  get estatisticasLista(): FormArray { return this.contentForm.get('estatisticas.lista') as FormArray; }
 
   private createIndicador(item?: any): FormGroup {
     return this.fb.group({
@@ -138,15 +144,13 @@ export class ContentComponent implements OnInit {
   private cleanPayload(obj: any): any {
     if (Array.isArray(obj)) {
       const arr = obj.map(v => this.cleanPayload(v)).filter(v => v !== null && v !== undefined && v !== '');
-      // Retorna o array diretamente, mesmo se estiver vazio. 
-      // Array vazio significa que o usuário excluiu todos os itens.
       return arr;
     } else if (obj !== null && typeof obj === 'object') {
       const cleaned: any = {};
       for (const key in obj) {
         const val = this.cleanPayload(obj[key]);
         if (val !== null && val !== undefined && val !== '') {
-           cleaned[key] = val;
+          cleaned[key] = val;
         }
       }
       return Object.keys(cleaned).length > 0 ? cleaned : null;
@@ -154,32 +158,36 @@ export class ContentComponent implements OnInit {
     return obj;
   }
 
-  saveContent() {
+  saveContent(): void {
     if (this.contentForm.invalid) {
       this.contentForm.markAllAsTouched();
       this.toastService.error('Preencha todos os campos corretamente antes de salvar.');
+      this.cdr.markForCheck();
       return;
     }
     this.isSaving = true;
     this.cdr.markForCheck();
     
-    // Limpa o payload de strings vazias para o comportamento de PATCH
     const rawData = this.contentForm.value;
     const contentData = this.cleanPayload(rawData) || {};
     
-    this.contentService.saveContent(contentData).pipe(
-      finalize(() => {
-        this.isSaving = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      this.contentService.saveContent(contentData).pipe(
+        finalize(() => {
+          this.isSaving = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.toastService.success('Conteúdo salvo com sucesso!');
+          this.contentForm.markAsPristine();
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.error('Erro ao salvar o conteúdo. Tente novamente.');
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: () => {
-        this.toastService.success('Conteúdo salvo com sucesso!');
-        this.contentForm.markAsPristine();
-      },
-      error: () => {
-        this.toastService.error('Erro ao salvar o conteúdo. Tente novamente.');
-      }
-    });
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -6,7 +6,7 @@ import { UserService } from '../../../../services/user.service';
 import { ToastService } from '../../../../services/toast.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations, CreateUserPayload, UpdateUserPayload } from '../../../../models/user.model';
-import { catchError, of, finalize } from 'rxjs';
+import { catchError, of, finalize, Subscription } from 'rxjs';
 import { SpringPage } from '../../../../models/page.model';
 
 @Component({
@@ -14,14 +14,16 @@ import { SpringPage } from '../../../../models/page.model';
   standalone: true,
   imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  styleUrls: ['./users.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   userService = inject(UserService);
   cdr = inject(ChangeDetectorRef);
   toastService = inject(ToastService);
   
+  private readonly subs = new Subscription();
   currentUser$ = this.authService.currentUser$;
   
   users: User[] = [];
@@ -137,26 +139,22 @@ export class UsersComponent implements OnInit {
     };
 
     this.users = [...this.users].sort((a, b) => {
-
       if (field === 'status') {
         return ((statusWeight[a.status] ?? 99) - (statusWeight[b.status] ?? 99)) * dir;
       }
 
       if (field === 'userCode') {
-        // Numérico: '0001' < '0010'
         const aNum = parseInt(a.userCode ?? '0', 10);
         const bNum = parseInt(b.userCode ?? '0', 10);
         return (aNum - bNum) * dir;
       }
 
       if (field === 'lastLoginAt') {
-        // Nunca acessou vai para o final no crescente
         const aTime = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
         const bTime = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
         return (aTime - bTime) * dir;
       }
 
-      // Padrão: comparação textual (ex: nome A→Z)
       const aVal = (a[field as keyof User] ?? '') as string;
       const bVal = (b[field as keyof User] ?? '') as string;
       return aVal.localeCompare(bVal, 'pt-BR') * dir;
@@ -164,11 +162,18 @@ export class UsersComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.loadUsers();
-      }
-    });
+    this.subs.add(
+      this.authService.currentUser$.subscribe(user => {
+        if (user) {
+          this.loadUsers();
+        }
+        this.cdr.markForCheck();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   loadUsers(): void {
@@ -182,23 +187,29 @@ export class UsersComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.userService.getAll(this.page, this.size).pipe(
-      catchError(() => {
-        // Fallback em caso de erro (ex: rota GET /admin/users não implementada ainda)
-        const emptyPage: SpringPage<User> = { content: [], totalElements: 0, totalPages: 0, number: 0, size: this.size };
-        return of(emptyPage);
+    this.cdr.markForCheck();
+
+    this.subs.add(
+      this.userService.getAll(this.page, this.size).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }),
+        catchError(() => {
+          const emptyPage: SpringPage<User> = { content: [], totalElements: 0, totalPages: 0, number: 0, size: this.size };
+          return of(emptyPage);
+        })
+      ).subscribe(pageData => {
+        this.users = pageData.content;
+        this.totalPages = pageData.totalPages;
+        this.cdr.markForCheck();
       })
-    ).subscribe(pageData => {
-      this.users = pageData.content;
-      this.totalPages = pageData.totalPages;
-      this.isLoading = false;
-      this.cdr.markForCheck();
-    });
+    );
   }
 
   canEditUser(targetUser: User): boolean {
     if (this.isOwner) return true;
-    return this.currentUser?.id === targetUser.id; // Usuário pode editar próprio perfil (ex: senha)
+    return this.currentUser?.id === targetUser.id;
   }
   
   openCreateModal(): void {
@@ -215,19 +226,22 @@ export class UsersComponent implements OnInit {
     };
     this.showPassword = false;
     this.isModalOpen = true;
+    this.cdr.markForCheck();
   }
 
   openEditModal(user: User): void {
     if (!this.canEditUser(user)) return;
     this.errorMessage = null;
     this.isCreateMode = false;
-    this.editingUser = { ...user, password: '' }; // Não carrega a senha real
+    this.editingUser = { ...user, password: '' };
     this.showPassword = false;
     this.isModalOpen = true;
+    this.cdr.markForCheck();
   }
   
   togglePassword(): void {
     this.showPassword = !this.showPassword;
+    this.cdr.markForCheck();
   }
 
   validateLocalData(): boolean {
@@ -315,38 +329,42 @@ export class UsersComponent implements OnInit {
     if (this.isCreateMode) {
       this.editingUser.name = `${this.firstName.trim()} ${this.lastName.trim()}`;
       const createdUserName = this.editingUser.name;
-      this.userService.create(this.editingUser as CreateUserPayload).pipe(
-        finalize(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
+      this.subs.add(
+        this.userService.create(this.editingUser as CreateUserPayload).pipe(
+          finalize(() => {
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          })
+        ).subscribe({
+          next: () => {
+            this.isModalOpen = false;
+            this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
+            this.loadUsers();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            this.errorMessage = this.translateErrorMessage(err);
+            this.cdr.markForCheck();
+          }
         })
-      ).subscribe({
-        next: () => {
-          this.isModalOpen = false;
-          this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
-          this.loadUsers();
-        },
-        error: (err) => {
-          this.errorMessage = this.translateErrorMessage(err);
-        }
-      });
+      );
     } else {
       const id = this.editingUser.id!;
       const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
 
       if (hasNewPassword) {
-        // Encadeamento sequencial: troca a senha primeiro
-        this.userService.changePassword(id, this.editingUser.password!).subscribe({
-          next: () => {
-            // Se a senha foi alterada com sucesso, atualiza o restante dos dados
-            this.updateUserDataOnly(id);
-          },
-          error: (err) => {
-            this.errorMessage = this.translateErrorMessage(err);
-            this.isLoading = false;
-            this.cdr.markForCheck();
-          }
-        });
+        this.subs.add(
+          this.userService.changePassword(id, this.editingUser.password!).subscribe({
+            next: () => {
+              this.updateUserDataOnly(id);
+            },
+            error: (err) => {
+              this.errorMessage = this.translateErrorMessage(err);
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            }
+          })
+        );
       } else {
         this.updateUserDataOnly(id);
       }
@@ -355,21 +373,25 @@ export class UsersComponent implements OnInit {
 
   private updateUserDataOnly(id: string): void {
     const updatedUserName = this.editingUser.name;
-    this.userService.updateData(id, this.editingUser as UpdateUserPayload).pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      this.userService.updateData(id, this.editingUser as UpdateUserPayload).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.isModalOpen = false;
+          this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
+          this.loadUsers();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage = this.translateErrorMessage(err);
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: () => {
-        this.isModalOpen = false;
-        this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
-        this.loadUsers();
-      },
-      error: (err) => {
-        this.errorMessage = this.translateErrorMessage(err);
-      }
-    });
+    );
   }
   
   openDeleteModal(user: Partial<User>): void {
@@ -377,7 +399,8 @@ export class UsersComponent implements OnInit {
     this.userToDelete = user as User;
     this.deleteUsernameConfirm = '';
     this.isDeleteModalOpen = true;
-    this.isModalOpen = false; // Fecha a modal de edição se estiver aberta
+    this.isModalOpen = false;
+    this.cdr.markForCheck();
   }
   
   confirmDelete(): void {
@@ -389,23 +412,27 @@ export class UsersComponent implements OnInit {
     
     const deletedUserName = this.userToDelete.name;
     
-    this.userService.delete(this.userToDelete.id).pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
+    this.subs.add(
+      this.userService.delete(this.userToDelete.id).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.isDeleteModalOpen = false;
+          this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
+          this.userToDelete = null;
+          this.loadUsers();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const errorMsg = this.translateErrorMessage(err);
+          this.toastService.error(errorMsg, 'Erro ao Excluir');
+          this.cdr.markForCheck();
+        }
       })
-    ).subscribe({
-      next: () => {
-        this.isDeleteModalOpen = false;
-        this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
-        this.userToDelete = null;
-        this.loadUsers();
-      },
-      error: (err) => {
-        const errorMsg = this.translateErrorMessage(err);
-        this.toastService.error(errorMsg, 'Erro ao Excluir');
-      }
-    });
+    );
   }
   
   nextPage(): void {

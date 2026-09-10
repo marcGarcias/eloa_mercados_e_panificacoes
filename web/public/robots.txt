@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /assets/
+Allow: /images/
+Disallow: /admin/
+Disallow: /login-cms/
+Disallow: /setup/
+
+Sitemap: https://eloapanificacoes.com.br/sitemap.xml

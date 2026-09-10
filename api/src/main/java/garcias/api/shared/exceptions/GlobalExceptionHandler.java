@@ -12,8 +12,13 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 
     @ExceptionHandler(NotFoundException.class)
@@ -76,9 +81,9 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class, org.springframework.validation.BindException.class})
     public ResponseEntity<ErrorResponse> handleValidationException(
-            MethodArgumentNotValidException exception,
+            org.springframework.validation.BindException exception,
             HttpServletRequest request
     ) {
 
@@ -108,6 +113,23 @@ public class GlobalExceptionHandler {
                 );
     }
 
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(
+            org.springframework.web.multipart.MaxUploadSizeExceededException exception,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CONTENT_TOO_LARGE)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.CONTENT_TOO_LARGE.value(),
+                                "O arquivo enviado excede o limite máximo permitido pelo servidor (10MB).",
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
+    }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(
@@ -162,12 +184,30 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimitExceededException(
+            RateLimitExceededException exception,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(exception.getRetryAfterSeconds()))
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.TOO_MANY_REQUESTS.value(),
+                                exception.getMessage(),
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(
             Exception exception,
             HttpServletRequest request
     ) {
-
+        logger.error("Erro inesperado no servidor em [{}]: {}", request.getRequestURI(), exception.getMessage(), exception);
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -182,12 +222,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeException(
-            RuntimeException exception
+    public ResponseEntity<ErrorResponse> handleRuntimeException(
+            RuntimeException exception,
+            HttpServletRequest request
     ) {
+        logger.error("Erro de tempo de execução em [{}]: {}", request.getRequestURI(), exception.getMessage(), exception);
 
         return ResponseEntity
-                .badRequest()
-                .body(exception.getMessage());
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        new ErrorResponse(
+                                HttpStatus.BAD_REQUEST.value(),
+                                "Ocorreu um erro ao processar a solicitação.",
+                                request.getRequestURI(),
+                                LocalDateTime.now()
+                        )
+                );
     }
 }

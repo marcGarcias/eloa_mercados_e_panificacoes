@@ -1,0 +1,78 @@
+<div class="login-screen">
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="brand-text">Eloa <small>SETUP</small></div>
+            <p>Cadastre o primeiro proprietário para iniciar o sistema.</p>
+        </div>
+
+        @if (userCodeGenerated) {
+            <div class="success-box">
+                <h4>Setup Concluído!</h4>
+                <p>Seu código de acesso gerado é:</p>
+                <div class="code-display">{{ userCodeGenerated }}</div>
+                <p class="warning">Guarde este código em segurança! Você precisará dele para fazer login.</p>
+                <button type="button" class="btn btn-solid login-submit" (click)="goToLogin()">
+                    Ir para o Login
+                </button>
+            </div>
+        } @else {
+            <form class="login-form" [formGroup]="setupForm" (ngSubmit)="onSubmit()">
+                <div class="login-error" [class.show]="errorMessage">
+                    {{ errorMessage }}
+                </div>
+                <div class="field">
+                    <label>Nome Completo</label>
+                    <input type="text" formControlName="name" placeholder="Digite seu nome completo">
+                    @if (setupForm.get('name')?.invalid && (setupForm.get('name')?.dirty || setupForm.get('name')?.touched)) {
+                        <span class="field-error">Nome deve ter entre 2 e 100 caracteres.</span>
+                    }
+                </div>
+                <div class="field">
+                    <label>CPF</label>
+                    <input type="text" formControlName="cpf" placeholder="000.000.000-00">
+                    @if (setupForm.get('cpf')?.invalid && (setupForm.get('cpf')?.dirty || setupForm.get('cpf')?.touched)) {
+                        <span class="field-error">CPF inválido ou obrigatório.</span>
+                    }
+                </div>
+                <div class="field">
+                    <label>Chave de Acesso do Servidor</label>
+                    <input type="text" formControlName="accessKey" placeholder="Insira a chave de acesso">
+                    @if (setupForm.get('accessKey')?.invalid && (setupForm.get('accessKey')?.dirty || setupForm.get('accessKey')?.touched)) {
+                        <span class="field-error">A chave de acesso é obrigatória.</span>
+                    }
+                </div>
+                <div class="field">
+                    <label>Senha</label>
+                    <div class="password-field">
+                        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres">
+                        <button type="button" class="password-toggle" (click)="togglePassword()" [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'">
+                            @if (showPassword) {
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            } @else {
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            }
+                        </button>
+                    </div>
+                    @if (setupForm.get('password')?.invalid && (setupForm.get('password')?.dirty || setupForm.get('password')?.touched)) {
+                        <span class="field-error">Senha deve ter no mínimo 8 caracteres.</span>
+                    }
+                </div>
+                <button type="submit" class="btn btn-solid login-submit" [disabled]="setupForm.invalid || isLoading">
+                    @if (isLoading) {
+                        Carregando...
+                    } @else {
+                        Finalizar Setup
+                    }
+                </button>
+            </form>
+        }
+    </div>
+</div>

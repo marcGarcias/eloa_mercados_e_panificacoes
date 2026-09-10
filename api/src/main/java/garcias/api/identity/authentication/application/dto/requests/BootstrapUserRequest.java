@@ -11,7 +11,14 @@ public record BootstrapUserRequest(
 
         @NotBlank(message = "Password is required.")
         @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters.")
-        String password
+        String password,
+
+        @NotBlank(message = "Access Key is required.")
+        String accessKey,
+
+        @NotBlank(message = "CPF is required.")
+        @org.hibernate.validator.constraints.br.CPF(message = "CPF invalid.")
+        String cpf
 
 ) {
 }

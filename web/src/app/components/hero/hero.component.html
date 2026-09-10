@@ -2,10 +2,7 @@
     <div class="container hero-grid">
         <div>
             <div class="hero-badge">
-                <svg viewBox="0 0 24 24">
-                    <path
-                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
+                <img src="/assets/icons/star.svg" width="16" height="16" alt="Selo" class="badge-icon">
                 {{ banner?.selo || 'Feito com tradição todos os dias' }}
             </div>
             <h1>
@@ -22,8 +19,8 @@
             <div class="search">
                 <input id="search" type="text" placeholder="Buscar pão, bolo, salgado...">
             </div>
-            <div class="hero-stats" *ngIf="banner?.indicadores && (banner?.indicadores?.length || 0) > 0; else defaultStats">
-                <div class="stat-item" *ngFor="let ind of banner?.indicadores">
+            <div class="hero-stats" *ngIf="banner?.indicadores as indicadores; else defaultStats">
+                <div class="stat-item" *ngFor="let ind of indicadores">
                     <span class="stat-num">{{ ind.valor }}</span>
                     <span class="stat-label" [innerHTML]="ind.nome"></span>
                 </div>
@@ -48,7 +45,7 @@
 
         <div class="hero-image">
             <div class="hero-circle">
-                <img src="/assets/images/eloa_girl.webp" alt="Pães frescos Eloa" loading="lazy">
+                <img src="/assets/images/eloa_girl.webp" alt="Pães frescos Eloa" fetchpriority="high" width="380" height="380">
             </div>
         </div>
     </div>

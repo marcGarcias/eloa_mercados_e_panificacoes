@@ -299,7 +299,16 @@
                 </div>
                 <div class="field">
                     <label>CNPJ</label>
-                    <input type="text" formControlName="cnpj" placeholder="Ex: 00.000.000/0001-00">
+                    <input 
+                        type="text" 
+                        formControlName="cnpj" 
+                        placeholder="Ex: 00.000.000/0001-00"
+                        maxlength="18"
+                        [class.input-error]="contentForm.get('dados.cnpj')?.invalid && contentForm.get('dados.cnpj')?.touched">
+                    <small class="field-hint" *ngIf="!contentForm.get('dados.cnpj')?.invalid">Exibido no rodapé da página inicial</small>
+                    <span class="field-error" *ngIf="contentForm.get('dados.cnpj')?.invalid && contentForm.get('dados.cnpj')?.touched">
+                        Formato inválido (Ex: 00.000.000/0001-00)
+                    </span>
                 </div>
             </div>
         </div><!-- /dados -->
@@ -309,7 +318,7 @@
     <!-- Sticky Save Bar -->
     <div class="save-bar">
         <span class="save-bar-hint">Todas as seções serão salvas juntas.</span>
-        <button class="btn btn-solid" (click)="saveContent()" [disabled]="isSaving">
+        <button type="button" class="btn btn-solid" (click)="saveContent()" [disabled]="isSaving">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
                 <polyline points="17 21 17 13 7 13 7 21"/>

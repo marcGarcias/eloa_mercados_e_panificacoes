@@ -21,16 +21,17 @@ public class ChangePasswordService
 
 
     private final UserRepository userRepository;
-
     private final PasswordHasher passwordHasher;
-
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     public ChangePasswordService(
             UserRepository userRepository,
-            PasswordHasher passwordHasher
+            PasswordHasher passwordHasher,
+            org.springframework.context.ApplicationEventPublisher eventPublisher
     ) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
+        this.eventPublisher = eventPublisher;
     }
 
 
@@ -71,5 +72,9 @@ public class ChangePasswordService
 
 
         userRepository.save(user);
+
+        eventPublisher.publishEvent(
+                new garcias.api.identity.user.application.dto.events.UserPasswordChangedEvent(user.getUserCode().value())
+        );
     }
 }

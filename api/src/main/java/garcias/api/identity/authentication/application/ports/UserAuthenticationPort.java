@@ -9,4 +9,6 @@ public interface UserAuthenticationPort {
     Optional<UserAuthenticationDto> findByUserCode(String userCode);
 
     boolean existsAnyUser();
+
+    String createInitialUser(String name, String password);
 }

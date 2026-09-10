@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { UserService } from '../../../../services/user.service';
 import { ToastService } from '../../../../services/toast.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
-import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations } from '../../../../models/user.model';
-import { catchError, of } from 'rxjs';
+import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations, CreateUserPayload, UpdateUserPayload } from '../../../../models/user.model';
+import { catchError, of, finalize, Subscription } from 'rxjs';
 import { SpringPage } from '../../../../models/page.model';
 
 @Component({
@@ -14,14 +14,16 @@ import { SpringPage } from '../../../../models/page.model';
   standalone: true,
   imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  styleUrls: ['./users.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   userService = inject(UserService);
   cdr = inject(ChangeDetectorRef);
   toastService = inject(ToastService);
   
+  private readonly subs = new Subscription();
   currentUser$ = this.authService.currentUser$;
   
   users: User[] = [];
@@ -47,6 +49,15 @@ export class UsersComponent implements OnInit {
   readonly RoleTranslations = RoleTranslations;
   readonly StatusTranslations = StatusTranslations;
 
+  sortField: keyof User | 'lastLoginAt' | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Filtro multi-seleção de funções
+  readonly allRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'EDITOR'];
+  selectedRoles = new Set<UserRole>(['SUPER_ADMIN', 'ADMIN', 'EDITOR']);
+  roleFilterOpen = false;
+  searchQuery = '';
+
   get currentUser(): User | null {
     return this.authService.currentUser;
   }
@@ -54,13 +65,115 @@ export class UsersComponent implements OnInit {
   get isOwner(): boolean {
     return this.authService.hasRole(['SUPER_ADMIN']);
   }
+
+  get isRoleFilterActive(): boolean {
+    return this.selectedRoles.size < this.allRoles.length;
+  }
+
+  get filteredUsers(): User[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.users.filter(u => {
+      const matchesRole = this.selectedRoles.has(u.role);
+      if (!q) return matchesRole;
+      const matchesSearch =
+        u.name?.toLowerCase().includes(q) ||
+        u.userCode?.toLowerCase().includes(q);
+      return matchesRole && matchesSearch;
+    });
+  }
+
+  toggleRoleFilterOpen(event: Event): void {
+    event.stopPropagation();
+    this.roleFilterOpen = !this.roleFilterOpen;
+    this.cdr.markForCheck();
+  }
+
+  toggleRoleFilter(role: UserRole, event: Event): void {
+    event.stopPropagation();
+    if (this.selectedRoles.has(role)) {
+      // Impede desmarcar tudo
+      if (this.selectedRoles.size > 1) {
+        this.selectedRoles.delete(role);
+      }
+    } else {
+      this.selectedRoles.add(role);
+    }
+    this.selectedRoles = new Set(this.selectedRoles); // força detecção
+    this.cdr.markForCheck();
+  }
+
+  clearRoleFilter(): void {
+    this.selectedRoles = new Set(this.allRoles);
+    this.roleFilterOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('document:click')
+  closeRoleFilter(): void {
+    if (this.roleFilterOpen) {
+      this.roleFilterOpen = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  sortBy(field: keyof User | 'lastLoginAt'): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.applySort();
+    this.cdr.markForCheck();
+  }
+
+  private applySort(): void {
+    if (!this.sortField) return;
+    const field = this.sortField;
+    const dir = this.sortDirection === 'asc' ? 1 : -1;
+
+    // Status: asc = Ativo primeiro
+    const statusWeight: Record<string, number> = {
+      'ACTIVE': 1,
+      'INACTIVE': 2
+    };
+
+    this.users = [...this.users].sort((a, b) => {
+      if (field === 'status') {
+        return ((statusWeight[a.status] ?? 99) - (statusWeight[b.status] ?? 99)) * dir;
+      }
+
+      if (field === 'userCode') {
+        const aNum = parseInt(a.userCode ?? '0', 10);
+        const bNum = parseInt(b.userCode ?? '0', 10);
+        return (aNum - bNum) * dir;
+      }
+
+      if (field === 'lastLoginAt') {
+        const aTime = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
+        const bTime = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : (dir === 1 ? Infinity : -Infinity);
+        return (aTime - bTime) * dir;
+      }
+
+      const aVal = (a[field as keyof User] ?? '') as string;
+      const bVal = (b[field as keyof User] ?? '') as string;
+      return aVal.localeCompare(bVal, 'pt-BR') * dir;
+    });
+  }
   
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.loadUsers();
-      }
-    });
+    this.subs.add(
+      this.authService.currentUser$.subscribe(user => {
+        if (user) {
+          this.loadUsers();
+        }
+        this.cdr.markForCheck();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   loadUsers(): void {
@@ -74,23 +187,29 @@ export class UsersComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.userService.getAll(this.page, this.size).pipe(
-      catchError(() => {
-        // Fallback em caso de erro (ex: rota GET /admin/users não implementada ainda)
-        const emptyPage: SpringPage<User> = { content: [], totalElements: 0, totalPages: 0, number: 0, size: this.size };
-        return of(emptyPage);
+    this.cdr.markForCheck();
+
+    this.subs.add(
+      this.userService.getAll(this.page, this.size).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }),
+        catchError(() => {
+          const emptyPage: SpringPage<User> = { content: [], totalElements: 0, totalPages: 0, number: 0, size: this.size };
+          return of(emptyPage);
+        })
+      ).subscribe(pageData => {
+        this.users = pageData.content;
+        this.totalPages = pageData.totalPages;
+        this.cdr.markForCheck();
       })
-    ).subscribe(pageData => {
-      this.users = pageData.content;
-      this.totalPages = pageData.totalPages;
-      this.isLoading = false;
-      this.cdr.markForCheck();
-    });
+    );
   }
 
   canEditUser(targetUser: User): boolean {
     if (this.isOwner) return true;
-    return this.currentUser?.id === targetUser.id; // Usuário pode editar próprio perfil (ex: senha)
+    return this.currentUser?.id === targetUser.id;
   }
   
   openCreateModal(): void {
@@ -107,19 +226,22 @@ export class UsersComponent implements OnInit {
     };
     this.showPassword = false;
     this.isModalOpen = true;
+    this.cdr.markForCheck();
   }
 
   openEditModal(user: User): void {
     if (!this.canEditUser(user)) return;
     this.errorMessage = null;
     this.isCreateMode = false;
-    this.editingUser = { ...user, password: '' }; // Não carrega a senha real
+    this.editingUser = { ...user, password: '' };
     this.showPassword = false;
     this.isModalOpen = true;
+    this.cdr.markForCheck();
   }
   
   togglePassword(): void {
     this.showPassword = !this.showPassword;
+    this.cdr.markForCheck();
   }
 
   validateLocalData(): boolean {
@@ -207,36 +329,42 @@ export class UsersComponent implements OnInit {
     if (this.isCreateMode) {
       this.editingUser.name = `${this.firstName.trim()} ${this.lastName.trim()}`;
       const createdUserName = this.editingUser.name;
-      this.userService.create(this.editingUser).subscribe({
-        next: () => {
-          this.isModalOpen = false;
-          this.isLoading = false;
-          this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
-          this.loadUsers();
-        },
-        error: (err) => {
-          this.errorMessage = this.translateErrorMessage(err);
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        }
-      });
+      this.subs.add(
+        this.userService.create(this.editingUser as CreateUserPayload).pipe(
+          finalize(() => {
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          })
+        ).subscribe({
+          next: () => {
+            this.isModalOpen = false;
+            this.toastService.success(`O usuário "${createdUserName}" foi criado com sucesso.`, 'Usuário Criado');
+            this.loadUsers();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            this.errorMessage = this.translateErrorMessage(err);
+            this.cdr.markForCheck();
+          }
+        })
+      );
     } else {
       const id = this.editingUser.id!;
       const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
 
       if (hasNewPassword) {
-        // Encadeamento sequencial: troca a senha primeiro
-        this.userService.changePassword(id, this.editingUser.password!).subscribe({
-          next: () => {
-            // Se a senha foi alterada com sucesso, atualiza o restante dos dados
-            this.updateUserDataOnly(id);
-          },
-          error: (err) => {
-            this.errorMessage = this.translateErrorMessage(err);
-            this.isLoading = false;
-            this.cdr.markForCheck();
-          }
-        });
+        this.subs.add(
+          this.userService.changePassword(id, this.editingUser.password!).subscribe({
+            next: () => {
+              this.updateUserDataOnly(id);
+            },
+            error: (err) => {
+              this.errorMessage = this.translateErrorMessage(err);
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            }
+          })
+        );
       } else {
         this.updateUserDataOnly(id);
       }
@@ -245,19 +373,25 @@ export class UsersComponent implements OnInit {
 
   private updateUserDataOnly(id: string): void {
     const updatedUserName = this.editingUser.name;
-    this.userService.updateData(id, this.editingUser).subscribe({
-      next: () => {
-        this.isModalOpen = false;
-        this.isLoading = false;
-        this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
-        this.loadUsers();
-      },
-      error: (err) => {
-        this.errorMessage = this.translateErrorMessage(err);
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    });
+    this.subs.add(
+      this.userService.updateData(id, this.editingUser as UpdateUserPayload).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.isModalOpen = false;
+          this.toastService.success(`Os dados do usuário "${updatedUserName}" foram atualizados.`, 'Usuário Atualizado');
+          this.loadUsers();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.errorMessage = this.translateErrorMessage(err);
+          this.cdr.markForCheck();
+        }
+      })
+    );
   }
   
   openDeleteModal(user: Partial<User>): void {
@@ -265,7 +399,8 @@ export class UsersComponent implements OnInit {
     this.userToDelete = user as User;
     this.deleteUsernameConfirm = '';
     this.isDeleteModalOpen = true;
-    this.isModalOpen = false; // Fecha a modal de edição se estiver aberta
+    this.isModalOpen = false;
+    this.cdr.markForCheck();
   }
   
   confirmDelete(): void {
@@ -277,21 +412,27 @@ export class UsersComponent implements OnInit {
     
     const deletedUserName = this.userToDelete.name;
     
-    this.userService.delete(this.userToDelete.id).subscribe({
-      next: () => {
-        this.isDeleteModalOpen = false;
-        this.isLoading = false;
-        this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
-        this.userToDelete = null;
-        this.loadUsers();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        const errorMsg = this.translateErrorMessage(err);
-        this.toastService.error(errorMsg, 'Erro ao Excluir');
-        this.cdr.markForCheck();
-      }
-    });
+    this.subs.add(
+      this.userService.delete(this.userToDelete.id).pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.isDeleteModalOpen = false;
+          this.toastService.success(`O usuário "${deletedUserName}" foi excluído com sucesso.`, 'Usuário Excluído');
+          this.userToDelete = null;
+          this.loadUsers();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const errorMsg = this.translateErrorMessage(err);
+          this.toastService.error(errorMsg, 'Erro ao Excluir');
+          this.cdr.markForCheck();
+        }
+      })
+    );
   }
   
   nextPage(): void {

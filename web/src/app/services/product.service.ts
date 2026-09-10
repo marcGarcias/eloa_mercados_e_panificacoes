@@ -30,10 +30,6 @@ export class ProductService {
     );
   }
 
-  getCategories(): string[] {
-    return [];
-  }
-
   searchPublic(filters: {
     name?: string;
     categoryName?: string;
@@ -43,9 +39,9 @@ export class ProductService {
     const publicUrl = (environment?.apiUrl ?? '') + '/api/public/products';
     let params = new HttpParams()
       .set('page', String(filters.page ?? 0))
-      .set('size', String(filters.size ?? 999));
-    if (filters.name)         params = params.set('name', filters.name);
-    if (filters.categoryName) params = params.set('categoryName', filters.categoryName);
+      .set('size', String(filters.size ?? 12));
+    if (filters.name && filters.name.trim()) params = params.set('name', filters.name.trim());
+    if (filters.categoryName && filters.categoryName !== 'Todos') params = params.set('categoryName', filters.categoryName);
     return this.http.get<SpringPage<ProductPublicResponse>>(publicUrl, { params });
   }
 
@@ -56,16 +52,24 @@ export class ProductService {
     );
   }
 
-  // ----------------------------------------------------------------
-  // Metodos Admin — alinhados com a API
-  // ----------------------------------------------------------------
+  getPublicCategoriesPaged(filters: {
+    page?: number;
+    size?: number;
+    name?: string;
+  } = {}): Observable<SpringPage<{ name: string }>> {
+    const categoriesUrl = (environment?.apiUrl ?? '') + '/api/public/categories';
+    let params = new HttpParams()
+      .set('page', String(filters.page ?? 0))
+      .set('size', String(filters.size ?? 12));
+    if (filters.name && filters.name.trim()) params = params.set('name', filters.name.trim());
+    return this.http.get<SpringPage<{ name: string }>>(categoriesUrl, { params });
+  }
 
   /**
    * Lista produtos com filtros e paginacao.
    * GET /api/admin/products?name=&categoryId=&status=&page=&size=
    *
    * @param filters - Filtros opcionais de busca
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   searchAdmin(filters: {
     name?: string;
@@ -88,7 +92,6 @@ export class ProductService {
    * POST /api/admin/products (multipart/form-data)
    *
    * @param payload - Dados do produto com foto WebP obrigatoria
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   create(payload: CreateProductPayload): Observable<ProductAdminResponse> {
     const formData = this.buildCreateFormData(payload);
@@ -102,7 +105,6 @@ export class ProductService {
    *
    * @param id - ID do produto
    * @param payload - Campos a atualizar (parcial)
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   update(id: number, payload: UpdateProductPayload): Observable<ProductAdminResponse> {
     const formData = this.buildUpdateFormData(payload);
@@ -114,7 +116,6 @@ export class ProductService {
    * DELETE /api/admin/products/{id}
    *
    * @param id - ID do produto
-   * TODO: Descomentar chamada HTTP quando integrar o backend
    */
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
@@ -135,10 +136,6 @@ export class ProductService {
     return this.http.put<void>(`${this.apiUrl}/reorder`, { order: productIds });
   }
 
-  // ----------------------------------------------------------------
-  // Helpers Gerais
-  // ----------------------------------------------------------------
-
   /**
    * Converte o caminho da foto (/uploads/products/filename) para a URL de visualizacao.
    */
@@ -148,10 +145,6 @@ export class ProductService {
     const apiBase = environment?.apiUrl ?? '';
     return `${apiBase}/api/storage/images/${filename}`;
   }
-
-  // ----------------------------------------------------------------
-  // Helpers de FormData
-  // ----------------------------------------------------------------
 
   /**
    * Constroi FormData para criacao de produto (POST).

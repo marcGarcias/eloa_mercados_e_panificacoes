@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { HeroComponent } from '../hero/hero.component';
@@ -9,7 +9,9 @@ import { StatsComponent } from '../stats/stats.component';
 import { CtaComponent } from '../cta/cta.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ContentService } from '../../services/content.service';
+import { SeoService } from '../../services/seo.service';
 import { SiteContent } from '../../models/content.model';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -27,18 +29,48 @@ import { SiteContent } from '../../models/content.model';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   content: SiteContent | null = null;
-  private contentService = inject(ContentService);
+  private readonly contentService = inject(ContentService);
+  private readonly seoService = inject(SeoService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly subs = new Subscription();
 
   ngOnInit(): void {
-    this.contentService.getContentPublic().subscribe({
-      next: (data) => {
-        this.content = data;
-      },
-      error: () => {
-        this.content = null;
-      }
+    // Configura SEO e Schema.org da Home (Catálogo & Pedidos via WhatsApp)
+    this.seoService.updateMetaTags({
+      title: 'Catálogo de Panificação & Pedidos via WhatsApp',
+      description: 'Catálogo de produtos da Eloá Mercados & Panificações. Pães, doces, bolos, salgados e insumos de panificação. Consulte e faça seu pedido pelo WhatsApp.',
+      canonicalUrl: 'https://eloapanificacoes.com.br/',
+      ogTitle: 'Eloá Mercados & Panificações | Catálogo & Pedidos via WhatsApp',
+      ogDescription: 'Consulte nossa linha completa de panificação e confeitaria. Faça seu pedido diretamente pelo WhatsApp com nossa equipe.',
+      ogImage: 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.jpg'
     });
+    this.seoService.setHomeStructuredData();
+
+    this.subs.add(
+      this.contentService.getContentPublic().pipe(
+        finalize(() => {
+          this.cdr.detectChanges();
+        })
+      ).subscribe({
+        next: (data) => {
+          this.content = data;
+          if (data) {
+            this.seoService.updateFromSiteContent(data);
+          }
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.content = null;
+          this.cdr.detectChanges();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }
+

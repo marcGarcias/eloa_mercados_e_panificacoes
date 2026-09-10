@@ -13,6 +13,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/home/home').then(m => m.Home)
     },
     {
+        path: 'setup',
+        loadComponent: () => import('./features/setup/setup').then(m => m.Setup)
+    },
+    {
         path: 'login-cms',
         loadComponent: () => import('./components/login-cms/login-cms').then(m => m.LoginCms)
     }

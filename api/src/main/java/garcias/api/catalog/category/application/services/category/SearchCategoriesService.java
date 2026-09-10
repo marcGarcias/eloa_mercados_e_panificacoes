@@ -1,10 +1,10 @@
 package garcias.api.catalog.category.application.services.category;
 
-
 import garcias.api.catalog.category.application.usecases.category.SearchCategoriesUseCase;
 import garcias.api.catalog.category.domain.entities.Category;
 import garcias.api.catalog.category.domain.persistence.CategoryRepository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +13,7 @@ import java.util.List;
 public class SearchCategoriesService
         implements SearchCategoriesUseCase {
 
-
     private final CategoryRepository categoryRepository;
-
 
     public SearchCategoriesService(
             CategoryRepository categoryRepository
@@ -25,7 +23,11 @@ public class SearchCategoriesService
 
     @Override
     public List<Category> execute() {
-
         return categoryRepository.findAll();
+    }
+
+    @Override
+    public Page<Category> execute(String name, Pageable pageable) {
+        return categoryRepository.findAll(name, pageable);
     }
 }

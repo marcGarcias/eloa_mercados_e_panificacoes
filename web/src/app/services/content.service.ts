@@ -20,7 +20,7 @@ export class ContentService {
     return this.http.get<SiteContent>(publicUrl);
   }
 
-  saveContent(newContent: SiteContent): Observable<boolean> {
-    return this.http.patch<boolean>(this.apiUrl, newContent);
+  saveContent(newContent: SiteContent): Observable<SiteContent> {
+    return this.http.patch<SiteContent>(this.apiUrl, newContent);
   }
 }

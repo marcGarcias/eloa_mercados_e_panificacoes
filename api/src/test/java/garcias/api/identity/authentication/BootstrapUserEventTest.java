@@ -1,74 +1,53 @@
 package garcias.api.identity.authentication;
 
-import garcias.api.identity.authentication.application.dto.events.BootstrapUserRequestedEvent;
 import garcias.api.identity.authentication.application.dto.requests.BootstrapUserRequest;
+import garcias.api.identity.authentication.application.dto.responses.BootstrapUserResponse;
 import garcias.api.identity.authentication.application.ports.UserAuthenticationPort;
 import garcias.api.identity.authentication.application.services.BootstrapUserService;
 import garcias.api.identity.authentication.domain.exceptions.BootstrapAlreadyCompletedException;
-import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
-import garcias.api.shared.security.application.PasswordHasher;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.modulith.test.ApplicationModuleTest;
-import org.springframework.modulith.test.AssertablePublishedEvents;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@ApplicationModuleTest
-@DisplayName("Bootstrap User Event Tests")
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Bootstrap User Service Tests")
 class BootstrapUserEventTest {
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new PasswordEncoder() {
-                @Override
-                public String encode(CharSequence rawPassword) {
-                    return rawPassword.toString();
-                }
-                @Override
-                public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                    return rawPassword.toString().equals(encodedPassword);
-                }
-            };
-        }
-    }
-
-    @MockitoBean
+    @Mock
     private UserAuthenticationPort userAuthenticationPort;
 
-    @MockitoBean
-    private RefreshTokenRepository refreshTokenRepository;
-
-    @MockitoBean
-    private PasswordHasher passwordHasher;
-
-    @Autowired
+    @InjectMocks
     private BootstrapUserService bootstrapUserService;
 
+    private final String validAccessKey = "abc-123-xyz-!";
+    private final String validCpf = "123.456.789-00";
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(bootstrapUserService, "serverAccessKey", validAccessKey);
+        ReflectionTestUtils.setField(bootstrapUserService, "serverCpf", validCpf);
+    }
+
     @Test
-    @DisplayName("Verify that a valid bootstrap request publishes the BootstrapUserRequestedEvent")
-    void verifyBootstrapEventPublished(AssertablePublishedEvents events) {
+    @DisplayName("Verify that a valid bootstrap request creates initial user successfully")
+    void verifyBootstrapSuccess() {
         when(userAuthenticationPort.existsAnyUser()).thenReturn(false);
+        when(userAuthenticationPort.createInitialUser("Admin", "adminPass123")).thenReturn("USR-12345");
 
-        BootstrapUserRequest request = new BootstrapUserRequest("Admin", "adminPass");
-        bootstrapUserService.execute(request);
+        BootstrapUserRequest request = new BootstrapUserRequest("Admin", "adminPass123", validAccessKey, validCpf);
+        BootstrapUserResponse response = bootstrapUserService.execute(request);
 
-        assertThat(events.ofType(BootstrapUserRequestedEvent.class))
-                .hasSize(1)
-                .element(0)
-                .satisfies(event -> {
-                    assertThat(event.name()).isEqualTo("Admin");
-                    assertThat(event.password()).isEqualTo("adminPass");
-                });
+        assertNotNull(response);
+        assertEquals("USR-12345", response.userCode());
+        verify(userAuthenticationPort).createInitialUser("Admin", "adminPass123");
     }
 
     @Test
@@ -76,7 +55,7 @@ class BootstrapUserEventTest {
     void verifyBootstrapThrowsExceptionWhenUserExists() {
         when(userAuthenticationPort.existsAnyUser()).thenReturn(true);
 
-        BootstrapUserRequest request = new BootstrapUserRequest("Admin", "adminPass");
+        BootstrapUserRequest request = new BootstrapUserRequest("Admin", "adminPass123", validAccessKey, validCpf);
 
         assertThrows(BootstrapAlreadyCompletedException.class, () -> {
             bootstrapUserService.execute(request);

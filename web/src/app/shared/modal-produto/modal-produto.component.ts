@@ -4,6 +4,7 @@ import {
   Output,
   EventEmitter,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -18,6 +19,9 @@ import {
   UpdateProductPayload,
 } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
+import { CategoryAdminService } from '../../services/category-admin.service';
+import { ToastService } from '../../services/toast.service';
+import { finalize, Subscription } from 'rxjs';
 
 /**
  * Modal dual-mode de produto.
@@ -25,7 +29,7 @@ import { ProductService } from '../../services/product.service';
  * Modo CRIACAO: @Input product = null
  *   - Titulo: "Novo produto"
  *   - Campos: name, categoryId, weight, photo (WebP obrigatoria)
- *   - Submit: monta CreateProductPayload
+ *   - Submit: valida integridade e existência das categorias na API antes de criar
  *
  * Modo EDICAO: @Input product = ProductAdminResponse
  *   - Titulo: "Editar produto"
@@ -45,7 +49,8 @@ import { ProductService } from '../../services/product.service';
   styleUrls: ['./modal-produto.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalProdutoComponent implements OnChanges {
+export class ModalProdutoComponent implements OnChanges, OnDestroy {
+  private readonly subs = new Subscription();
 
   /** Produto a editar. null = modo criacao */
   @Input() product: ProductAdminResponse | null = null;
@@ -82,6 +87,8 @@ export class ModalProdutoComponent implements OnChanges {
   constructor(
     private readonly fb: FormBuilder,
     private readonly productService: ProductService,
+    private readonly categoryAdminService: CategoryAdminService,
+    private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef,
   ) {
     this.form = this.buildForm();
@@ -108,9 +115,9 @@ export class ModalProdutoComponent implements OnChanges {
     }
   }
 
-  // ----------------------------------------------------------------
-  // Controle de foto
-  // ----------------------------------------------------------------
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
 
   onPhotoChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -132,6 +139,14 @@ export class ModalProdutoComponent implements OnChanges {
       return;
     }
 
+    const MAX_SIZE_MB = 10;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) {
+      this.photoError = `A imagem não pode ultrapassar ${MAX_SIZE_MB}MB. Tamanho selecionado: ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.selectedPhoto = file;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -148,10 +163,6 @@ export class ModalProdutoComponent implements OnChanges {
     this.cdr.markForCheck();
   }
 
-  // ----------------------------------------------------------------
-  // Acoes do modal
-  // ----------------------------------------------------------------
-
   close(): void {
     this.closed.emit();
   }
@@ -165,62 +176,99 @@ export class ModalProdutoComponent implements OnChanges {
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.cdr.markForCheck();
       return;
     }
     if (!this.isEditMode && !this.selectedPhoto) {
       this.photoError = 'A foto do produto e obrigatoria.';
+      this.cdr.markForCheck();
       return;
     }
     if (this.photoError) return;
 
     const formValue = this.form.getRawValue();
+    this.isSubmitting = true;
+    this.cdr.markForCheck();
 
-    if (this.isEditMode && this.product) {
-      const payload: UpdateProductPayload = {};
-      if (formValue.name)       payload.name       = formValue.name;
-      if (formValue.weight)     payload.weight     = Number(formValue.weight);
-      if (formValue.categoryId) payload.categoryId = Number(formValue.categoryId);
-      if (formValue.status)     payload.status     = formValue.status;
-      
-      if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
+    this.subs.add(
+      this.categoryAdminService.getAll().subscribe({
+        next: (freshCategories) => {
+          this.categories = freshCategories;
+          const targetCategoryId = Number(formValue.categoryId);
+          const categoryExists = freshCategories.some(cat => cat.id === targetCategoryId);
 
-      // Log do FormData para verificacao (remover na integracao real)
-      const fd = this.productService.buildUpdateFormData(payload);
-      console.log('[MODAL] PATCH FormData entries:');
-      fd.forEach((value, key) => console.log(' ', key, '=', value));
+          if (!categoryExists) {
+            this.isSubmitting = false;
+            this.toastService.error('A categoria selecionada não foi encontrada ou foi removida. Selecione uma categoria válida.', 'Categoria não encontrada');
+            this.form.get('categoryId')?.setErrors({ notFound: true });
+            this.cdr.markForCheck();
+            return;
+          }
 
-      // TODO: Integrar com ProductService.update(this.product.id, payload)
-      this.isSubmitting = true;
-      this.productService.update(this.product.id, payload).subscribe({
-        next: (updated) => { this.isSubmitting = false; this.saved.emit(updated); },
-        error: () => { this.isSubmitting = false; }
-      });
+          if (this.isEditMode && this.product) {
+            const payload: UpdateProductPayload = {};
+            if (formValue.name)       payload.name       = formValue.name;
+            if (formValue.weight)     payload.weight     = Number(formValue.weight);
+            if (formValue.categoryId) payload.categoryId = targetCategoryId;
+            if (formValue.status)     payload.status     = formValue.status;
+            if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
 
-    } else {
-      const payload: CreateProductPayload = {
-        name:       formValue.name,
-        weight:     Number(formValue.weight),
-        categoryId: Number(formValue.categoryId),
-        photo:      this.selectedPhoto!,
-      };
+            this.subs.add(
+              this.productService.update(this.product.id, payload).pipe(
+                finalize(() => {
+                  this.isSubmitting = false;
+                  this.cdr.markForCheck();
+                })
+              ).subscribe({
+                next: (updated) => { 
+                  this.saved.emit(updated);
+                  this.cdr.markForCheck();
+                },
+                error: (err) => {
+                  console.error('[MODAL] Erro ao atualizar produto:', err);
+                  this.toastService.error(err.error?.message || 'Erro ao atualizar produto.', 'Erro');
+                  this.cdr.markForCheck();
+                }
+              })
+            );
 
-      // Log do FormData para verificacao (remover na integracao real)
-      const fd = this.productService.buildCreateFormData(payload);
-      console.log('[MODAL] POST FormData entries:');
-      fd.forEach((value, key) => console.log(' ', key, '=', value));
+          } else {
+            const payload: CreateProductPayload = {
+              name:       formValue.name,
+              weight:     Number(formValue.weight),
+              categoryId: targetCategoryId,
+              photo:      this.selectedPhoto!,
+            };
 
-      // TODO: Integrar com ProductService.create(payload)
-      this.isSubmitting = true;
-      this.productService.create(payload).subscribe({
-        next: (created) => { this.isSubmitting = false; this.saved.emit(created); },
-        error: () => { this.isSubmitting = false; }
-      });
-    }
+            this.subs.add(
+              this.productService.create(payload).pipe(
+                finalize(() => {
+                  this.isSubmitting = false;
+                  this.cdr.markForCheck();
+                })
+              ).subscribe({
+                next: (created) => { 
+                  this.saved.emit(created);
+                  this.cdr.markForCheck();
+                },
+                error: (err) => {
+                  console.error('[MODAL] Erro ao criar produto:', err);
+                  this.toastService.error(err.error?.message || 'Erro ao criar produto.', 'Erro');
+                  this.cdr.markForCheck();
+                }
+              })
+            );
+          }
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error('[MODAL] Erro ao verificar categorias na API:', err);
+          this.toastService.error('Não foi possível verificar as categorias na API. Tente novamente.', 'Falha de Verificação');
+          this.cdr.markForCheck();
+        }
+      })
+    );
   }
-
-  // ----------------------------------------------------------------
-  // Helpers de template
-  // ----------------------------------------------------------------
 
   isFieldInvalid(field: string): boolean {
     const ctrl = this.form.get(field);
@@ -231,19 +279,16 @@ export class ModalProdutoComponent implements OnChanges {
     const ctrl = this.form.get(field);
     if (!ctrl || !ctrl.errors) return '';
     if (ctrl.errors['required'])  return 'Campo obrigatorio.';
+    if (ctrl.errors['notFound'])  return 'Categoria inexistente. Selecione uma da lista.';
     if (ctrl.errors['min'])       return `Valor minimo: ${ctrl.errors['min'].min}.`;
     if (ctrl.errors['minlength']) return `Minimo de ${ctrl.errors['minlength'].requiredLength} caracteres.`;
     return 'Valor invalido.';
   }
 
-  // ----------------------------------------------------------------
-  // Internos
-  // ----------------------------------------------------------------
-
   private buildForm(): FormGroup {
     return this.fb.group({
       name:       ['', [Validators.required, Validators.minLength(2)]],
-      categoryId: ['', Validators.required],
+      categoryId: [null, [Validators.required, (ctrl: AbstractControl) => (Number(ctrl.value) > 0 ? null : { required: true })]],
       weight:     ['', [Validators.required, Validators.min(0.001)]],
       // Campos exclusivos do modo edicao
       status:   [ProductStatus.ACTIVE],
@@ -266,7 +311,7 @@ export class ModalProdutoComponent implements OnChanges {
       this.photoPreviewUrl = this.product.photo || null;
     } else {
       this.form.reset({
-        name: '', categoryId: '', weight: '', status: ProductStatus.ACTIVE
+        name: '', categoryId: null, weight: '', status: ProductStatus.ACTIVE
       });
     }
 

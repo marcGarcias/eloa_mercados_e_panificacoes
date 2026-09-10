@@ -8,6 +8,14 @@ export interface LoginResponse {
   accessToken: string;
 }
 
+export interface BootstrapUserResponse {
+  id: string;
+  name: string;
+  userCode: string;
+  role: string;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -51,6 +59,10 @@ export class AuthService {
         }
       })
     );
+  }
+
+  bootstrapSystem(name: string, password: string, accessKey: string, cpf: string): Observable<BootstrapUserResponse> {
+    return this.http.post<BootstrapUserResponse>(`${this.apiUrl}/bootstrap`, { name, password, accessKey, cpf });
   }
 
   logout(): void {
@@ -104,13 +116,16 @@ export class AuthService {
 
   silentRefresh(): Observable<boolean> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/refresh`, {}).pipe(
-      tap(response => {
+      switchMap(response => {
         if (response.accessToken) {
           this.setToken(response.accessToken);
-          this.loadCurrentUser().subscribe();
+          return this.loadCurrentUser().pipe(
+            map(() => true),
+            catchError(() => of(true))
+          );
         }
+        return of(false);
       }),
-      map(() => true),
       catchError(() => {
         this.accessToken = null;
         this.loggedInSubject.next(false);

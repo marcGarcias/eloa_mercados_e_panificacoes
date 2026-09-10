@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContentService } from '../../../../services/content.service';
 import { SiteContent } from '../../../../models/content.model';
 import { ToastService } from '../../../../services/toast.service';
+import { finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-content',
@@ -12,14 +13,16 @@ import { ToastService } from '../../../../services/toast.service';
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.css']
 })
-export class ContentComponent implements OnInit {
+export class ContentComponent implements OnInit, OnDestroy {
   contentForm!: FormGroup;
   isSaving = false;
   openSection: string | null = null;
 
-  private fb = inject(FormBuilder);
-  private contentService = inject(ContentService);
-  private toastService = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
+  private readonly contentService = inject(ContentService);
+  private readonly toastService = inject(ToastService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly subs = new Subscription();
 
   constructor() {}
 
@@ -28,81 +31,94 @@ export class ContentComponent implements OnInit {
     this.loadContent();
   }
 
-  toggleSection(section: string) {
-    this.openSection = this.openSection === section ? null : section;
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
-  private initForm() {
+  toggleSection(section: string): void {
+    this.openSection = this.openSection === section ? null : section;
+    this.cdr.markForCheck();
+  }
+
+  private initForm(): void {
     this.contentForm = this.fb.group({
       banner: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        subtitulo: [''],
-        descricao: [''],
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        subtitulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(500)]],
         indicadores: this.fb.array([])
       }),
       diferenciais: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        descricao: [''],
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(500)]],
         cards: this.fb.array([])
       }),
       catalogo: this.fb.group({
-        selo: [''],
-        descricao: ['']
+        selo: ['', [Validators.maxLength(100)]],
+        descricao: ['', [Validators.maxLength(500)]]
       }),
       sobre: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        descricao: [''],
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(1000)]],
         lista: this.fb.array([])
       }),
       estatisticas: this.fb.group({
         lista: this.fb.array([])
       }),
       cta: this.fb.group({
-        selo: [''],
-        titulo: [''],
-        descricao: ['']
+        selo: ['', [Validators.maxLength(100)]],
+        titulo: ['', [Validators.maxLength(150)]],
+        descricao: ['', [Validators.maxLength(500)]]
       }),
       rodape: this.fb.group({
-        descricao: [''],
-        textoContato: [''],
-        textoDireitos: ['']
+        descricao: ['', [Validators.maxLength(300)]],
+        textoContato: ['', [Validators.maxLength(150)]],
+        textoDireitos: ['', [Validators.maxLength(150)]]
       }),
       dados: this.fb.group({
-        endereco: [''],
+        endereco: ['', [Validators.maxLength(250)]],
         horarioAbertura: [''],
         horarioFechamento: [''],
-        diasFuncionamento: [''],
-        whatsapp: [''],
-        cnpj: ['']
+        diasFuncionamento: ['', [Validators.maxLength(100)]],
+        whatsapp: ['', [Validators.maxLength(30)]],
+        cnpj: ['', [Validators.pattern(/^[A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}$/)]]
       })
     });
   }
 
   private loadContent() {
-    this.contentService.getContent().subscribe((data: SiteContent) => {
-      this.clearFormArrays();
-      data.banner.indicadores.forEach((ind: any) => this.bannerIndicadores.push(this.createIndicador(ind)));
-      data.diferenciais.cards.forEach((card: any) => this.diferenciaisCards.push(this.createCard(card)));
-      data.sobre.lista.forEach((item: any) => this.sobreLista.push(this.createDescricaoItem(item)));
-      data.estatisticas.lista.forEach((est: any) => this.estatisticasLista.push(this.createIndicador(est)));
-      this.contentForm.patchValue(data);
+    this.contentService.getContent().subscribe({
+      next: (data: SiteContent | null) => {
+        this.clearFormArrays();
+        if (!data) {
+          return;
+        }
+        data.banner?.indicadores?.forEach((ind: any) => this.bannerIndicadores.push(this.createIndicador(ind)));
+        data.diferenciais?.cards?.forEach((card: any) => this.diferenciaisCards.push(this.createCard(card)));
+        data.sobre?.lista?.forEach((item: any) => this.sobreLista.push(this.createDescricaoItem(item)));
+        data.estatisticas?.lista?.forEach((est: any) => this.estatisticasLista.push(this.createIndicador(est)));
+        this.contentForm.patchValue(data);
+      },
+      error: (err) => {
+        console.warn('Não foi possível carregar o conteúdo do site:', err);
+      }
     });
   }
 
-  private clearFormArrays() {
+  private clearFormArrays(): void {
     this.bannerIndicadores.clear();
     this.diferenciaisCards.clear();
     this.sobreLista.clear();
     this.estatisticasLista.clear();
   }
 
-  get bannerIndicadores() { return this.contentForm.get('banner.indicadores') as FormArray; }
-  get diferenciaisCards() { return this.contentForm.get('diferenciais.cards') as FormArray; }
-  get sobreLista() { return this.contentForm.get('sobre.lista') as FormArray; }
-  get estatisticasLista() { return this.contentForm.get('estatisticas.lista') as FormArray; }
+  get bannerIndicadores(): FormArray { return this.contentForm.get('banner.indicadores') as FormArray; }
+  get diferenciaisCards(): FormArray { return this.contentForm.get('diferenciais.cards') as FormArray; }
+  get sobreLista(): FormArray { return this.contentForm.get('sobre.lista') as FormArray; }
+  get estatisticasLista(): FormArray { return this.contentForm.get('estatisticas.lista') as FormArray; }
 
   private createIndicador(item?: any): FormGroup {
     return this.fb.group({
@@ -128,13 +144,13 @@ export class ContentComponent implements OnInit {
   private cleanPayload(obj: any): any {
     if (Array.isArray(obj)) {
       const arr = obj.map(v => this.cleanPayload(v)).filter(v => v !== null && v !== undefined && v !== '');
-      return arr.length > 0 ? arr : null;
+      return arr;
     } else if (obj !== null && typeof obj === 'object') {
       const cleaned: any = {};
       for (const key in obj) {
         const val = this.cleanPayload(obj[key]);
         if (val !== null && val !== undefined && val !== '') {
-           cleaned[key] = val;
+          cleaned[key] = val;
         }
       }
       return Object.keys(cleaned).length > 0 ? cleaned : null;
@@ -142,27 +158,36 @@ export class ContentComponent implements OnInit {
     return obj;
   }
 
-  saveContent() {
+  saveContent(): void {
     if (this.contentForm.invalid) {
       this.contentForm.markAllAsTouched();
       this.toastService.error('Preencha todos os campos corretamente antes de salvar.');
+      this.cdr.markForCheck();
       return;
     }
     this.isSaving = true;
+    this.cdr.markForCheck();
     
-    // Limpa o payload de strings vazias para o comportamento de PATCH
     const rawData = this.contentForm.value;
     const contentData = this.cleanPayload(rawData) || {};
     
-    this.contentService.saveContent(contentData).subscribe({
-      next: () => {
-        this.isSaving = false;
-        this.toastService.success('Conteúdo salvo com sucesso!');
-      },
-      error: () => {
-        this.isSaving = false;
-        this.toastService.error('Erro ao salvar o conteúdo. Tente novamente.');
-      }
-    });
+    this.subs.add(
+      this.contentService.saveContent(contentData).pipe(
+        finalize(() => {
+          this.isSaving = false;
+          this.cdr.markForCheck();
+        })
+      ).subscribe({
+        next: () => {
+          this.toastService.success('Conteúdo salvo com sucesso!');
+          this.contentForm.markAsPristine();
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.error('Erro ao salvar o conteúdo. Tente novamente.');
+          this.cdr.markForCheck();
+        }
+      })
+    );
   }
 }

@@ -15,16 +15,18 @@
   position: relative;
   width: 240px;
   height: 240px;
+  aspect-ratio: 1 / 1;
   margin: auto;
   background: linear-gradient(160deg, var(--tan) 0%, var(--secondary) 60%, #FFF 100%);
-  border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%;
+  border-radius: 55% 45% 60% 40% / 45% 55% 45% 55%;
   overflow: visible;
-  animation: morphShape 8s ease-in-out infinite alternate;
   box-shadow: 0 15px 30px rgba(76, 45, 25, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   order: -1;
+  will-change: transform;
+  animation: floatAbout 6s ease-in-out infinite alternate;
 }
 
 .about-image img {
@@ -35,12 +37,12 @@
   filter: drop-shadow(0 18px 20px rgba(76, 45, 25, 0.28));
 }
 
-@keyframes morphShape {
+@keyframes floatAbout {
   0% {
-      border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%;
+    transform: translateY(0);
   }
   100% {
-      border-radius: 45% 55% 35% 65% / 55% 45% 55% 45%;
+    transform: translateY(-8px);
   }
 }
 

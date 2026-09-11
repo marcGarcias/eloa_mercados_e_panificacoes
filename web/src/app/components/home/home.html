@@ -2,31 +2,31 @@
 <div class="page-wrapper">
   <app-hero [banner]="content?.banner"></app-hero>
 
-  @defer (on viewport) {
+  @defer (on viewport; prefetch on idle) {
     <app-features [diferenciais]="content?.diferenciais"></app-features>
   } @placeholder {
     <div style="min-height: 200px;"></div>
   }
 
-  @defer (on viewport) {
+  @defer (on viewport; prefetch on idle) {
     <app-catalog [catalogo]="content?.catalogo"></app-catalog>
   } @placeholder {
     <div style="min-height: 400px;"></div>
   }
 
-  @defer (on viewport) {
+  @defer (on viewport; prefetch on idle) {
     <app-about [sobre]="content?.sobre"></app-about>
   } @placeholder {
     <div style="min-height: 300px;"></div>
   }
 
-  @defer (on viewport) {
+  @defer (on viewport; prefetch on idle) {
     <app-stats [estatisticas]="content?.estatisticas"></app-stats>
   } @placeholder {
     <div style="min-height: 150px;"></div>
   }
 
-  @defer (on viewport) {
+  @defer (on viewport; prefetch on idle) {
     <app-cta [cta]="content?.cta" [dados]="content?.dados"></app-cta>
     <app-footer [rodape]="content?.rodape" [dados]="content?.dados"></app-footer>
   } @placeholder {

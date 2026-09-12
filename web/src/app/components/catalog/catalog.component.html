@@ -108,7 +108,7 @@
 
     <div class="catalog-scroll-wrapper" *ngIf="!isLoading && products.length > 0">
       <div class="grid">
-        <div class="card" *ngFor="let produto of products">
+        <div class="card" *ngFor="let produto of products; let i = index" [id]="'catalog-' + getProductSlug(produto, i)">
           <div class="photo">
             <img *ngIf="produto.imagem" [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
             <span class="no-image" *ngIf="!produto.imagem">

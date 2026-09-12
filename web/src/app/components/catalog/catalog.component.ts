@@ -234,4 +234,10 @@ export class CatalogComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     }
   }
+
+  getProductSlug(produto: Product, index: number): string {
+    if (!produto.nome) return `item-${index + 1}`;
+    const clean = produto.nome.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return clean || `item-${index + 1}`;
+  }
 }

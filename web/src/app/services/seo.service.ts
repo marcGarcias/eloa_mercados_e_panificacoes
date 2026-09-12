@@ -300,12 +300,17 @@ export class SeoService {
     if (!products || products.length === 0) return;
 
     const itemListElements = products.slice(0, 30).map((prod, index) => {
+      const slug = prod.nome
+        ? prod.nome.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+        : `item-${index + 1}`;
+      const itemUrl = `${this.baseUrl}/#catalog-${slug || (index + 1)}`;
+
       return {
         "@type": "ListItem",
         "position": index + 1,
         "name": prod.nome,
         "description": `${prod.nome} - Linha de panificação e confeitaria Eloá. Disponível sob consulta para pedidos e cotações no atacado.`,
-        "url": `${this.baseUrl}/#catalog`,
+        "url": itemUrl,
         "image": prod.imagem || this.defaultOgImage
       };
     });

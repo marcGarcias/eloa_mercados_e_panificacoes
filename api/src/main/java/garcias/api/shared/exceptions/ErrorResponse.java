@@ -1,8 +1,6 @@
 package garcias.api.shared.exceptions;
 
-
 import java.time.LocalDateTime;
-
 
 public record ErrorResponse(
 

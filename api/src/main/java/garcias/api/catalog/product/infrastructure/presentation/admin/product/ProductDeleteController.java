@@ -1,6 +1,5 @@
 package garcias.api.catalog.product.infrastructure.presentation.admin.product;
 
-
 import garcias.api.catalog.product.application.dto.requests.BatchDeleteProductsRequest;
 import garcias.api.catalog.product.application.usecases.product.BatchDeleteProductsUseCase;
 import garcias.api.catalog.product.application.usecases.product.DeleteProductUseCase;
@@ -13,15 +12,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductDeleteController {
 
-
     private final DeleteProductUseCase deleteProductUseCase;
     private final BatchDeleteProductsUseCase batchDeleteProductsUseCase;
-
 
     public ProductDeleteController(
             DeleteProductUseCase deleteProductUseCase,
@@ -30,7 +26,6 @@ public class ProductDeleteController {
         this.deleteProductUseCase = deleteProductUseCase;
         this.batchDeleteProductsUseCase = batchDeleteProductsUseCase;
     }
-
 
     @DeleteMapping("/{id}")
     @Operation(
@@ -53,11 +48,9 @@ public class ProductDeleteController {
 
     ) {
 
-
         deleteProductUseCase.execute(
                 new ProductId(id)
         );
-
 
         return ResponseEntity.noContent().build();
     }

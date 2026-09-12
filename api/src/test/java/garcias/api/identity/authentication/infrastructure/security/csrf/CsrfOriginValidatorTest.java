@@ -104,3 +104,4 @@ class CsrfOriginValidatorTest {
         assertTrue(exception.getMessage().contains("exige cabeçalho X-Requested-With"));
     }
 }
+

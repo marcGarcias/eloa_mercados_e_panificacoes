@@ -64,7 +64,7 @@ class ImageStorageImplTest {
     @Test
     @DisplayName("Should throw InvalidImageException when file exceeds 5MB limit")
     void shouldRejectFileExceedingSizeLimit() {
-        byte[] oversizedBytes = new byte[6 * 1024 * 1024]; // 6MB
+        byte[] oversizedBytes = new byte[6 * 1024 * 1024];
         MockMultipartFile file = new MockMultipartFile("image", "large.png", "image/png", oversizedBytes);
 
         InvalidImageException ex = assertThrows(InvalidImageException.class, () -> imageStorage.save(file));
@@ -105,3 +105,4 @@ class ImageStorageImplTest {
         assertThrows(ImageNotFoundException.class, () -> imageStorage.load("non-existent-image.webp"));
     }
 }
+

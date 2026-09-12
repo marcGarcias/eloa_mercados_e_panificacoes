@@ -7,3 +7,4 @@ public class MissingRefreshTokenException extends UnauthorizedException {
         super("Refresh token is missing.");
     }
 }
+

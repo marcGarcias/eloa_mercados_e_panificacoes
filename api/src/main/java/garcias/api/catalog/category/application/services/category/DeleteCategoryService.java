@@ -28,7 +28,6 @@ public class DeleteCategoryService implements DeleteCategoryUseCase {
     @Transactional
     public void execute(CategoryId categoryId) {
 
-
         Category category =
                 categoryRepository
                         .findById(categoryId)
@@ -36,12 +35,10 @@ public class DeleteCategoryService implements DeleteCategoryUseCase {
                                 () -> new ObjectNotFoundException(categoryId.value())
                         );
 
-
         if (productRepository.existsByCategoryId(categoryId)) {
 
             throw new CategoryHasProductsException(categoryId);
         }
-
 
         categoryRepository.delete(category);
     }

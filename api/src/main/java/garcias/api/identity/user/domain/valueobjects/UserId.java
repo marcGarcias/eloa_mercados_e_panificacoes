@@ -13,3 +13,4 @@ public record UserId(UUID value) {
         return new UserId(UUID.randomUUID());
     }
 }
+

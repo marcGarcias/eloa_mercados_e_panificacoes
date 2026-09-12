@@ -19,15 +19,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductUpdateController {
 
-
     private final UpdateProductUseCase updateProductUseCase;
     private final WebpImageValidator webpImageValidator;
-
 
     public ProductUpdateController(
             UpdateProductUseCase updateProductUseCase,
@@ -36,7 +33,6 @@ public class ProductUpdateController {
         this.updateProductUseCase = updateProductUseCase;
         this.webpImageValidator = webpImageValidator;
     }
-
 
     @PatchMapping(
             value = "/{id}",
@@ -80,18 +76,15 @@ public class ProductUpdateController {
 
     ) {
 
-
         if (request.photo() != null && !request.photo().isEmpty()) {
             webpImageValidator.validate(request.photo());
         }
-
 
         Product product =
                 updateProductUseCase.execute(
                         new ProductId(id),
                         request
                 );
-
 
         return ResponseEntity.ok(
                 ProductAdminResponseMapper.toResponse(product)

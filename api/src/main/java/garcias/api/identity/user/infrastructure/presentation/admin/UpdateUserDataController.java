@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-
 @RestController
 @RequestMapping("/api/admin/users")
 @Tag(
@@ -21,15 +20,13 @@ import java.util.UUID;
         description = """
                 Administrative endpoints responsible for
                 updating user information.
-                
+
                 These operations require SUPER_ADMIN permission.
                 """
 )
 public class UpdateUserDataController {
 
-
     private final UpdateUserDataUseCase updateUserDataUseCase;
-
 
     public UpdateUserDataController(
             UpdateUserDataUseCase updateUserDataUseCase
@@ -37,21 +34,20 @@ public class UpdateUserDataController {
         this.updateUserDataUseCase = updateUserDataUseCase;
     }
 
-
     @PatchMapping("/{userId}")
     @Operation(
             summary = "Update user data",
             description = """
                     Updates editable user information.
-                    
+
                     Allowed fields:
                     - Name
                     - Role
                     - Status
-                    
+
                     This endpoint does not update credentials.
                     Password changes are handled by a dedicated endpoint.
-                    
+
                     Only authenticated SUPER_ADMIN users
                     are allowed to execute this operation.
                     """,
@@ -88,21 +84,19 @@ public class UpdateUserDataController {
             )
             @PathVariable UUID userId,
 
-
             @RequestBody
             UpdateUserDataRequest request
 
     ) {
-
 
         updateUserDataUseCase.execute(
                 userId,
                 request
         );
 
-
         return ResponseEntity.noContent()
                 .build();
     }
 
 }
+

@@ -12,3 +12,4 @@ public interface UserAuthenticationPort {
 
     String createInitialUser(String name, String password);
 }
+

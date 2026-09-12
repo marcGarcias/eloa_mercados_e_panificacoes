@@ -25,7 +25,6 @@ public class CreateProductService implements CreateProductUseCase {
     private final ImageStorage imageStorage;
     private final WebpImageValidator webpImageValidator;
 
-
     public CreateProductService(
             ProductRepository productRepository,
             CategoryRepository categoryRepository,
@@ -38,7 +37,6 @@ public class CreateProductService implements CreateProductUseCase {
         this.imageStorage = imageStorage;
         this.webpImageValidator = webpImageValidator;
     }
-
 
     @Override
     @Transactional
@@ -59,16 +57,13 @@ public class CreateProductService implements CreateProductUseCase {
 
             webpImageValidator.validate(request.photo());
 
-
             imagePath = imageStorage.save(request.photo());
-
 
             CatalogPosition position =
                     productRepository
                             .findLastPosition()
                             .map(CatalogPosition::next)
                             .orElse(CatalogPosition.first());
-
 
             Product product =
                     Product.create(
@@ -78,7 +73,6 @@ public class CreateProductService implements CreateProductUseCase {
                             new ProductPhoto(imagePath),
                             categoryId
                     );
-
 
             return productRepository.save(product);
 

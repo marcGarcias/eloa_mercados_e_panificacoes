@@ -20,3 +20,4 @@ public class ListUsersUseCase {
                 .map(UserResponse::from);
     }
 }
+

@@ -7,3 +7,4 @@ public interface SiteContentRepository {
     Optional<SiteContent> find();
     SiteContent save(SiteContent content);
 }
+

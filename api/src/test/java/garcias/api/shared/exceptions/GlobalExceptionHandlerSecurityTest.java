@@ -72,9 +72,10 @@ class GlobalExceptionHandlerSecurityTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(500, response.getBody().status());
-        // Must NOT leak internal SQL, table names, or database traces
+
         assertEquals("Internal server error.", response.getBody().message());
         assertFalse(response.getBody().message().contains("SELECT"));
         assertFalse(response.getBody().message().contains("password"));
     }
 }
+

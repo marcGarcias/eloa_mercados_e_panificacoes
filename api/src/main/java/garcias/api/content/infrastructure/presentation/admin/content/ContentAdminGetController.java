@@ -24,3 +24,4 @@ public class ContentAdminGetController {
                 .orElse(ResponseEntity.noContent().build());
     }
 }
+

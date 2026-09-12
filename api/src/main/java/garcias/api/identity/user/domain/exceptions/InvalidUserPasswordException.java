@@ -7,3 +7,4 @@ public class InvalidUserPasswordException extends DomainException {
         super("New password cannot be the same as current password");
     }
 }
+

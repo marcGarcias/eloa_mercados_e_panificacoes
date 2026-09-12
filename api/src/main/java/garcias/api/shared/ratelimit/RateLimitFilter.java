@@ -55,7 +55,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-        // Isenção explícita de imagens estáticas e actuator/swagger
         if (shouldBypass(uri)) {
             filterChain.doFilter(request, response);
             return;
@@ -124,3 +123,4 @@ public class RateLimitFilter extends OncePerRequestFilter {
         return request.getRemoteAddr();
     }
 }
+

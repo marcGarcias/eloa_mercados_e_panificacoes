@@ -12,3 +12,4 @@ public record ReorderProductsRequest(
         List<@NotNull Long> order
 
 ) {}
+

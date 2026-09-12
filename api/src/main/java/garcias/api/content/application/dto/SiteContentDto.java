@@ -34,8 +34,6 @@ public class SiteContentDto {
     @Valid
     private FaqDto faq;
 
-    // Getters and Setters
-
     public FaqDto getFaq() {
         return faq;
     }
@@ -107,8 +105,6 @@ public class SiteContentDto {
     public void setDados(DadosDto dados) {
         this.dados = dados;
     }
-
-    // --- Sub DTOs ---
 
     public static class IndicadorDto {
         @Size(max = 100, message = "O nome do indicador deve ter no máximo 100 caracteres.")
@@ -345,3 +341,4 @@ public class SiteContentDto {
         public void setResposta(String resposta) { this.resposta = resposta; }
     }
 }
+

@@ -9,3 +9,4 @@ public interface PasswordHasher {
             String hashedPassword
     );
 }
+

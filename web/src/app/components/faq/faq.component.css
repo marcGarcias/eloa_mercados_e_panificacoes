@@ -45,7 +45,6 @@
   line-height: 1.6;
 }
 
-/* Acordeon Minimalista (Base Mobile) */
 .faq-list {
   display: flex;
   flex-direction: column;
@@ -110,7 +109,6 @@
   font-weight: 600;
 }
 
-/* Ícone Redondo Sutil e Elegante */
 .faq-icon {
   width: 28px;
   height: 28px;
@@ -136,7 +134,6 @@
   transform: rotate(180deg);
 }
 
-/* Resposta Expandida */
 .faq-answer {
   padding: 0 18px 18px;
   animation: faqSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -161,7 +158,6 @@
   }
 }
 
-/* Telas Maiores (Progressive Enhancement - Mobile First) */
 @media (min-width: 744px) {
   .faq-section {
     padding: 72px 20px;
@@ -187,3 +183,4 @@
     font-size: 0.925rem;
   }
 }
+

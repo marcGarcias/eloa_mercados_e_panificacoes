@@ -4,7 +4,6 @@ import garcias.api.shared.exceptions.AttributeCannotBeEmptyException;
 
 public record Password(String value) {
 
-
     public Password(String value) {
 
         if (value == null || value.isBlank()) {
@@ -13,7 +12,6 @@ public record Password(String value) {
 
         this.value = value;
     }
-
 
     public static Password fromHash(String hash) {
 

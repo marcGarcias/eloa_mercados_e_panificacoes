@@ -9,3 +9,4 @@ public record BatchDeleteCategoriesRequest(
         @NotEmpty(message = "Category list must not be empty")
         List<@NotNull Long> ids
 ) {}
+

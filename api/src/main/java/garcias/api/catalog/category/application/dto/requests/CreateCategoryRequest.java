@@ -1,9 +1,7 @@
 package garcias.api.catalog.category.application.dto.requests;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 
 public record CreateCategoryRequest(
 

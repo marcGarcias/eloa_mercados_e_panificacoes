@@ -26,16 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/products")
 public class ProductAdminSearchController {
 
-
     private final SearchProductsUseCase searchProductsUseCase;
-
 
     public ProductAdminSearchController(
             SearchProductsUseCase searchProductsUseCase
     ){
         this.searchProductsUseCase = searchProductsUseCase;
     }
-
 
     @Operation(
             summary = "Pesquisar produtos (Admin)",
@@ -100,7 +97,6 @@ public class ProductAdminSearchController {
 
     ){
 
-
         ProductFilter filter =
                 new ProductFilter(
                         name,
@@ -111,13 +107,11 @@ public class ProductAdminSearchController {
                         status
                 );
 
-
         Page<Product> products =
                 searchProductsUseCase.execute(
                         filter,
                         new PageRequestFilter(page, size)
                 );
-
 
         return ResponseEntity.ok(
                 products.map(

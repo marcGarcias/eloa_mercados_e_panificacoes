@@ -7,3 +7,4 @@ public abstract class ConflictException
         super(message);
     }
 }
+

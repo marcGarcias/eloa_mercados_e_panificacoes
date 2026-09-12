@@ -6,3 +6,4 @@ public interface LogoutUseCase {
 
     void executeByToken(String refreshToken);
 }
+

@@ -42,3 +42,4 @@ public class SiteContentJpaEntity {
         return version;
     }
 }
+

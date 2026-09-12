@@ -24,3 +24,4 @@ public class ContentPublicGetController {
                 .orElse(ResponseEntity.noContent().build());
     }
 }
+

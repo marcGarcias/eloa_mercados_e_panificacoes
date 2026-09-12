@@ -5,3 +5,4 @@ public class InvalidOriginException extends ForbiddenException {
         super(message);
     }
 }
+

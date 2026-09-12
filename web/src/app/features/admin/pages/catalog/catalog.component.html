@@ -6,7 +6,7 @@
     </div>
 
     <div class="head-actions">
-      <!-- Ações da aba Produtos -->
+
       <ng-container *ngIf="activeTab === 'products'">
         <button class="btn btn-ghost" type="button" (click)="toggleEditMode()" [class.active]="isEditMode">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -26,7 +26,6 @@
         </button>
       </ng-container>
 
-      <!-- Ações da aba Categorias -->
       <ng-container *ngIf="activeTab === 'categories'">
         <button class="btn btn-solid" id="btn-nova-categoria" type="button" (click)="openCreateCategoryModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -38,12 +37,11 @@
     </div>
   </div>
 
-  <!-- Abas de Navegação Principal -->
   <div class="tab-navigation">
-    <button 
-      type="button" 
-      class="tab-item" 
-      [class.active]="activeTab === 'products'" 
+    <button
+      type="button"
+      class="tab-item"
+      [class.active]="activeTab === 'products'"
       (click)="setActiveTab('products')"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -56,10 +54,10 @@
       <span class="tab-count" *ngIf="totalElements > 0">{{ totalElements }}</span>
     </button>
 
-    <button 
-      type="button" 
-      class="tab-item" 
-      [class.active]="activeTab === 'categories'" 
+    <button
+      type="button"
+      class="tab-item"
+      [class.active]="activeTab === 'categories'"
       (click)="setActiveTab('categories')"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -75,11 +73,11 @@
 
   <div *ngIf="activeTab === 'products'" class="tab-content">
     <div class="toolbar">
-      <!-- Seletor Dropdown com Lista Pesquisável de Categorias -->
+
       <div class="category-dropdown-wrapper">
-        <button 
-          type="button" 
-          class="category-select-trigger" 
+        <button
+          type="button"
+          class="category-select-trigger"
           (click)="toggleCategoryDropdown($event)"
           title="Selecionar categoria"
         >
@@ -95,27 +93,27 @@
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4.3-4.3" />
             </svg>
-            <input 
-              type="text" 
-              placeholder="Pesquisar entre {{ adminCategories.length }} categorias..." 
+            <input
+              type="text"
+              placeholder="Pesquisar entre {{ adminCategories.length }} categorias..."
               [(ngModel)]="categoryFilterSearch"
               autofocus
             />
           </div>
 
           <div class="dropdown-list">
-            <button 
-              type="button" 
-              class="dropdown-item" 
+            <button
+              type="button"
+              class="dropdown-item"
               [class.active]="activeFilter === 'Todos'"
               (click)="setFilter('Todos')"
             >
               Todas as Categorias
             </button>
-            <button 
-              type="button" 
-              *ngFor="let cat of filteredAdminCategoriesForDropdown" 
-              class="dropdown-item" 
+            <button
+              type="button"
+              *ngFor="let cat of filteredAdminCategoriesForDropdown"
+              class="dropdown-item"
               [class.active]="activeFilter === cat.name"
               (click)="setFilter(cat.name)"
             >
@@ -133,7 +131,6 @@
         <button type="button" class="btn-clear-badge" (click)="setFilter('Todos')" title="Remover filtro">×</button>
       </div>
 
-      <!-- Barra de busca de produtos -->
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="7" />
@@ -149,7 +146,6 @@
       </div>
     </div>
 
-    <!-- Dica de arrastar e soltar -->
     <div class="drag-hint" id="drag-hint" *ngIf="isEditMode && activeFilter === 'Todos'">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="9" cy="6" r="1" />
@@ -162,7 +158,6 @@
       Arraste os cards para definir a ordem de exibição no site.
     </div>
 
-    <!-- Loading State Produtos -->
     <div class="loading-state" *ngIf="isLoading">
       <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
@@ -170,18 +165,17 @@
       <p>Carregando produtos do catálogo...</p>
     </div>
 
-    <!-- Grade de Produtos -->
-    <div 
-      class="grid" 
-      id="products" 
+    <div
+      class="grid"
+      id="products"
       *ngIf="!isLoading && filteredProducts.length > 0; else emptyProductsState"
-      cdkDropList 
+      cdkDropList
       cdkDropListOrientation="mixed"
       [cdkDropListDisabled]="!isEditMode || activeFilter !== 'Todos' || isMobile"
       (cdkDropListDropped)="onDrop($event)"
     >
       <div *ngFor="let p of filteredProducts; let idx = index" class="card" cdkDrag>
-        <!-- Drag handle (Desktop) -->
+
         <div *ngIf="isEditMode && !isMobile" class="drag-handle-hint" cdkDragHandle title="Segure para arrastar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="6" r="1.5" />
@@ -193,7 +187,6 @@
           </svg>
         </div>
 
-        <!-- Setas de reordenação mobile -->
         <div *ngIf="isEditMode && isMobile && activeFilter === 'Todos'" class="mobile-order-controls">
           <button class="order-btn" type="button" (click)="moveProductUp(idx, $event)" [disabled]="idx === 0" title="Mover para cima">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -255,7 +248,6 @@
       </div>
     </ng-template>
 
-    <!-- Paginação de Produtos -->
     <div class="pagination-section" *ngIf="totalPages > 1 && !isLoading">
       <div class="pagination-info">
         Página {{ page + 1 }} de {{ totalPages }} <span class="bullet">•</span> {{ totalElements }} produtos
@@ -269,9 +261,9 @@
         </button>
 
         <div class="page-numbers">
-          <button 
-            *ngFor="let pNum of getPageNumbers(page, totalPages)" 
-            class="page-btn num-btn" 
+          <button
+            *ngFor="let pNum of getPageNumbers(page, totalPages)"
+            class="page-btn num-btn"
             [class.active]="pNum === page"
             (click)="goToPage(pNum)"
           >
@@ -305,7 +297,6 @@
       </div>
     </div>
 
-    <!-- Loading State Categorias -->
     <div class="loading-state" *ngIf="isCategoryLoading">
       <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
@@ -313,7 +304,6 @@
       <p>Carregando categorias...</p>
     </div>
 
-    <!-- Tabela / Lista Paginada de Categorias -->
     <div class="categories-table-container" *ngIf="!isCategoryLoading && categoryList.length > 0; else emptyCategoriesState">
       <table class="categories-table">
         <thead>
@@ -330,9 +320,9 @@
               <span class="category-pill">{{ cat.name }}</span>
             </td>
             <td class="col-actions">
-              <button 
-                type="button" 
-                class="btn-delete-cat" 
+              <button
+                type="button"
+                class="btn-delete-cat"
                 (click)="deleteCategoryDirectly(cat)"
                 title="Excluir categoria"
               >
@@ -358,7 +348,6 @@
       </div>
     </ng-template>
 
-    <!-- Paginação de Categorias -->
     <div class="pagination-section" *ngIf="categoryTotalPages > 1 && !isCategoryLoading">
       <div class="pagination-info">
         Página {{ categoryPage + 1 }} de {{ categoryTotalPages }} <span class="bullet">•</span> {{ categoryTotalElements }} categorias
@@ -372,9 +361,9 @@
         </button>
 
         <div class="page-numbers">
-          <button 
-            *ngFor="let pNum of getPageNumbers(categoryPage, categoryTotalPages)" 
-            class="page-btn num-btn" 
+          <button
+            *ngFor="let pNum of getPageNumbers(categoryPage, categoryTotalPages)"
+            class="page-btn num-btn"
             [class.active]="pNum === categoryPage"
             (click)="goToCategoryPage(pNum)"
           >
@@ -393,7 +382,6 @@
   </div>
 </section>
 
-<!-- Modal de Produto (criacao / edicao) -->
 <app-modal-produto
   [isOpen]="isProductModalOpen"
   [product]="editingProduct"
@@ -403,10 +391,10 @@
 >
 </app-modal-produto>
 
-<!-- Modal de Categoria (criacao) -->
 <app-modal-categoria
   [isOpen]="isCategoryModalOpen"
   (saved)="onCategorySaved($event)"
   (closed)="onCategoryModalClosed()"
 >
 </app-modal-categoria>
+

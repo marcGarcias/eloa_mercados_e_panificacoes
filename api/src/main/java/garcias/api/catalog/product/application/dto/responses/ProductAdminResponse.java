@@ -4,7 +4,6 @@ import garcias.api.catalog.product.domain.enums.ProductStatus;
 
 import java.math.BigDecimal;
 
-
 public record ProductAdminResponse(
 
         Long id,

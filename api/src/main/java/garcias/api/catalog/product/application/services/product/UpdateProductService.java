@@ -12,10 +12,8 @@ import garcias.api.shared.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class UpdateProductService implements UpdateProductUseCase {
-
 
     private final ProductRepository productRepository;
     private final garcias.api.catalog.category.domain.persistence.CategoryRepository categoryRepository;
@@ -31,7 +29,6 @@ public class UpdateProductService implements UpdateProductUseCase {
         this.imageStorage = imageStorage;
     }
 
-
     @Override
     @Transactional
     public Product execute(
@@ -39,14 +36,12 @@ public class UpdateProductService implements UpdateProductUseCase {
             UpdateProductRequest request
     ) {
 
-
         Product product =
                 productRepository
                         .findById(id)
                         .orElseThrow(() ->
                                 new ObjectNotFoundException(id.value())
                         );
-
 
         if (request.name() != null && !request.name().isBlank()) {
 
@@ -57,7 +52,6 @@ public class UpdateProductService implements UpdateProductUseCase {
             );
         }
 
-
         if (request.weight() != null) {
 
             product.changeWeight(
@@ -65,9 +59,7 @@ public class UpdateProductService implements UpdateProductUseCase {
             );
         }
 
-
         String oldPhoto = null;
-
 
         if (request.photo() != null && !request.photo().isEmpty()) {
 
@@ -76,12 +68,10 @@ public class UpdateProductService implements UpdateProductUseCase {
             String newPhoto =
                     imageStorage.save(request.photo());
 
-
             product.changePhoto(
                     new ProductPhoto(newPhoto)
             );
         }
-
 
         if (request.categoryId() != null) {
             CategoryId newCategoryId = new CategoryId(request.categoryId());
@@ -91,12 +81,10 @@ public class UpdateProductService implements UpdateProductUseCase {
             product.changeCategory(newCategoryId);
         }
 
-
         if (request.position() != null) {
 
             CatalogPosition newPosition =
                     new CatalogPosition(request.position());
-
 
             if (!newPosition.equals(product.getPosition())) {
 
@@ -107,7 +95,6 @@ public class UpdateProductService implements UpdateProductUseCase {
             }
         }
 
-
         if (request.status() != null) {
 
             product.changeStatus(
@@ -115,10 +102,8 @@ public class UpdateProductService implements UpdateProductUseCase {
             );
         }
 
-
         Product updated =
                 productRepository.save(product);
-
 
         if (oldPhoto != null) {
 

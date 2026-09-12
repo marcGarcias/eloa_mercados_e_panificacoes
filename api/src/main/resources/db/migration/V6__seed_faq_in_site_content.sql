@@ -1,7 +1,3 @@
--- Migration V6: Injeta a seção FAQ com as perguntas canônicas no JSON do site_content
--- Utiliza o operador de merge JSONB (||) do PostgreSQL para preservar 100% dos dados existentes
--- A cláusula NOT (data::jsonb ? 'faq') garante idempotência absoluta
-
 UPDATE site_content
 SET data = (
     data::jsonb || '{
@@ -38,3 +34,4 @@ SET data = (
 )::text
 WHERE id = 1
   AND NOT (data::jsonb ? 'faq');
+

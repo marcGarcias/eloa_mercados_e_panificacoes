@@ -14,3 +14,4 @@ public record Faq(List<FaqItem> itens) {
         return new Faq(FaqCanonical.CANONICAL_ITEMS);
     }
 }
+

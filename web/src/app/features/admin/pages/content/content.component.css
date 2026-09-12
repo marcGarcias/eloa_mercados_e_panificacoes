@@ -1,4 +1,3 @@
-/* ---- Accordion ---- */
 .accordion {
   display: flex;
   flex-direction: column;
@@ -84,7 +83,6 @@
   display: block;
 }
 
-/* ---- List Items ---- */
 .section-sub-header {
   display: flex;
   align-items: center;
@@ -181,7 +179,6 @@
   resize: vertical;
 }
 
-/* ---- Field sub-label (inside list items) ---- */
 .field-sublabel {
   font-size: 11px;
   font-weight: 600;
@@ -192,7 +189,6 @@
   display: block;
 }
 
-/* Info Card para Estatísticas */
 .stat-info-card {
   display: flex;
   align-items: flex-start;
@@ -239,7 +235,6 @@
   font-weight: 600;
 }
 
-/* ---- Dados card (below accordion) ---- */
 .dados-card {
   margin-top: 20px;
   border: 1px solid var(--line, #E7DACB);
@@ -269,7 +264,6 @@
   color: var(--gray, #9E8B7A);
 }
 
-/* ---- Sticky Save Bar ---- */
 .save-bar {
   position: sticky;
   bottom: 64px;
@@ -302,7 +296,7 @@
     margin-right: 0;
     padding: 14px 22px;
   }
-  
+
   .accordion-body {
     padding: 20px 22px 24px;
   }
@@ -328,11 +322,6 @@ input.input-error, textarea.input-error {
   background-color: #fff8f8;
 }
 
-/* ==========================================
-   FAQ ADMIN - DESIGN CLEAN & MODERNO
-   ========================================== */
-
-/* Banner Informativo */
 .faq-info-card {
   display: flex;
   align-items: flex-start;
@@ -375,7 +364,6 @@ input.input-error, textarea.input-error {
   font-size: 12px;
 }
 
-/* Lista de Cards de FAQ */
 .faq-card-list {
   display: flex;
   flex-direction: column;
@@ -396,7 +384,6 @@ input.input-error, textarea.input-error {
   box-shadow: 0 4px 14px rgba(46, 36, 28, 0.06);
 }
 
-/* Cabeçalho da Pergunta */
 .faq-card-header {
   display: flex;
   align-items: flex-start;
@@ -464,7 +451,6 @@ input.input-error, textarea.input-error {
   stroke: #8A7F74;
 }
 
-/* Corpo e Campo de Resposta */
 .faq-card-body {
   padding: 16px 18px 18px;
 }
@@ -527,3 +513,4 @@ input.input-error, textarea.input-error {
   display: block;
   font-weight: 500;
 }
+

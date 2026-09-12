@@ -7,3 +7,4 @@ public class InvalidProductEntityStateException extends DomainException {
         super(message);
     }
 }
+

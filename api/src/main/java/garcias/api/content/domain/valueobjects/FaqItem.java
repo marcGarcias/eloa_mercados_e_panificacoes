@@ -6,3 +6,4 @@ public record FaqItem(String id, String pergunta, String resposta) {
         return new FaqItem(this.id, this.pergunta, novaResposta);
     }
 }
+

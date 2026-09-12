@@ -7,3 +7,4 @@ public interface LoginUseCase {
 
     LoginResult execute(LoginRequest request);
 }
+

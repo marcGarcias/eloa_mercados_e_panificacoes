@@ -6,9 +6,9 @@
 
     <div class="catalog-toolbar">
       <div class="category-dropdown-wrapper">
-        <button 
-          type="button" 
-          class="category-select-trigger" 
+        <button
+          type="button"
+          class="category-select-trigger"
           (click)="toggleCategoryDropdown($event)"
           title="Selecionar categoria"
           aria-haspopup="listbox"
@@ -27,20 +27,20 @@
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4.3-4.3" />
             </svg>
-            <input 
-              type="text" 
-              placeholder="Pesquisar entre {{ totalCategoriesCount }} categorias..." 
+            <input
+              type="text"
+              placeholder="Pesquisar entre {{ totalCategoriesCount }} categorias..."
               aria-label="Pesquisar categoria de produto"
-              [(ngModel)]="categorySearchQuery" 
+              [(ngModel)]="categorySearchQuery"
               (input)="filterCategoryDropdown()"
               autofocus
             />
           </div>
 
           <div class="dropdown-list">
-            <button 
-              type="button" 
-              class="dropdown-item" 
+            <button
+              type="button"
+              class="dropdown-item"
               role="option"
               [attr.aria-selected]="activeCategory === 'Todos'"
               [class.active]="activeCategory === 'Todos'"
@@ -48,10 +48,10 @@
             >
               Todas as Categorias
             </button>
-            <button 
-              type="button" 
-              *ngFor="let cat of filteredCategories" 
-              class="dropdown-item" 
+            <button
+              type="button"
+              *ngFor="let cat of filteredCategories"
+              class="dropdown-item"
               role="option"
               [attr.aria-selected]="activeCategory === cat"
               [class.active]="activeCategory === cat"
@@ -71,18 +71,18 @@
           <circle cx="11" cy="11" r="7" />
           <path d="M21 21l-4.3-4.3" />
         </svg>
-        <input 
+        <input
           id="catalog-search"
-          type="text" 
-          placeholder="Buscar produto por nome..." 
+          type="text"
+          placeholder="Buscar produto por nome..."
           aria-label="Buscar produto por nome no catálogo"
-          [(ngModel)]="searchQuery" 
-          (input)="onSearchChange()" 
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()"
         />
-        <button 
-          *ngIf="searchQuery" 
-          type="button" 
-          class="clear-search-btn" 
+        <button
+          *ngIf="searchQuery"
+          type="button"
+          class="clear-search-btn"
           (click)="clearSearch()"
           title="Limpar busca"
           aria-label="Limpar campo de busca"
@@ -146,9 +146,9 @@
         </button>
 
         <div class="page-numbers">
-          <button 
-            *ngFor="let pNum of getPageNumbers(page, totalPages)" 
-            class="page-btn num-btn" 
+          <button
+            *ngFor="let pNum of getPageNumbers(page, totalPages)"
+            class="page-btn num-btn"
             [class.active]="pNum === page"
             [attr.aria-label]="'Página ' + (pNum + 1)"
             [attr.aria-current]="pNum === page ? 'page' : null"

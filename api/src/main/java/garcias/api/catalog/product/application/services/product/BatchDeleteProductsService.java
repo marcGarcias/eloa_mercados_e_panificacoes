@@ -58,7 +58,6 @@ public class BatchDeleteProductsService implements BatchDeleteProductsUseCase {
             productRepository.delete(product);
         }
 
-        // Reorganiza as posicoes de todos os produtos ativos restantes de 1 a N
         productRepository.reorganizeAllPositions();
 
         TransactionSynchronizationManager.registerSynchronization(
@@ -73,3 +72,4 @@ public class BatchDeleteProductsService implements BatchDeleteProductsUseCase {
         );
     }
 }
+

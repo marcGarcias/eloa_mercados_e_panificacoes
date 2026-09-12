@@ -8,3 +8,4 @@ public interface CreateUserUseCase {
     User execute(CreateUserRequest request);
 
 }
+

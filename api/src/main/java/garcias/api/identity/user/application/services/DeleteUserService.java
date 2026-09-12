@@ -16,10 +16,8 @@ import java.util.UUID;
 @Transactional
 public class DeleteUserService implements DeleteUserUseCase {
 
-
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
-
 
     public DeleteUserService(
             UserRepository userRepository,
@@ -28,7 +26,6 @@ public class DeleteUserService implements DeleteUserUseCase {
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
     }
-
 
     @Override
     public void execute(UUID userId) {
@@ -47,3 +44,4 @@ public class DeleteUserService implements DeleteUserUseCase {
         userRepository.delete(user);
     }
 }
+

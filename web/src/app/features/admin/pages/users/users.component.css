@@ -78,8 +78,6 @@
   color: var(--dark, #2E241C);
 }
 
-
-/* Alertas */
 .alert-danger {
   background: rgba(220, 53, 69, 0.08);
   border-left: 4px solid #dc3545;
@@ -95,7 +93,6 @@
   font-weight: 600;
 }
 
-/* Paginação */
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -132,7 +129,6 @@
   cursor: not-allowed;
 }
 
-/* Ações no Rodapé da Modal */
 .modal-actions {
   display: flex;
   gap: 10px;
@@ -146,7 +142,6 @@
   flex: 1;
 }
 
-/* Botão Excluir no rodapé da edição */
 .btn-delete {
   background: transparent;
   color: #A5402F;
@@ -164,7 +159,6 @@
   border-color: #A5402F;
 }
 
-/* Botão vermelho de confirmação de exclusão */
 .btn-danger-action {
   background: #dc3545;
   color: #fff;
@@ -186,7 +180,6 @@
   cursor: not-allowed;
 }
 
-/* Centralização de feedbacks na tabela */
 .text-center {
   text-align: center;
   color: var(--gray);
@@ -222,19 +215,16 @@ th.sort-active {
   height: 13px;
 }
 
-/* Seta visível quando a coluna está ativa */
 .sort-icon.asc,
 .sort-icon.desc {
   opacity: 1;
   color: var(--green, #24412A);
 }
 
-/* Seta apontando para cima (padrão — crescente) */
 .sort-icon.asc {
   transform: rotate(0deg);
 }
 
-/* Seta apontando para baixo (decrescente) */
 .sort-icon.desc {
   transform: rotate(180deg);
 }

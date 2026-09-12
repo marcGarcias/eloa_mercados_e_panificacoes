@@ -17,21 +17,17 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/admin/categories")
 public class CategoryUpdateController {
 
-
     private final UpdateCategoryUseCase updateCategoryUseCase;
-
 
     public CategoryUpdateController(
             UpdateCategoryUseCase updateCategoryUseCase
     ) {
         this.updateCategoryUseCase = updateCategoryUseCase;
     }
-
 
     @PutMapping("/{id}")
     @Operation(
@@ -65,13 +61,11 @@ public class CategoryUpdateController {
 
     ) {
 
-
         Category category =
                 updateCategoryUseCase.execute(
                         new CategoryId(id),
                         request
                 );
-
 
         return ResponseEntity.ok(
                 CategoryAdmResponseMapper.toResponse(category)

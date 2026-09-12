@@ -6,3 +6,4 @@ public class InvalidImageException extends DomainException {
         super(message);
     }
 }
+

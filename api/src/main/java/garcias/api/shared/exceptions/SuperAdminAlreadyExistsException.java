@@ -5,3 +5,4 @@ public class SuperAdminAlreadyExistsException extends ConflictException {
         super("System already has a SUPER_ADMIN user. Only one owner is allowed.");
     }
 }
+

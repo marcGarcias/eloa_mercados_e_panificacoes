@@ -7,3 +7,4 @@ public class InvalidSetupAccessKeyException extends UnauthorizedException {
         super(message);
     }
 }
+

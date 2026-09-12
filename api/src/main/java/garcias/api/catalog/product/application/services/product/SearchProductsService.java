@@ -10,13 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class SearchProductsService implements SearchProductsUseCase {
 
-
     private final ProductRepository productRepository;
-
 
     public SearchProductsService(
             ProductRepository productRepository
@@ -24,13 +21,11 @@ public class SearchProductsService implements SearchProductsUseCase {
         this.productRepository = productRepository;
     }
 
-
     @Override
     public Page<Product> execute(
             ProductFilter filter,
             PageRequestFilter pageRequest
     ) {
-
 
         return productRepository.search(
                 filter,

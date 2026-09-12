@@ -24,7 +24,7 @@ class JwtTokenServiceTest {
     void setUp() {
         jwtProperties = new JwtProperties();
         jwtProperties.setSecret(secret);
-        jwtProperties.setAccessTokenExpiration(180000); // 3 minutes
+        jwtProperties.setAccessTokenExpiration(180000);
         jwtProperties.setIssuer("garcias-api");
         jwtTokenService = new JwtTokenService(jwtProperties);
     }
@@ -65,7 +65,7 @@ class JwtTokenServiceTest {
                 .claim("role", "SUPER_ADMIN")
                 .issuer("garcias-api")
                 .issuedAt(new Date(System.currentTimeMillis() - 100000))
-                .expiration(new Date(System.currentTimeMillis() - 1000)) // expired in the past
+                .expiration(new Date(System.currentTimeMillis() - 1000))
                 .signWith(key)
                 .compact();
 
@@ -80,3 +80,4 @@ class JwtTokenServiceTest {
         assertFalse(jwtTokenService.isValid(null));
     }
 }
+

@@ -66,3 +66,4 @@ class PasswordHasherImplTest {
         assertFalse(passwordHasher.matches(null, hash));
     }
 }
+

@@ -29,7 +29,6 @@ public final class ProductSpecification {
         );
     }
 
-
     private static Specification<ProductJpaEntity> nameContains(
             String name
     ) {
@@ -46,7 +45,6 @@ public final class ProductSpecification {
             );
         };
     }
-
 
     private static Specification<ProductJpaEntity> categoryIdEquals(
             CategoryId categoryId
@@ -87,7 +85,6 @@ public final class ProductSpecification {
             );
         };
     }
-
 
     private static Specification<ProductJpaEntity> statusEquals(
             ProductStatus status

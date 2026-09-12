@@ -5,16 +5,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-
 public class WebpImageValidator {
-
 
     public static void validate(MultipartFile file) {
 
         if (file == null || file.isEmpty()) {
             throw new InvalidImageException("Imagem obrigatória");
         }
-
 
         if (!isWebp(file)) {
             throw new InvalidImageException(
@@ -24,7 +21,6 @@ public class WebpImageValidator {
 
     }
 
-
     private static boolean isWebp(MultipartFile file) {
 
         try {
@@ -33,13 +29,11 @@ public class WebpImageValidator {
 
             file.getInputStream().read(header);
 
-
             String riff = new String(
                     header,
                     0,
                     4
             );
-
 
             String webp = new String(
                     header,
@@ -47,10 +41,8 @@ public class WebpImageValidator {
                     4
             );
 
-
             return "RIFF".equals(riff)
                     && "WEBP".equals(webp);
-
 
         } catch (IOException e) {
             return false;

@@ -7,3 +7,4 @@ public class TokenGenerationException extends InternalServerException {
         super(message, cause);
     }
 }
+

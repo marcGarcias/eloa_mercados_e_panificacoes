@@ -11,6 +11,7 @@ class CatalogCategoryModuleTest {
     @Test
     @DisplayName("Verify that the Category module loads context successfully in isolation")
     void verifyModuleContextLoads() {
-        // Test passes if the application context for this module successfully loads
+
     }
 }
+

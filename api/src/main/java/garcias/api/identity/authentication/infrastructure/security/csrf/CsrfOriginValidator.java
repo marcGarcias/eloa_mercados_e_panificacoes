@@ -60,9 +60,9 @@ public class CsrfOriginValidator {
             return;
         }
 
-        // Se ambos Origin e Referer estiverem ausentes, exige obrigatoriamente X-Requested-With
         if (!"XMLHttpRequest".equalsIgnoreCase(requestedWith)) {
             throw new InvalidOriginException("Requisição sem Origin/Referer exige cabeçalho X-Requested-With: XMLHttpRequest.");
         }
     }
 }
+

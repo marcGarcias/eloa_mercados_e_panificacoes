@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 public class User {
 
-
     private UserId id;
 
     private UserName name;
@@ -115,19 +114,16 @@ public class User {
         updateTimestamp();
     }
 
-
     public void deactivate() {
 
         this.status = UserStatus.INACTIVE;
         updateTimestamp();
     }
 
-
     public void recordLogin() {
 
         this.lastLoginAt = LocalDateTime.now();
     }
-
 
     private void updateTimestamp() {
 
@@ -197,3 +193,4 @@ public class User {
         return updatedAt;
     }
 }
+

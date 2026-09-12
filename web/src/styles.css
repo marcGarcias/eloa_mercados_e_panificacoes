@@ -47,7 +47,6 @@ a {
   text-decoration: none;
 }
 
-/* Link de salto para acessibilidade de teclado */
 .skip-to-content {
   position: fixed;
   top: -200px;
@@ -70,7 +69,6 @@ a {
   outline-offset: 2px;
 }
 
-/* Indicadores de foco universais e acessíveis para teclado */
 :focus-visible {
   outline: 2.5px solid var(--primary-dark, #B87D34);
   outline-offset: 3px;
@@ -181,7 +179,6 @@ a {
   color: white;
 }
 
-/* Toast Notifications */
 :root {
   --toast-success: #24412A;
   --toast-error: #A5402F;
@@ -301,7 +298,6 @@ a {
   100% { width: 0%; }
 }
 
-/* Progressive Enhancement para Desktop */
 @media (min-width: 768px) {
   #toast-container {
     top: 24px;
@@ -328,9 +324,6 @@ a {
   }
 }
 
-/* ==========================================================================
-   INITIAL LOADER (APP-ROOT SHELL)
-   ========================================================================== */
 .initial-loader {
   position: fixed;
   top: 0;

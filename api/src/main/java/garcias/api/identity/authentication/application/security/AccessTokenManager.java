@@ -12,5 +12,5 @@ public interface AccessTokenManager {
 
     boolean isValid(String token);
 
-
 }
+

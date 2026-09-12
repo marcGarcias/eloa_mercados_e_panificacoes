@@ -32,7 +32,7 @@ public class SiteContentRepositoryImpl implements SiteContentRepository {
     public SiteContent save(SiteContent content) {
         var existing = jpaRepository.findById(REGISTRATION_ID);
         SiteContentJpaEntity entityToSave;
-        
+
         if (existing.isPresent()) {
             var entity = existing.get();
             var mapped = mapper.toJpa(content, REGISTRATION_ID);
@@ -41,8 +41,9 @@ public class SiteContentRepositoryImpl implements SiteContentRepository {
         } else {
             entityToSave = mapper.toJpa(content, REGISTRATION_ID);
         }
-        
+
         var saved = jpaRepository.save(entityToSave);
         return mapper.toDomain(saved);
     }
 }
+

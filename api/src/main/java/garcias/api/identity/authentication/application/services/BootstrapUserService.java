@@ -31,18 +31,15 @@ public class BootstrapUserService implements BootstrapUserUseCase {
             throw new BootstrapAlreadyCompletedException();
         }
 
-        // 1. Validar CPF
         if (request.cpf() == null || !request.cpf().replaceAll("\\D", "").equals(this.serverCpf.replaceAll("\\D", ""))) {
             throw new garcias.api.identity.authentication.domain.exceptions.InvalidSetupCpfException();
         }
 
-        // 2. Validar Chave de Acesso (Regex)
         String accessKeyRegex = "^[a-zA-Z0-9]{3}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{3}-[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]$";
         if (request.accessKey() == null || !request.accessKey().matches(accessKeyRegex)) {
             throw new garcias.api.identity.authentication.domain.exceptions.InvalidSetupAccessKeyException("Formato da chave de acesso inválido.");
         }
 
-        // 3. Validar se a chave bate com a do servidor
         if (!request.accessKey().equals(this.serverAccessKey)) {
             throw new garcias.api.identity.authentication.domain.exceptions.InvalidSetupAccessKeyException("Chave de acesso incorreta.");
         }

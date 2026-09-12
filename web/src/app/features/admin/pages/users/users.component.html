@@ -121,7 +121,7 @@
           <td data-label="Acesso">{{ user.lastLoginAt ? (user.lastLoginAt | date:'dd/MM/yyyy HH:mm') : 'Nunca acessou' }}</td>
           <td data-label="Ações">
             <button class="icon-btn" *ngIf="canEditUser(user)" (click)="openEditModal(user)" title="Editar">
-              <!-- Edit Icon -->
+
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -132,8 +132,7 @@
       </tbody>
     </table>
   </div>
-  
-  <!-- Simple Pagination Controls -->
+
   <div class="pagination-controls" *ngIf="totalPages > 1">
     <button [disabled]="page === 0" (click)="prevPage()">Anterior</button>
     <span>Página {{ page + 1 }} de {{ totalPages }}</span>
@@ -141,13 +140,11 @@
   </div>
 </div>
 
-<!-- Modal (Create & Edit) -->
 <app-modal [title]="isCreateMode ? 'Novo Usuário' : 'Editar Usuário'" [isOpen]="isModalOpen" (close)="isModalOpen = false">
   <div class="alert alert-danger" *ngIf="errorMessage">
     {{ errorMessage }}
   </div>
 
-  <!-- Modo de Criação: Nome e Sobrenome separados -->
   <ng-container *ngIf="isCreateMode">
     <div class="field">
       <label>Nome</label>
@@ -159,12 +156,11 @@
     </div>
   </ng-container>
 
-  <!-- Modo de Edição: Nome completo -->
   <div class="field" *ngIf="!isCreateMode">
     <label>Nome</label>
     <input type="text" [(ngModel)]="editingUser.name" [disabled]="!isOwner" placeholder="Digite o nome completo" autocomplete="off" maxlength="150">
   </div>
-  
+
   <div class="field password-field">
     <label>Senha {{ !isCreateMode ? '(deixe em branco para não alterar)' : '' }}</label>
     <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="editingUser.password" placeholder="••••••">
@@ -179,8 +175,7 @@
       </svg>
     </button>
   </div>
-  
-  <!-- Se nao for SUPER_ADMIN, exibe o select sem a opcao de Proprietario -->
+
   <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id && editingUser.role !== 'SUPER_ADMIN'">
     <label>Função</label>
     <select [(ngModel)]="editingUser.role">
@@ -188,13 +183,12 @@
       <option value="EDITOR">{{ RoleTranslations['EDITOR'] }}</option>
     </select>
   </div>
-  
-  <!-- Se for SUPER_ADMIN, exibe apenas como leitura desabilitada -->
+
   <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id && editingUser.role === 'SUPER_ADMIN'">
     <label>Função</label>
     <input type="text" [value]="RoleTranslations['SUPER_ADMIN']" disabled>
   </div>
-  
+
   <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id">
     <label>Status</label>
     <select [(ngModel)]="editingUser.status">
@@ -202,7 +196,7 @@
       <option value="INACTIVE">{{ StatusTranslations['INACTIVE'] }}</option>
     </select>
   </div>
-  
+
   <div class="modal-actions">
     <button class="btn-delete" *ngIf="!isCreateMode && isOwner && editingUser.id !== currentUser?.id" (click)="openDeleteModal(editingUser!)">Excluir Perfil</button>
     <div class="spacer"></div>
@@ -211,19 +205,19 @@
   </div>
 </app-modal>
 
-<!-- Delete Modal -->
 <app-modal [title]="'Confirmar Exclusão'" [isOpen]="isDeleteModalOpen" (close)="isDeleteModalOpen = false">
   <div class="alert alert-danger">
     <p>Para excluir o usuário <strong>{{ userToDelete?.name }}</strong>, digite o nome do usuário abaixo para confirmar.</p>
   </div>
-  
+
   <div class="field">
     <label>Nome do Usuário</label>
     <input type="text" [(ngModel)]="deleteUsernameConfirm" placeholder="Exatamente o nome a deletar" autocomplete="off">
   </div>
-  
+
   <div class="modal-actions">
     <button class="btn btn-ghost" (click)="isDeleteModalOpen = false">Cancelar</button>
     <button class="btn-danger-action" (click)="confirmDelete()" [disabled]="deleteUsernameConfirm !== userToDelete?.name">Confirmar Exclusão</button>
   </div>
 </app-modal>
+

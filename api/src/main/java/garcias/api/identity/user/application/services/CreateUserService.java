@@ -17,13 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateUserService
         implements CreateUserUseCase {
 
-
     private final UserRepository userRepository;
 
     private final UserCodeProvider userCodeProvider;
 
     private final PasswordHasher passwordHasher;
-
 
     public CreateUserService(
             UserRepository userRepository,
@@ -35,13 +33,12 @@ public class CreateUserService
         this.passwordHasher = passwordHasher;
     }
 
-
     @Override
     public User execute(
             CreateUserRequest request
     ) {
 
-        if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+        if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN
                 && userRepository.existsByRole(garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN)) {
             throw new garcias.api.shared.exceptions.SuperAdminAlreadyExistsException();
         }
@@ -56,14 +53,12 @@ public class CreateUserService
                 userRepository.existsByCode(code)
         );
 
-
         Password password =
                 Password.fromHash(
                         passwordHasher.hash(
                                 request.password()
                         )
                 );
-
 
         User user =
                 User.create(
@@ -74,7 +69,7 @@ public class CreateUserService
                         request.status()
                 );
 
-
         return userRepository.save(user);
     }
 }
+

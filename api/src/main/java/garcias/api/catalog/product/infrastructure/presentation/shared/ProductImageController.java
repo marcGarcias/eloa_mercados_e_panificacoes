@@ -77,3 +77,4 @@ public class ProductImageController {
                 .body(resource);
     }
 }
+

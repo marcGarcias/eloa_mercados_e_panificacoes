@@ -119,3 +119,4 @@ class BootstrapUserServiceTest {
         verify(userAuthenticationPort, never()).createInitialUser(anyString(), anyString());
     }
 }
+

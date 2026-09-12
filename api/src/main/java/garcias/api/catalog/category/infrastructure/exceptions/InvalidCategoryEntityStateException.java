@@ -7,3 +7,4 @@ public class InvalidCategoryEntityStateException extends DomainException {
         super(message);
     }
 }
+

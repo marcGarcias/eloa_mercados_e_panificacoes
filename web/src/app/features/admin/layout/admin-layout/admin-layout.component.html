@@ -1,6 +1,5 @@
 <div class="app admin-theme">
-    
-    <!-- Topbar (Apenas Mobile - simplificada) -->
+
     <header class="topbar mobile-only">
         <div class="topbar-inner">
             <div class="brand-logo">Eloa <small>ADMIN</small></div>
@@ -20,14 +19,13 @@
         </div>
     </header>
 
-    <!-- Sidebar (Apenas Desktop) -->
     <aside class="sidebar desktop-only">
         <div class="sidebar-brand">
             <div class="brand-logo">Eloa <small>ADMIN</small></div>
         </div>
-        
+
         <nav class="sidebar-nav" aria-label="Navegação do painel lateral">
-            <!-- Catálogo -->
+
             <a class="nav-item" routerLink="catalog" routerLinkActive="active">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="7" height="9"></rect>
@@ -38,11 +36,10 @@
                 <span>Catálogo</span>
             </a>
 
-            <!-- Conteúdo -->
             <ng-container *ngIf="authService.currentUser$ | async as user">
-                <a class="nav-item" 
-                   *ngIf="user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'; else lockedContentSidebar" 
-                   routerLink="home" 
+                <a class="nav-item"
+                   *ngIf="user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'; else lockedContentSidebar"
+                   routerLink="home"
                    routerLinkActive="active">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 20h9"></path>
@@ -60,10 +57,9 @@
                     </span>
                 </ng-template>
 
-                <!-- Usuários -->
-                <a class="nav-item" 
-                   *ngIf="user.role === 'SUPER_ADMIN'; else lockedUsersSidebar" 
-                   routerLink="users" 
+                <a class="nav-item"
+                   *ngIf="user.role === 'SUPER_ADMIN'; else lockedUsersSidebar"
+                   routerLink="users"
                    routerLinkActive="active">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -100,16 +96,14 @@
         </div>
     </aside>
 
-    <!-- Área Principal de Conteúdo -->
     <div class="app-content-wrapper">
         <main>
             <router-outlet></router-outlet>
         </main>
     </div>
 
-    <!-- Bottom Navigation Bar (Apenas Mobile) -->
     <nav class="bottom-nav mobile-only" aria-label="Navegação móvel do painel">
-        <!-- Catálogo -->
+
         <a class="bottom-nav-item" routerLink="catalog" routerLinkActive="active">
             <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="9"></rect>
@@ -120,11 +114,10 @@
             <span>Catálogo</span>
         </a>
 
-        <!-- Conteúdo -->
         <ng-container *ngIf="authService.currentUser$ | async as user">
-            <a class="bottom-nav-item" 
-               *ngIf="user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'; else lockedContentBottom" 
-               routerLink="home" 
+            <a class="bottom-nav-item"
+               *ngIf="user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'; else lockedContentBottom"
+               routerLink="home"
                routerLinkActive="active">
                 <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"></path>
@@ -142,10 +135,9 @@
                 </span>
             </ng-template>
 
-            <!-- Usuários -->
-            <a class="bottom-nav-item" 
-               *ngIf="user.role === 'SUPER_ADMIN'; else lockedUsersBottom" 
-               routerLink="users" 
+            <a class="bottom-nav-item"
+               *ngIf="user.role === 'SUPER_ADMIN'; else lockedUsersBottom"
+               routerLink="users"
                routerLinkActive="active">
                 <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -168,5 +160,5 @@
     </nav>
 </div>
 
-<!-- Modal de Categoria (compartilhado ou global no admin) -->
 <app-modal-categoria></app-modal-categoria>
+

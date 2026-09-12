@@ -44,6 +44,7 @@ class IdentityAuthenticationModuleTest {
     @Test
     @DisplayName("Verify that the Authentication module loads context successfully in isolation")
     void verifyModuleContextLoads() {
-        // Test passes if the application context for this module successfully loads
+
     }
 }
+

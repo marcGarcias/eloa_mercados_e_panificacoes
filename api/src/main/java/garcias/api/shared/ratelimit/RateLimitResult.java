@@ -14,3 +14,4 @@ public record RateLimitResult(
         return new RateLimitResult(false, 0, retryAfterSeconds, limit);
     }
 }
+

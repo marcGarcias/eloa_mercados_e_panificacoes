@@ -23,7 +23,7 @@ public class SiteContentMapper {
         try {
             SiteContent content = objectMapper.readValue(jpaEntity.getData(), SiteContent.class);
             if (content != null && content.faq() == null) {
-                // Fallback de segurança caso o registro JSON legado não possua a chave "faq"
+
                 return new SiteContent(
                         content.banner(),
                         content.diferenciais(),
@@ -52,3 +52,4 @@ public class SiteContentMapper {
         }
     }
 }
+

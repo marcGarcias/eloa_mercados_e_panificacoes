@@ -29,7 +29,6 @@ public class UpdateCategoryService implements UpdateCategoryUseCase {
             UpdateCategoryRequest request
     ) {
 
-
         Category category =
                 categoryRepository
                         .findById(id)
@@ -37,18 +36,14 @@ public class UpdateCategoryService implements UpdateCategoryUseCase {
                                 () -> new ObjectNotFoundException(id.value())
                         );
 
-
         if (request.name() != null) {
-
 
             CategoryName newName =
                     new CategoryName(request.name());
 
-
             categoryRepository
                     .findByName(newName)
                     .ifPresent(existing -> {
-
 
                         if (!existing.getId()
                                 .equals(category.getId())) {
@@ -57,10 +52,8 @@ public class UpdateCategoryService implements UpdateCategoryUseCase {
                         }
                     });
 
-
             category.rename(newName);
         }
-
 
         return categoryRepository.save(category);
     }

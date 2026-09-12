@@ -8,10 +8,8 @@
 
     <div [formGroup]="contentForm">
 
-        <!-- ACORDEON -->
         <div class="accordion">
 
-            <!-- 1. Banner -->
             <div class="accordion-item" [class.open]="openSection === 'banner'">
                 <button class="accordion-header" type="button" (click)="toggleSection('banner')">
                     <span class="accordion-title">
@@ -62,7 +60,6 @@
                 </div>
             </div>
 
-            <!-- 2. Diferenciais -->
             <div class="accordion-item" [class.open]="openSection === 'diferenciais'">
                 <button class="accordion-header" type="button" (click)="toggleSection('diferenciais')">
                     <span class="accordion-title">
@@ -111,7 +108,6 @@
                 </div>
             </div>
 
-            <!-- 3. Catálogo -->
             <div class="accordion-item" [class.open]="openSection === 'catalogo'">
                 <button class="accordion-header" type="button" (click)="toggleSection('catalogo')">
                     <span class="accordion-title">
@@ -134,7 +130,6 @@
                 </div>
             </div>
 
-            <!-- 4. Sobre Nós -->
             <div class="accordion-item" [class.open]="openSection === 'sobre'">
                 <button class="accordion-header" type="button" (click)="toggleSection('sobre')">
                     <span class="accordion-title">
@@ -192,7 +187,6 @@
                 </div>
             </div>
 
-            <!-- 5. Estatísticas -->
             <div class="accordion-item" [class.open]="openSection === 'estatisticas'">
                 <button class="accordion-header" type="button" (click)="toggleSection('estatisticas')">
                     <span class="accordion-title">
@@ -250,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- 6. CTA -->
             <div class="accordion-item" [class.open]="openSection === 'cta'">
                 <button class="accordion-header" type="button" (click)="toggleSection('cta')">
                     <span class="accordion-title">
@@ -277,7 +270,6 @@
                 </div>
             </div>
 
-            <!-- 7. Rodapé -->
             <div class="accordion-item" [class.open]="openSection === 'rodape'">
                 <button class="accordion-header" type="button" (click)="toggleSection('rodape')">
                     <span class="accordion-title">
@@ -306,7 +298,6 @@
                 </div>
             </div>
 
-            <!-- 8. Perguntas Frequentes (FAQ) -->
             <div class="accordion-item" [class.open]="openSection === 'faq'">
                 <button class="accordion-header" type="button" (click)="toggleSection('faq')">
                     <span class="accordion-title">
@@ -318,8 +309,7 @@
                     </svg>
                 </button>
                 <div class="accordion-body" formGroupName="faq">
-                    
-                    <!-- Banner Informativo Clean -->
+
                     <div class="faq-info-card">
                         <div class="faq-info-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -334,11 +324,9 @@
                         </div>
                     </div>
 
-                    <!-- Lista de Cards Clean -->
                     <div class="faq-card-list" formArrayName="itens">
                         <div class="faq-card" *ngFor="let item of faqItens.controls; let i = index" [formGroupName]="i">
-                            
-                            <!-- Cabeçalho da Pergunta -->
+
                             <div class="faq-card-header">
                                 <div class="faq-q-number">Q{{ i + 1 }}</div>
                                 <div class="faq-q-content">
@@ -354,7 +342,6 @@
                                 </span>
                             </div>
 
-                            <!-- Área de Edição da Resposta -->
                             <div class="faq-card-body">
                                 <div class="faq-answer-top">
                                     <label class="faq-answer-label">Sua Resposta aos Clientes</label>
@@ -362,10 +349,10 @@
                                         {{ 1000 - (item.get('resposta')?.value?.length || 0) }} caracteres restantes
                                     </span>
                                 </div>
-                                <textarea 
+                                <textarea
                                     class="faq-textarea-clean"
-                                    rows="3" 
-                                    formControlName="resposta" 
+                                    rows="3"
+                                    formControlName="resposta"
                                     [placeholder]="'Padrão: ' + defaultFaqItens[i].resposta"
                                     maxlength="1000"
                                     [class.has-error]="item.get('resposta')?.invalid && item.get('resposta')?.touched">
@@ -379,11 +366,10 @@
                     </div>
 
                 </div>
-            </div><!-- /faq -->
+            </div>
 
-        </div><!-- /accordion -->
+        </div>
 
-        <!-- 9. DADOS GERAIS (por último) -->
         <div class="dados-card" formGroupName="dados">
             <div class="dados-header">
                 <div class="dados-title">
@@ -417,9 +403,9 @@
                 </div>
                 <div class="field">
                     <label>CNPJ</label>
-                    <input 
-                        type="text" 
-                        formControlName="cnpj" 
+                    <input
+                        type="text"
+                        formControlName="cnpj"
                         [placeholder]="'Padrão: ' + defaultDados.cnpj"
                         maxlength="18"
                         [class.input-error]="contentForm.get('dados.cnpj')?.invalid && contentForm.get('dados.cnpj')?.touched">
@@ -429,11 +415,10 @@
                     </span>
                 </div>
             </div>
-        </div><!-- /dados -->
+        </div>
 
     </div>
 
-    <!-- Sticky Save Bar -->
     <div class="save-bar">
         <span class="save-bar-hint">Todas as seções serão salvas juntas.</span>
         <button type="button" class="btn btn-solid" (click)="saveContent()" [disabled]="isSaving">

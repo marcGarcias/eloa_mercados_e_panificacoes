@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-
 @Service
 @Transactional
 public class UpdateUserDataService implements UpdateUserDataUseCase {
@@ -42,7 +41,6 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
                         UserNotFoundException::new
                 );
 
-
         if (request.name() != null) {
 
             user.changeName(
@@ -51,13 +49,13 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
         }
 
         if (request.role() != null) {
-            // Impedir promover alguém a SUPER_ADMIN (só joga erro se o usuário a ser modificado não for SUPER_ADMIN)
-            if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+
+            if (request.role() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN
                     && user.getRole() != garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN) {
                 throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
             }
-            // Impedir rebaixar o SUPER_ADMIN (se a role atual é SUPER_ADMIN e a nova não é)
-            if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+
+            if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN
                     && request.role() != garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN) {
                 throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
             }
@@ -67,9 +65,8 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
             );
         }
 
-
         if (request.status() != null) {
-            if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN 
+            if (user.getRole() == garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN
                     && request.status() == UserStatus.INACTIVE) {
                 throw new garcias.api.shared.exceptions.SuperAdminModificationNotAllowedException();
             }
@@ -78,7 +75,6 @@ public class UpdateUserDataService implements UpdateUserDataUseCase {
                     request.status()
             );
         }
-
 
         userRepository.save(user);
 

@@ -5,3 +5,4 @@ public class SuperAdminCreationNotAllowedException extends DomainException {
         super("Creating a SUPER_ADMIN user is not allowed through this channel.");
     }
 }
+

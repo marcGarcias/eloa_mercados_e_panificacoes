@@ -22,30 +22,25 @@ public class CreateCategoryService
         this.categoryRepository = categoryRepository;
     }
 
-
     @Override
     @Transactional
     public Category execute(
             CreateCategoryRequest request
     ) {
 
-
         CategoryName name =
                 new CategoryName(request.name());
-
 
         if (categoryRepository.existsByName(name)) {
 
             throw new ObjectAlreadyExistsException("Category name", name.toString());
         }
 
-
         Category category =
                 Category.create(
                         CategoryId.empty(),
                         name
                 );
-
 
         return categoryRepository.save(category);
 

@@ -348,7 +348,7 @@ public class ContentDtoMapper {
                     .map(canonico -> {
                         if (novasRespostas.containsKey(canonico.id())) {
                             String novaResposta = novasRespostas.get(canonico.id());
-                            // Se for nulo ou vazio, preserva ou atualiza conforme enviado
+
                             return novaResposta != null ? canonico.withResposta(novaResposta) : canonico.withResposta(null);
                         }
                         return canonico;
@@ -365,3 +365,4 @@ public class ContentDtoMapper {
         return toDomain(existingDto);
     }
 }
+

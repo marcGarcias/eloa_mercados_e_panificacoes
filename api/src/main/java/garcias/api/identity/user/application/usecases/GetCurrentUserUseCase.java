@@ -23,3 +23,4 @@ public class GetCurrentUserUseCase {
         return UserResponse.from(user);
     }
 }
+

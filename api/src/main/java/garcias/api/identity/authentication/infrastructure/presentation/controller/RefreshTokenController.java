@@ -53,7 +53,7 @@ public class RefreshTokenController {
             summary = "Refresh access token",
             description = """
         Generates a new access token using a valid refresh token.
-        
+
         The client must send the 'refresh_token' cookie obtained during
         the initial login or previous refresh. If the refresh token is
         valid and not expired, a new access token is returned, and a
@@ -133,3 +133,4 @@ public class RefreshTokenController {
         );
     }
 }
+

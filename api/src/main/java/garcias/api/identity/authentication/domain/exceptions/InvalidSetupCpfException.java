@@ -7,3 +7,4 @@ public class InvalidSetupCpfException extends UnauthorizedException {
         super("CPF de setup inválido.");
     }
 }
+

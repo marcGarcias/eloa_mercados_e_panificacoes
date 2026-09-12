@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-
 @Service
 @Transactional
 public class ChangePasswordService
         implements ChangePasswordUseCase {
-
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
@@ -34,7 +32,6 @@ public class ChangePasswordService
         this.eventPublisher = eventPublisher;
     }
 
-
     @Override
     public void execute(
             UUID userId,
@@ -46,30 +43,25 @@ public class ChangePasswordService
                         UserNotFoundException::new
                 );
 
-
         boolean samePassword =
                 passwordHasher.matches(
                         request.newPassword(),
                         user.getPassword().value()
                 );
 
-
         if (samePassword) {
 
             throw new InvalidUserPasswordException();
         }
-
 
         String encodedPassword =
                 passwordHasher.hash(
                         request.newPassword()
                 );
 
-
         user.changePassword(
                 new Password(encodedPassword)
         );
-
 
         userRepository.save(user);
 

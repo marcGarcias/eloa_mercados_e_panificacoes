@@ -10,3 +10,4 @@ public interface RefreshTokenProvider {
 
     void revoke(String refreshToken);
 }
+

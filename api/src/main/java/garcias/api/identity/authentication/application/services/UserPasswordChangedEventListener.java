@@ -19,3 +19,4 @@ public class UserPasswordChangedEventListener {
         logoutUseCase.execute(event.userCode());
     }
 }
+

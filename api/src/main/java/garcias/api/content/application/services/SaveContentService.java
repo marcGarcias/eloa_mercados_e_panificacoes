@@ -19,3 +19,4 @@ public class SaveContentService implements SaveContentUseCase {
         return repository.save(content);
     }
 }
+

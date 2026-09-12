@@ -9,3 +9,4 @@ public record BatchDeleteProductsRequest(
         @NotEmpty(message = "Product list must not be empty")
         List<@NotNull Long> ids
 ) {}
+

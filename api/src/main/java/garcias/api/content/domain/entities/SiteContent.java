@@ -49,3 +49,4 @@ public record SiteContent(
         return faq;
     }
 }
+

@@ -59,7 +59,7 @@ public class ContentDtoMapperFaqTest {
         SiteContent merged = ContentDtoMapper.merge(existingContent, patch);
 
         FaqItem faq1 = merged.faq().itens().get(0);
-        // A pergunta deve permanecer a canônica oficial, e não a enviada no patch!
+
         assertEquals("Como faço para pedir ou cotar produtos da Eloá Panificações?", faq1.pergunta());
         assertEquals("Resposta legítima", faq1.resposta());
     }
@@ -86,7 +86,7 @@ public class ContentDtoMapperFaqTest {
     void devePreservarItensQuandoPayloadOmitirPerguntas() {
         var patch = new SiteContentDto();
         var faqDto = new SiteContentDto.FaqDto();
-        // Envia apenas alteração para o faq-3, omitindo faq-1, faq-2, faq-4 e faq-5
+
         faqDto.setItens(List.of(
                 new SiteContentDto.FaqItemDto("faq-3", null, "Novo texto para o atacado.")
         ));
@@ -99,7 +99,6 @@ public class ContentDtoMapperFaqTest {
         FaqItem faq3 = merged.faq().itens().stream().filter(i -> "faq-3".equals(i.id())).findFirst().orElseThrow();
         assertEquals("Novo texto para o atacado.", faq3.resposta());
 
-        // As outras continuam intactas
         FaqItem faq1 = merged.faq().itens().stream().filter(i -> "faq-1".equals(i.id())).findFirst().orElseThrow();
         assertEquals(FaqCanonical.CANONICAL_ITEMS.get(0).resposta(), faq1.resposta());
     }
@@ -127,7 +126,7 @@ public class ContentDtoMapperFaqTest {
     void deveManterExatamente5ItensNaOrdemCanonica() {
         var patch = new SiteContentDto();
         var faqDto = new SiteContentDto.FaqDto();
-        // Envia em ordem invertida
+
         faqDto.setItens(List.of(
                 new SiteContentDto.FaqItemDto("faq-5", null, "Resposta 5"),
                 new SiteContentDto.FaqItemDto("faq-1", null, "Resposta 1")
@@ -145,3 +144,4 @@ public class ContentDtoMapperFaqTest {
         assertEquals("faq-5", itens.get(4).id());
     }
 }
+

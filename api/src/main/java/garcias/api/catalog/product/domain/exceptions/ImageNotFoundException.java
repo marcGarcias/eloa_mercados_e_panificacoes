@@ -7,3 +7,4 @@ public class ImageNotFoundException extends NotFoundException {
         super("Image not found");
     }
 }
+

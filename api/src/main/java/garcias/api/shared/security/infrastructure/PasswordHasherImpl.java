@@ -4,14 +4,11 @@ import garcias.api.shared.security.application.PasswordHasher;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class PasswordHasherImpl
         implements PasswordHasher {
 
-
     private final Argon2PasswordEncoder encoder;
-
 
     public PasswordHasherImpl() {
 
@@ -24,7 +21,6 @@ public class PasswordHasherImpl
 
         return encoder.encode(rawPassword);
     }
-
 
     @Override
     public boolean matches(

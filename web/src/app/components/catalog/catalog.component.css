@@ -312,7 +312,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Container com scroll independente para mobile */
 .catalog-scroll-wrapper {
   max-height: 520px;
   overflow-y: auto;
@@ -638,3 +637,4 @@
   align-items: center;
   gap: 6px;
 }
+

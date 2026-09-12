@@ -64,7 +64,6 @@ class RefreshTokenServiceTest {
         assertEquals("new.access.token", result.accessToken());
         assertEquals("new.refresh.token", result.refreshToken());
 
-        // Token rotation: revokes old token
         verify(refreshTokenManager).revoke(oldRefreshToken);
     }
 
@@ -96,3 +95,4 @@ class RefreshTokenServiceTest {
         verifyNoInteractions(accessTokenManager);
     }
 }
+

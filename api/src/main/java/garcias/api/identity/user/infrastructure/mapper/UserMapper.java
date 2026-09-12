@@ -7,7 +7,6 @@ import garcias.api.identity.user.domain.valueobjects.UserId;
 import garcias.api.identity.user.domain.valueobjects.UserName;
 import garcias.api.identity.user.infrastructure.persistence.UserJpaEntity;
 
-
 public final class UserMapper {
 
     private UserMapper() {
@@ -29,7 +28,6 @@ public final class UserMapper {
 
         return entity;
     }
-
 
     public static User toDomain(UserJpaEntity entity) {
 

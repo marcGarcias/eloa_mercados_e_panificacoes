@@ -42,3 +42,4 @@ class PasswordValueObjectTest {
         assertEquals(hash, password.value());
     }
 }
+

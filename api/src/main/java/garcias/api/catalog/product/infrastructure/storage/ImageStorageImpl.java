@@ -24,7 +24,7 @@ import java.util.UUID;
 @Component
 public class ImageStorageImpl implements ImageStorage {
 
-    private static final long MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+    private static final long MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
     private static final int MAX_WIDTH = 3840;
     private static final int MAX_HEIGHT = 2160;
 

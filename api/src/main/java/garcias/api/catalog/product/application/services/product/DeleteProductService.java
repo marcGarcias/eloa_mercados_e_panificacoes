@@ -1,6 +1,5 @@
 package garcias.api.catalog.product.application.services.product;
 
-
 import garcias.api.catalog.product.application.storage.ImageStorage;
 import garcias.api.catalog.product.application.usecases.product.DeleteProductUseCase;
 import garcias.api.catalog.product.domain.entities.Product;
@@ -14,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-
 @Service
 public class DeleteProductService implements DeleteProductUseCase {
-
 
     private final ProductRepository productRepository;
     private final ImageStorage imageStorage;
@@ -29,11 +26,9 @@ public class DeleteProductService implements DeleteProductUseCase {
         this.imageStorage = imageStorage;
     }
 
-
     @Override
     @Transactional
     public void execute(ProductId id) {
-
 
         Product product =
                 productRepository.findById(id)

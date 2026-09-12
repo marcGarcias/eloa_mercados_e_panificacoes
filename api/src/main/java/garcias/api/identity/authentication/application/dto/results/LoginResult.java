@@ -5,3 +5,4 @@ public record LoginResult(
         String refreshToken
 ) {
 }
+

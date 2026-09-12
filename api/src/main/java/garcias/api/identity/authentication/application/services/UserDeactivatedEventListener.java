@@ -20,3 +20,4 @@ public class UserDeactivatedEventListener {
         logoutUseCase.execute(event.userCode());
     }
 }
+

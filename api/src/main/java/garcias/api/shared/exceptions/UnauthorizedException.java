@@ -5,3 +5,4 @@ public abstract class UnauthorizedException extends RuntimeException {
         super(message);
     }
 }
+

@@ -1,7 +1,3 @@
-/* ===================================================
-   ADMIN THEME - Scoped to body.admin-layout
-   =================================================== */
-
 :root, body.admin-layout {
     --primary: #CC9148;
     --primary-dark: #B87D34;
@@ -38,15 +34,11 @@ body.admin-layout {
             background: none;
         }
 
-        /* Layout */
-
         .app {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-
-        /* Topbar */
 
         .topbar {
             background: var(--white);
@@ -182,8 +174,6 @@ body.admin-layout {
             color: #A5402F;
         }
 
-        /* Main */
-
         main {
             max-width: 1280px;
             margin: auto;
@@ -259,8 +249,6 @@ body.admin-layout {
             padding: 7px 12px;
             font-size: 12px;
         }
-
-        /* Toolbar */
 
         .toolbar {
             display: flex;
@@ -343,8 +331,6 @@ body.admin-layout {
             height: 13px;
             flex-shrink: 0;
         }
-
-        /* Product Grid */
 
         .grid {
             display: grid;
@@ -503,8 +489,6 @@ body.admin-layout {
             color: #A5402F;
         }
 
-        /* Table */
-
         .table-wrap {
             background: transparent;
             border: none;
@@ -635,8 +619,6 @@ body.admin-layout {
             min-width: 76px;
         }
 
-        /* Conteúdo */
-
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -709,8 +691,6 @@ body.admin-layout {
             justify-content: flex-end;
         }
 
-        /* ---- diferenciais ---- */
-
         .diff-list {
             display: flex;
             flex-direction: column;
@@ -748,8 +728,6 @@ body.admin-layout {
             height: 14px;
         }
 
-        /* ---- dias da semana ---- */
-
         .day-chips {
             display: flex;
             gap: 6px;
@@ -773,8 +751,6 @@ body.admin-layout {
             border-color: var(--green);
             color: var(--white);
         }
-
-        /* ---- redes sociais ---- */
 
         .social-row {
             display: flex;
@@ -854,8 +830,6 @@ body.admin-layout {
         .view.active {
             display: block;
         }
-
-        /* Modal */
 
         .overlay {
             position: fixed;
@@ -1067,9 +1041,6 @@ body.admin-layout {
             color: var(--dark);
         }
 
-        /* Responsive */
-
-        /* Estilos padrão para Mobile (375px a 743px) */
         .grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
@@ -1091,7 +1062,6 @@ body.admin-layout {
             grid-column: 1;
         }
 
-        /* Modais se comportam como Bottom Sheets no celular */
         .overlay {
             align-items: flex-end;
             justify-content: center;
@@ -1117,7 +1087,6 @@ body.admin-layout {
             }
         }
 
-        /* Barra de ferramentas responsiva do admin */
         .toolbar {
             flex-direction: column;
             align-items: stretch;
@@ -1131,13 +1100,13 @@ body.admin-layout {
             padding-bottom: 8px;
             width: 100%;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
             -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
             mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
         }
 
         .chips::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
+            display: none;
         }
 
         .search {
@@ -1186,7 +1155,6 @@ body.admin-layout {
             justify-content: center;
         }
 
-        /* Tablet (744px a 1279px) e Desktop (>= 1280px) */
         @media (min-width: 744px) {
             .grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -1281,7 +1249,6 @@ body.admin-layout {
                 flex: none;
             }
 
-            /* Restaurar Layout da Tabela no Tablet e Desktop */
             .table-wrap {
                 background: var(--white);
                 border: 1px solid var(--line);
@@ -1350,7 +1317,6 @@ body.admin-layout {
             }
         }
 
-        /* Desktop (>= 1280px) */
         @media (min-width: 1280px) {
             .grid {
                 grid-template-columns: repeat(4, 1fr);

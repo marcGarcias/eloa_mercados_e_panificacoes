@@ -26,7 +26,8 @@ public class MeController {
 
         String userCode = authentication.getPrincipal().toString();
         UserResponse response = getCurrentUserUseCase.execute(userCode);
-        
+
         return ResponseEntity.ok(response);
     }
 }
+

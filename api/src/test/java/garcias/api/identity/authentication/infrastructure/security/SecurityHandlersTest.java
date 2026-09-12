@@ -68,3 +68,4 @@ class SecurityHandlersTest {
         assertTrue(body.contains("/api/admin/users/0002"));
     }
 }
+

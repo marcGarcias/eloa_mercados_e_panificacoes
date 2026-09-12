@@ -97,7 +97,6 @@ public class SecurityConfig {
                                 "/api/storage/images/**"
                         ).permitAll()
 
-                        // 1º MAIS ESPECÍFICOS PRIMEIRO
                         .requestMatchers(
                                 "/api/admin/products",
                                 "/api/admin/products/**",
@@ -111,7 +110,6 @@ public class SecurityConfig {
                         )
                         .hasAnyRole("SUPER_ADMIN", "ADMIN")
 
-                        // 2º REGRA GERAL (CATCH-ALL DO ADMIN) FICA POR ÚLTIMO
                         .requestMatchers("/api/admin/**")
                         .hasRole("SUPER_ADMIN")
 
@@ -134,3 +132,4 @@ public class SecurityConfig {
                 .build();
     }
 }
+

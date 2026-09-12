@@ -22,11 +22,8 @@ CREATE TABLE users (
                            CHECK(status IN ('ACTIVE', 'INACTIVE'))
 );
 
-
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-
--- Busca textual de usuário pelo nome
 CREATE INDEX idx_users_name_search
     ON users
         USING gin(name gin_trgm_ops);

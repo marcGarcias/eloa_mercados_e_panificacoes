@@ -9,7 +9,6 @@
 >
   <div class="modal" (click)="$event.stopPropagation()">
 
-    <!-- Cabecalho -->
     <div class="modal-head">
       <h2 class="modal-title">{{ modalTitle }}</h2>
       <button class="modal-close-btn" type="button" (click)="close()" aria-label="Fechar modal">
@@ -19,10 +18,8 @@
       </button>
     </div>
 
-    <!-- Corpo -->
     <form class="modal-body" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- Nome -->
       <div class="field" [class.has-error]="isFieldInvalid('name')">
         <label for="mp-name">Nome do produto</label>
         <input
@@ -37,7 +34,6 @@
         </span>
       </div>
 
-      <!-- Categoria + Peso -->
       <div class="field-row">
         <div class="field" [class.has-error]="isFieldInvalid('categoryId')">
           <label for="mp-category">Categoria</label>
@@ -66,11 +62,10 @@
         </div>
       </div>
 
-      <!-- Foto -->
       <div class="field">
         <label>Foto do produto <span class="field-hint">(formato WebP)</span></label>
         <div class="photo-upload-area">
-          <!-- Preview -->
+
           <div class="photo-preview-box" [class.has-photo]="photoPreviewUrl">
             <img
               *ngIf="photoPreviewUrl"
@@ -85,7 +80,6 @@
             </div>
           </div>
 
-          <!-- Controles de upload -->
           <div class="photo-controls">
             <label for="mp-photo-input" class="btn btn-ghost btn-small photo-upload-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -121,11 +115,9 @@
         <span class="field-error" *ngIf="photoError">{{ photoError }}</span>
       </div>
 
-      <!-- Campos exclusivos do modo edicao -->
       <ng-container *ngIf="isEditMode">
         <div class="field-row">
 
-          <!-- Status -->
           <div class="field">
             <label for="mp-status">Status</label>
             <select id="mp-status" formControlName="status">
@@ -137,7 +129,6 @@
         </div>
       </ng-container>
 
-      <!-- Rodape -->
       <div class="modal-foot">
         <button type="button" class="btn btn-ghost" (click)="close()" [disabled]="isSubmitting">
           Cancelar
@@ -153,3 +144,4 @@
     </form>
   </div>
 </div>
+

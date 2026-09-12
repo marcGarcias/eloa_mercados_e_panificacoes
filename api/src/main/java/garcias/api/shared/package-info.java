@@ -2,3 +2,4 @@
         type = org.springframework.modulith.ApplicationModule.Type.OPEN
 )
 package garcias.api.shared;
+

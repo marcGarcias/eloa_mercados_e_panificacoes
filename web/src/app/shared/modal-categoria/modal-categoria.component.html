@@ -9,7 +9,6 @@
 >
   <div class="modal" (click)="$event.stopPropagation()">
 
-    <!-- Cabecalho -->
     <div class="modal-head">
       <h2 class="modal-title">Nova categoria</h2>
       <button class="modal-close-btn" type="button" (click)="close()" aria-label="Fechar modal">
@@ -19,10 +18,8 @@
       </button>
     </div>
 
-    <!-- Corpo -->
     <form class="modal-body" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- Nome da Categoria -->
       <div class="field" [class.has-error]="isFieldInvalid('name')">
         <label for="mc-name">Nome da categoria</label>
         <input
@@ -37,7 +34,6 @@
         </span>
       </div>
 
-      <!-- Rodape -->
       <div class="modal-footer">
         <button class="btn btn-ghost" type="button" (click)="close()">Cancelar</button>
         <button class="btn btn-solid" type="submit" [disabled]="isSubmitting">

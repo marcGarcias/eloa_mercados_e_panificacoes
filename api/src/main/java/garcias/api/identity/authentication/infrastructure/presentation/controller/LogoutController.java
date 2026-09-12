@@ -44,9 +44,9 @@ public class LogoutController {
             summary = "Logout user",
             description = """
         Invalidates the user's refresh token session and clears the cookie.
-        
-        Reads the 'refresh_token' cookie and deletes its record from the server, 
-        preventing new access tokens from being generated for this session. 
+
+        Reads the 'refresh_token' cookie and deletes its record from the server,
+        preventing new access tokens from being generated for this session.
         Always returns a Set-Cookie header to clear the refresh token from the browser.
         """
     )
@@ -75,7 +75,7 @@ public class LogoutController {
                 .secure(cookieSecure)
                 .sameSite(cookieSameSite)
                 .path("/api/auth")
-                .maxAge(0) // 0 maxAge deletes the cookie
+                .maxAge(0)
                 .build();
 
         response.addHeader(
@@ -86,3 +86,4 @@ public class LogoutController {
         return ResponseEntity.noContent().build();
     }
 }
+

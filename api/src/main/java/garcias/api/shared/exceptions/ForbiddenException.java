@@ -5,3 +5,4 @@ public abstract class ForbiddenException extends RuntimeException {
         super(message);
     }
 }
+

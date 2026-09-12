@@ -34,3 +34,4 @@ public class ContentAdminPatchController {
         return ResponseEntity.ok(ContentDtoMapper.toDto(saved));
     }
 }
+

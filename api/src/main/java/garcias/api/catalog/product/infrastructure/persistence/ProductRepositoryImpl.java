@@ -38,10 +38,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Product save(Product product) {
         var entity = ProductMapper.toEntity(product);
         var saved = repository.save(entity);
-        
+
         entityManager.flush();
         entityManager.clear();
-        
+
         var savedWithCategory = repository.findByIdWithCategory(saved.getId()).orElse(saved);
         return ProductMapper.toDomain(savedWithCategory);
     }
@@ -95,24 +95,19 @@ public class ProductRepositoryImpl implements ProductRepository {
         Long oldPosition =
                 product.getPosition().value();
 
-
         Long position =
                 newPosition.value();
-
 
         if(oldPosition.equals(position)) {
             return;
         }
-
 
         List<ProductJpaEntity> products =
                 repository.findAll(
                         Sort.by("position")
                 );
 
-
         if(position < oldPosition) {
-
 
             products.stream()
                     .filter(p ->
@@ -125,9 +120,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                             )
                     );
 
-
         } else {
-
 
             products.stream()
                     .filter(p ->
@@ -140,7 +133,6 @@ public class ProductRepositoryImpl implements ProductRepository {
                             )
                     );
         }
-
 
         product.changePosition(newPosition);
     }
@@ -155,7 +147,6 @@ public class ProductRepositoryImpl implements ProductRepository {
                 repository.findByPositionGreaterThan(
                         position.value()
                 );
-
 
         products.forEach(product ->
                 product.setPosition(
@@ -212,8 +203,6 @@ public class ProductRepositoryImpl implements ProductRepository {
             }
         }
 
-        // As entidades sao gerenciadas pelo EntityManager dentro da transacao,
-        // o flush automatico persiste as mudancas sem necessidade de save() explicito.
         entityManager.flush();
     }
 
@@ -229,3 +218,4 @@ public class ProductRepositoryImpl implements ProductRepository {
         entityManager.flush();
     }
 }
+

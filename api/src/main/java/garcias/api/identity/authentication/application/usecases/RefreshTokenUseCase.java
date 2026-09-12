@@ -6,3 +6,4 @@ public interface RefreshTokenUseCase {
 
     LoginResult execute(String refreshToken);
 }
+

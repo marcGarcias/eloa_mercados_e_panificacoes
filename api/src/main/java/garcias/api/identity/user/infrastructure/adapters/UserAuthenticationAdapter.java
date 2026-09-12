@@ -37,10 +37,11 @@ public class UserAuthenticationAdapter implements UserAuthenticationPort {
 
     @Override
     public String createInitialUser(String name, String password) {
-        garcias.api.identity.user.application.dto.requests.CreateUserRequest request = 
+        garcias.api.identity.user.application.dto.requests.CreateUserRequest request =
             new garcias.api.identity.user.application.dto.requests.CreateUserRequest(
                 name, password, garcias.api.identity.user.domain.enums.UserRole.SUPER_ADMIN, garcias.api.identity.user.domain.enums.UserStatus.ACTIVE);
         garcias.api.identity.user.domain.entities.User user = createUserUseCase.execute(request);
         return user.getUserCode().value();
     }
 }
+

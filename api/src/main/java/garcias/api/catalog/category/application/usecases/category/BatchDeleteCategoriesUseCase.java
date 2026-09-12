@@ -7,3 +7,4 @@ public interface BatchDeleteCategoriesUseCase {
     void execute(BatchDeleteCategoriesRequest request);
 
 }
+

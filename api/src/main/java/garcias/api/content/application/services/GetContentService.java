@@ -20,3 +20,4 @@ public class GetContentService implements GetContentUseCase {
         return repository.find();
     }
 }
+

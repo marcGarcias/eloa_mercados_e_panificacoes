@@ -9,3 +9,4 @@ public class InternalServerException extends RuntimeException {
         super(message, cause);
     }
 }
+

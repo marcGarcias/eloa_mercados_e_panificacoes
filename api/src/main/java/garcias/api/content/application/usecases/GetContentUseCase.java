@@ -6,3 +6,4 @@ import java.util.Optional;
 public interface GetContentUseCase {
     Optional<SiteContent> execute();
 }
+

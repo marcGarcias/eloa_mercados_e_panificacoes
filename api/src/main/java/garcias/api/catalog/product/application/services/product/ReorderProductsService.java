@@ -18,14 +18,11 @@ import java.util.Map;
 @Service
 public class ReorderProductsService implements ReorderProductsUseCase {
 
-
     private final ProductRepository productRepository;
-
 
     public ReorderProductsService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-
 
     @Override
     @Transactional
@@ -38,10 +35,8 @@ public class ReorderProductsService implements ReorderProductsUseCase {
                         .map(ProductId::new)
                         .toList();
 
-
         List<Product> found =
                 productRepository.findAllByIds(productIds);
-
 
         if (found.size() != rawIds.size()) {
 
@@ -59,7 +54,6 @@ public class ReorderProductsService implements ReorderProductsUseCase {
             throw new ObjectNotFoundException(missing);
         }
 
-
         Map<ProductId, CatalogPosition> newPositions = new HashMap<>();
 
         for (int i = 0; i < rawIds.size(); i++) {
@@ -69,7 +63,7 @@ public class ReorderProductsService implements ReorderProductsUseCase {
             );
         }
 
-
         productRepository.reorderAll(newPositions);
     }
 }
+

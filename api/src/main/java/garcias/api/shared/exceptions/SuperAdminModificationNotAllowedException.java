@@ -5,3 +5,4 @@ public class SuperAdminModificationNotAllowedException extends DomainException {
         super("Modifying the role to/from SUPER_ADMIN is not allowed.");
     }
 }
+

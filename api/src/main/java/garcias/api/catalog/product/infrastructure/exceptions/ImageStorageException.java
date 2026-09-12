@@ -7,3 +7,4 @@ public class ImageStorageException extends InternalServerException {
         super(message, cause);
     }
 }
+

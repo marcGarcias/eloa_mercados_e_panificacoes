@@ -11,19 +11,15 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductReorderController {
 
-
     private final ReorderProductsUseCase reorderProductsUseCase;
-
 
     public ProductReorderController(ReorderProductsUseCase reorderProductsUseCase) {
         this.reorderProductsUseCase = reorderProductsUseCase;
     }
-
 
     @PutMapping("/reorder")
     @Operation(
@@ -57,3 +53,4 @@ public class ProductReorderController {
         return ResponseEntity.noContent().build();
     }
 }
+

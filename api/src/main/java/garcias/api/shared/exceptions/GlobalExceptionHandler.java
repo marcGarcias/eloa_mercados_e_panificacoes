@@ -1,6 +1,5 @@
 package garcias.api.shared.exceptions;
 
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +18,11 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(
             NotFoundException exception,
             HttpServletRequest request
     ) {
-
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -40,13 +36,11 @@ public class GlobalExceptionHandler {
                 );
     }
 
-
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflictException(
             ConflictException exception,
             HttpServletRequest request
     ) {
-
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -60,13 +54,11 @@ public class GlobalExceptionHandler {
                 );
     }
 
-
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErrorResponse> handleDomainException(
             DomainException exception,
             HttpServletRequest request
     ) {
-
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -80,13 +72,11 @@ public class GlobalExceptionHandler {
                 );
     }
 
-
     @ExceptionHandler({MethodArgumentNotValidException.class, org.springframework.validation.BindException.class})
     public ResponseEntity<ErrorResponse> handleValidationException(
             org.springframework.validation.BindException exception,
             HttpServletRequest request
     ) {
-
 
         String message =
                 exception
@@ -100,7 +90,6 @@ public class GlobalExceptionHandler {
                         )
                         .collect(Collectors.joining(", "));
 
-
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(
@@ -112,7 +101,6 @@ public class GlobalExceptionHandler {
                         )
                 );
     }
-
 
     @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(

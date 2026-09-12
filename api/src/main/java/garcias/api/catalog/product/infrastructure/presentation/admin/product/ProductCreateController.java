@@ -18,21 +18,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductCreateController {
 
-
     private final CreateProductUseCase createProductUseCase;
-
 
     public ProductCreateController(
             CreateProductUseCase createProductUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
     }
-
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
@@ -66,10 +62,8 @@ public class ProductCreateController {
 
     ) {
 
-
         Product product =
                 createProductUseCase.execute(request);
-
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

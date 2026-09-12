@@ -14,17 +14,13 @@ import java.util.Optional;
 
 public interface ProductRepository {
 
-
     Product save(Product product);
-
 
     Optional<Product> findById(ProductId id);
 
     void delete(Product product);
 
-
     Optional<CatalogPosition> findLastPosition();
-
 
     Page<Product> search(
             ProductFilter filter,
@@ -42,23 +38,11 @@ public interface ProductRepository {
 
     boolean existsByCategoryId(CategoryId categoryId);
 
-    /**
-     * Busca multiplos produtos por uma lista de IDs.
-     * Usado para validar a existencia de todos os produtos antes de reordenar.
-     */
     List<Product> findAllByIds(List<ProductId> ids);
 
-    /**
-     * Reescreve as posicoes de todos os produtos recebidos no mapa
-     * em uma unica transacao atomica.
-     * Nao utiliza a logica de deslocamento do updatePosition.
-     */
     void reorderAll(Map<ProductId, CatalogPosition> newPositions);
 
-    /**
-     * Normaliza as posicoes de todos os produtos remanescentes no catalogo
-     * consecutivamente de 1 a N.
-     */
     void reorganizeAllPositions();
 
 }
+

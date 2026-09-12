@@ -3,12 +3,9 @@ package garcias.api.catalog.product.application.mapper;
 import garcias.api.catalog.product.application.dto.responses.ProductAdminResponse;
 import garcias.api.catalog.product.domain.entities.Product;
 
-
 public final class ProductAdminResponseMapper {
 
-
     private ProductAdminResponseMapper() {}
-
 
     public static ProductAdminResponse toResponse(Product product) {
 

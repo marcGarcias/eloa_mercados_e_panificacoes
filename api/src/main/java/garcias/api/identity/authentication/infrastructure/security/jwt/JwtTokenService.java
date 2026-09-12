@@ -65,7 +65,6 @@ public class JwtTokenService {
                 .getSubject();
     }
 
-
     public String extractRole(String token) {
 
         return Jwts.parser()
@@ -76,3 +75,4 @@ public class JwtTokenService {
                 .get("role", String.class);
     }
 }
+

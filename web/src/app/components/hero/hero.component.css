@@ -14,9 +14,9 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(204, 145, 72, 0.12);
-  border: 1px solid rgba(204, 145, 72, 0.3);
-  color: var(--primary-dark);
+  background: rgba(184, 125, 52, 0.16);
+  border: 1px solid rgba(140, 85, 30, 0.35);
+  color: #6E3F15;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -42,13 +42,13 @@
 }
 
 .hero h1 span {
-  color: var(--primary);
+  color: #8A4B16;
   display: block;
 }
 
 .hero p {
   font-size: 18px;
-  color: #666;
+  color: #52463C;
   margin-bottom: 35px;
   line-height: 1.7;
 }
@@ -78,14 +78,14 @@
   font-family: var(--font-title);
   font-size: 32px;
   font-weight: 700;
-  color: var(--primary);
+  color: #7D4214;
   display: block;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #888;
-  font-weight: 500;
+  color: #52463C;
+  font-weight: 600;
 }
 
 .hero-image {

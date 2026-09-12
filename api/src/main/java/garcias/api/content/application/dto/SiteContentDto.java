@@ -31,7 +31,18 @@ public class SiteContentDto {
     @Valid
     private DadosDto dados;
 
+    @Valid
+    private FaqDto faq;
+
     // Getters and Setters
+
+    public FaqDto getFaq() {
+        return faq;
+    }
+
+    public void setFaq(FaqDto faq) {
+        this.faq = faq;
+    }
 
     public BannerDto getBanner() {
         return banner;
@@ -301,5 +312,36 @@ public class SiteContentDto {
         public void setWhatsapp(String whatsapp) { this.whatsapp = whatsapp; }
         public String getCnpj() { return cnpj; }
         public void setCnpj(String cnpj) { this.cnpj = cnpj; }
+    }
+
+    public static class FaqDto {
+        @Valid
+        private List<FaqItemDto> itens;
+
+        public List<FaqItemDto> getItens() { return itens; }
+        public void setItens(List<FaqItemDto> itens) { this.itens = itens; }
+    }
+
+    public static class FaqItemDto {
+        private String id;
+        private String pergunta;
+
+        @Size(max = 1000, message = "A resposta do FAQ não pode exceder 1000 caracteres.")
+        private String resposta;
+
+        public FaqItemDto() {}
+
+        public FaqItemDto(String id, String pergunta, String resposta) {
+            this.id = id;
+            this.pergunta = pergunta;
+            this.resposta = resposta;
+        }
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
+        public String getPergunta() { return pergunta; }
+        public void setPergunta(String pergunta) { this.pergunta = pergunta; }
+        public String getResposta() { return resposta; }
+        public void setResposta(String resposta) { this.resposta = resposta; }
     }
 }

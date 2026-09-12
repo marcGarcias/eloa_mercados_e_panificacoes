@@ -10,7 +10,8 @@ public record SiteContent(
         Estatisticas estatisticas,
         Cta cta,
         Rodape rodape,
-        Dados dados
+        Dados dados,
+        Faq faq
 ) {
     public Banner getBanner() {
         return banner;
@@ -42,5 +43,9 @@ public record SiteContent(
 
     public Dados getDados() {
         return dados;
+    }
+
+    public Faq getFaq() {
+        return faq;
     }
 }

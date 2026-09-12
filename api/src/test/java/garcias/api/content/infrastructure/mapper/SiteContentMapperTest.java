@@ -21,7 +21,7 @@ public class SiteContentMapperTest {
         Rodape rod = new Rodape("desc", "contato", "direitos");
         Dados dados = new Dados("end", "9", "18", "seg-sex", "123", "123");
         
-        SiteContent content = new SiteContent(banner, dif, cat, sobre, est, cta, rod, dados);
+        SiteContent content = new SiteContent(banner, dif, cat, sobre, est, cta, rod, dados, Faq.defaultFaq());
         
         // 1. Serializa para JSON
         String json = objectMapper.writeValueAsString(content);

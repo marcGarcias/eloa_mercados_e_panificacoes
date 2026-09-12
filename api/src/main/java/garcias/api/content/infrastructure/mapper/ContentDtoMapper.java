@@ -7,46 +7,53 @@ import java.util.stream.Collectors;
 
 public class ContentDtoMapper {
 
+    private static String blankToNull(String s) {
+        if (s == null || s.trim().isEmpty()) {
+            return null;
+        }
+        return s.trim();
+    }
+
     public static SiteContent toDomain(SiteContentDto dto) {
         if (dto == null) return null;
 
         var bannerDto = dto.getBanner() != null ? dto.getBanner() : new SiteContentDto.BannerDto();
         var bannerInds = bannerDto.getIndicadores() != null ? bannerDto.getIndicadores() : java.util.Collections.<SiteContentDto.IndicadorDto>emptyList();
         var banner = new Banner(
-                bannerDto.getSelo(),
-                bannerDto.getTitulo(),
-                bannerDto.getSubtitulo(),
-                bannerDto.getDescricao(),
+                blankToNull(bannerDto.getSelo()),
+                blankToNull(bannerDto.getTitulo()),
+                blankToNull(bannerDto.getSubtitulo()),
+                blankToNull(bannerDto.getDescricao()),
                 bannerInds.stream()
-                        .map(ind -> new Indicador(ind.getNome(), ind.getValor()))
+                        .map(ind -> new Indicador(ind != null ? blankToNull(ind.getNome()) : null, ind != null ? blankToNull(ind.getValor()) : null))
                         .collect(Collectors.toList())
         );
 
         var difDto = dto.getDiferenciais() != null ? dto.getDiferenciais() : new SiteContentDto.DiferenciaisDto();
         var difCards = difDto.getCards() != null ? difDto.getCards() : java.util.Collections.<SiteContentDto.CardDto>emptyList();
         var diferenciais = new Diferenciais(
-                difDto.getSelo(),
-                difDto.getTitulo(),
-                difDto.getDescricao(),
+                blankToNull(difDto.getSelo()),
+                blankToNull(difDto.getTitulo()),
+                blankToNull(difDto.getDescricao()),
                 difCards.stream()
-                        .map(c -> new Card(c.getTitulo(), c.getTexto()))
+                        .map(c -> new Card(c != null ? blankToNull(c.getTitulo()) : null, c != null ? blankToNull(c.getTexto()) : null))
                         .collect(Collectors.toList())
         );
 
         var catDto = dto.getCatalogo() != null ? dto.getCatalogo() : new SiteContentDto.CatalogoDto();
         var catalogo = new Catalogo(
-                catDto.getSelo(),
-                catDto.getDescricao()
+                blankToNull(catDto.getSelo()),
+                blankToNull(catDto.getDescricao())
         );
 
         var sobreDto = dto.getSobre() != null ? dto.getSobre() : new SiteContentDto.SobreDto();
         var sobreLista = sobreDto.getLista() != null ? sobreDto.getLista() : java.util.Collections.<SiteContentDto.DescricaoItemDto>emptyList();
         var sobre = new Sobre(
-                sobreDto.getSelo(),
-                sobreDto.getTitulo(),
-                sobreDto.getDescricao(),
+                blankToNull(sobreDto.getSelo()),
+                blankToNull(sobreDto.getTitulo()),
+                blankToNull(sobreDto.getDescricao()),
                 sobreLista.stream()
-                        .map(item -> new DescricaoItem(item.getNome(), item.getDescricao()))
+                        .map(item -> new DescricaoItem(item != null ? blankToNull(item.getNome()) : null, item != null ? blankToNull(item.getDescricao()) : null))
                         .collect(Collectors.toList())
         );
 
@@ -54,35 +61,59 @@ public class ContentDtoMapper {
         var estLista = estDto.getLista() != null ? estDto.getLista() : java.util.Collections.<SiteContentDto.IndicadorDto>emptyList();
         var estatisticas = new Estatisticas(
                 estLista.stream()
-                        .map(est -> new Indicador(est.getNome(), est.getValor()))
+                        .map(est -> new Indicador(est != null ? blankToNull(est.getNome()) : null, est != null ? blankToNull(est.getValor()) : null))
                         .collect(Collectors.toList())
         );
 
         var ctaDto = dto.getCta() != null ? dto.getCta() : new SiteContentDto.CtaDto();
         var cta = new Cta(
-                ctaDto.getSelo(),
-                ctaDto.getTitulo(),
-                ctaDto.getDescricao()
+                blankToNull(ctaDto.getSelo()),
+                blankToNull(ctaDto.getTitulo()),
+                blankToNull(ctaDto.getDescricao())
         );
 
         var rodDto = dto.getRodape() != null ? dto.getRodape() : new SiteContentDto.RodapeDto();
         var rodape = new Rodape(
-                rodDto.getDescricao(),
-                rodDto.getTextoContato(),
-                rodDto.getTextoDireitos()
+                blankToNull(rodDto.getDescricao()),
+                blankToNull(rodDto.getTextoContato()),
+                blankToNull(rodDto.getTextoDireitos())
         );
 
         var dadDto = dto.getDados() != null ? dto.getDados() : new SiteContentDto.DadosDto();
         var dados = new Dados(
-                dadDto.getEndereco(),
-                dadDto.getHorarioAbertura(),
-                dadDto.getHorarioFechamento(),
-                dadDto.getDiasFuncionamento(),
-                dadDto.getWhatsapp(),
-                dadDto.getCnpj()
+                blankToNull(dadDto.getEndereco()),
+                blankToNull(dadDto.getHorarioAbertura()),
+                blankToNull(dadDto.getHorarioFechamento()),
+                blankToNull(dadDto.getDiasFuncionamento()),
+                blankToNull(dadDto.getWhatsapp()),
+                blankToNull(dadDto.getCnpj())
         );
 
-        return new SiteContent(banner, diferenciais, catalogo, sobre, estatisticas, cta, rodape, dados);
+        var faqDto = dto.getFaq();
+        Faq faq;
+        if (faqDto != null && faqDto.getItens() != null && !faqDto.getItens().isEmpty()) {
+            var respostaMap = faqDto.getItens().stream()
+                    .filter(item -> item != null && item.getId() != null)
+                    .collect(Collectors.toMap(
+                            SiteContentDto.FaqItemDto::getId,
+                            item -> blankToNull(item.getResposta()),
+                            (first, duplicate) -> first
+                    ));
+
+            var itens = FaqCanonical.CANONICAL_ITEMS.stream()
+                    .map(canonico -> {
+                        if (respostaMap.containsKey(canonico.id())) {
+                            return canonico.withResposta(respostaMap.get(canonico.id()));
+                        }
+                        return canonico;
+                    })
+                    .collect(Collectors.toList());
+            faq = new Faq(itens);
+        } else {
+            faq = Faq.defaultFaq();
+        }
+
+        return new SiteContent(banner, diferenciais, catalogo, sobre, estatisticas, cta, rodape, dados, faq);
     }
 
     public static SiteContentDto toDto(SiteContent domain) {
@@ -187,6 +218,18 @@ public class ContentDtoMapper {
         }
         dto.setDados(dadDto);
 
+        var faqDto = new SiteContentDto.FaqDto();
+        if (domain.getFaq() != null && domain.getFaq().itens() != null) {
+            faqDto.setItens(domain.getFaq().itens().stream()
+                    .map(item -> new SiteContentDto.FaqItemDto(item.id(), item.pergunta(), item.resposta()))
+                    .collect(Collectors.toList()));
+        } else {
+            faqDto.setItens(FaqCanonical.CANONICAL_ITEMS.stream()
+                    .map(item -> new SiteContentDto.FaqItemDto(item.id(), item.pergunta(), item.resposta()))
+                    .collect(Collectors.toList()));
+        }
+        dto.setFaq(faqDto);
+
         return dto;
     }
 
@@ -197,55 +240,126 @@ public class ContentDtoMapper {
         var existingDto = toDto(existing);
 
         if (patch.getBanner() != null) {
-            if (patch.getBanner().getSelo() != null) existingDto.getBanner().setSelo(patch.getBanner().getSelo());
-            if (patch.getBanner().getTitulo() != null) existingDto.getBanner().setTitulo(patch.getBanner().getTitulo());
-            if (patch.getBanner().getSubtitulo() != null) existingDto.getBanner().setSubtitulo(patch.getBanner().getSubtitulo());
-            if (patch.getBanner().getDescricao() != null) existingDto.getBanner().setDescricao(patch.getBanner().getDescricao());
-            if (patch.getBanner().getIndicadores() != null) existingDto.getBanner().setIndicadores(patch.getBanner().getIndicadores());
+            if (existingDto.getBanner() == null) existingDto.setBanner(new SiteContentDto.BannerDto());
+            existingDto.getBanner().setSelo(blankToNull(patch.getBanner().getSelo()));
+            existingDto.getBanner().setTitulo(blankToNull(patch.getBanner().getTitulo()));
+            existingDto.getBanner().setSubtitulo(blankToNull(patch.getBanner().getSubtitulo()));
+            existingDto.getBanner().setDescricao(blankToNull(patch.getBanner().getDescricao()));
+            if (patch.getBanner().getIndicadores() != null) {
+                existingDto.getBanner().setIndicadores(patch.getBanner().getIndicadores().stream()
+                        .map(ind -> {
+                            var i = new SiteContentDto.IndicadorDto();
+                            i.setNome(ind != null ? blankToNull(ind.getNome()) : null);
+                            i.setValor(ind != null ? blankToNull(ind.getValor()) : null);
+                            return i;
+                        }).collect(Collectors.toList()));
+            }
         }
 
         if (patch.getDiferenciais() != null) {
-            if (patch.getDiferenciais().getSelo() != null) existingDto.getDiferenciais().setSelo(patch.getDiferenciais().getSelo());
-            if (patch.getDiferenciais().getTitulo() != null) existingDto.getDiferenciais().setTitulo(patch.getDiferenciais().getTitulo());
-            if (patch.getDiferenciais().getDescricao() != null) existingDto.getDiferenciais().setDescricao(patch.getDiferenciais().getDescricao());
-            if (patch.getDiferenciais().getCards() != null) existingDto.getDiferenciais().setCards(patch.getDiferenciais().getCards());
+            if (existingDto.getDiferenciais() == null) existingDto.setDiferenciais(new SiteContentDto.DiferenciaisDto());
+            existingDto.getDiferenciais().setSelo(blankToNull(patch.getDiferenciais().getSelo()));
+            existingDto.getDiferenciais().setTitulo(blankToNull(patch.getDiferenciais().getTitulo()));
+            existingDto.getDiferenciais().setDescricao(blankToNull(patch.getDiferenciais().getDescricao()));
+            if (patch.getDiferenciais().getCards() != null) {
+                existingDto.getDiferenciais().setCards(patch.getDiferenciais().getCards().stream()
+                        .map(c -> {
+                            var card = new SiteContentDto.CardDto();
+                            card.setTitulo(c != null ? blankToNull(c.getTitulo()) : null);
+                            card.setTexto(c != null ? blankToNull(c.getTexto()) : null);
+                            return card;
+                        }).collect(Collectors.toList()));
+            }
         }
 
         if (patch.getCatalogo() != null) {
-            if (patch.getCatalogo().getSelo() != null) existingDto.getCatalogo().setSelo(patch.getCatalogo().getSelo());
-            if (patch.getCatalogo().getDescricao() != null) existingDto.getCatalogo().setDescricao(patch.getCatalogo().getDescricao());
+            if (existingDto.getCatalogo() == null) existingDto.setCatalogo(new SiteContentDto.CatalogoDto());
+            existingDto.getCatalogo().setSelo(blankToNull(patch.getCatalogo().getSelo()));
+            existingDto.getCatalogo().setDescricao(blankToNull(patch.getCatalogo().getDescricao()));
         }
 
         if (patch.getSobre() != null) {
-            if (patch.getSobre().getSelo() != null) existingDto.getSobre().setSelo(patch.getSobre().getSelo());
-            if (patch.getSobre().getTitulo() != null) existingDto.getSobre().setTitulo(patch.getSobre().getTitulo());
-            if (patch.getSobre().getDescricao() != null) existingDto.getSobre().setDescricao(patch.getSobre().getDescricao());
-            if (patch.getSobre().getLista() != null) existingDto.getSobre().setLista(patch.getSobre().getLista());
+            if (existingDto.getSobre() == null) existingDto.setSobre(new SiteContentDto.SobreDto());
+            existingDto.getSobre().setSelo(blankToNull(patch.getSobre().getSelo()));
+            existingDto.getSobre().setTitulo(blankToNull(patch.getSobre().getTitulo()));
+            existingDto.getSobre().setDescricao(blankToNull(patch.getSobre().getDescricao()));
+            if (patch.getSobre().getLista() != null) {
+                existingDto.getSobre().setLista(patch.getSobre().getLista().stream()
+                        .map(item -> {
+                            var d = new SiteContentDto.DescricaoItemDto();
+                            d.setNome(item != null ? blankToNull(item.getNome()) : null);
+                            d.setDescricao(item != null ? blankToNull(item.getDescricao()) : null);
+                            return d;
+                        }).collect(Collectors.toList()));
+            }
         }
 
         if (patch.getEstatisticas() != null) {
-            if (patch.getEstatisticas().getLista() != null) existingDto.getEstatisticas().setLista(patch.getEstatisticas().getLista());
+            if (existingDto.getEstatisticas() == null) existingDto.setEstatisticas(new SiteContentDto.EstatisticasDto());
+            if (patch.getEstatisticas().getLista() != null) {
+                existingDto.getEstatisticas().setLista(patch.getEstatisticas().getLista().stream()
+                        .map(est -> {
+                            var ind = new SiteContentDto.IndicadorDto();
+                            ind.setNome(est != null ? blankToNull(est.getNome()) : null);
+                            ind.setValor(est != null ? blankToNull(est.getValor()) : null);
+                            return ind;
+                        }).collect(Collectors.toList()));
+            }
         }
 
         if (patch.getCta() != null) {
-            if (patch.getCta().getSelo() != null) existingDto.getCta().setSelo(patch.getCta().getSelo());
-            if (patch.getCta().getTitulo() != null) existingDto.getCta().setTitulo(patch.getCta().getTitulo());
-            if (patch.getCta().getDescricao() != null) existingDto.getCta().setDescricao(patch.getCta().getDescricao());
+            if (existingDto.getCta() == null) existingDto.setCta(new SiteContentDto.CtaDto());
+            existingDto.getCta().setSelo(blankToNull(patch.getCta().getSelo()));
+            existingDto.getCta().setTitulo(blankToNull(patch.getCta().getTitulo()));
+            existingDto.getCta().setDescricao(blankToNull(patch.getCta().getDescricao()));
         }
 
         if (patch.getRodape() != null) {
-            if (patch.getRodape().getDescricao() != null) existingDto.getRodape().setDescricao(patch.getRodape().getDescricao());
-            if (patch.getRodape().getTextoContato() != null) existingDto.getRodape().setTextoContato(patch.getRodape().getTextoContato());
-            if (patch.getRodape().getTextoDireitos() != null) existingDto.getRodape().setTextoDireitos(patch.getRodape().getTextoDireitos());
+            if (existingDto.getRodape() == null) existingDto.setRodape(new SiteContentDto.RodapeDto());
+            existingDto.getRodape().setDescricao(blankToNull(patch.getRodape().getDescricao()));
+            existingDto.getRodape().setTextoContato(blankToNull(patch.getRodape().getTextoContato()));
+            existingDto.getRodape().setTextoDireitos(blankToNull(patch.getRodape().getTextoDireitos()));
         }
 
         if (patch.getDados() != null) {
-            if (patch.getDados().getEndereco() != null) existingDto.getDados().setEndereco(patch.getDados().getEndereco());
-            if (patch.getDados().getHorarioAbertura() != null) existingDto.getDados().setHorarioAbertura(patch.getDados().getHorarioAbertura());
-            if (patch.getDados().getHorarioFechamento() != null) existingDto.getDados().setHorarioFechamento(patch.getDados().getHorarioFechamento());
-            if (patch.getDados().getDiasFuncionamento() != null) existingDto.getDados().setDiasFuncionamento(patch.getDados().getDiasFuncionamento());
-            if (patch.getDados().getWhatsapp() != null) existingDto.getDados().setWhatsapp(patch.getDados().getWhatsapp());
-            if (patch.getDados().getCnpj() != null) existingDto.getDados().setCnpj(patch.getDados().getCnpj());
+            if (existingDto.getDados() == null) existingDto.setDados(new SiteContentDto.DadosDto());
+            existingDto.getDados().setEndereco(blankToNull(patch.getDados().getEndereco()));
+            existingDto.getDados().setHorarioAbertura(blankToNull(patch.getDados().getHorarioAbertura()));
+            existingDto.getDados().setHorarioFechamento(blankToNull(patch.getDados().getHorarioFechamento()));
+            existingDto.getDados().setDiasFuncionamento(blankToNull(patch.getDados().getDiasFuncionamento()));
+            existingDto.getDados().setWhatsapp(blankToNull(patch.getDados().getWhatsapp()));
+            existingDto.getDados().setCnpj(blankToNull(patch.getDados().getCnpj()));
+        }
+
+        if (patch.getFaq() != null && patch.getFaq().getItens() != null) {
+            java.util.List<FaqItem> baseItens = (existing != null && existing.getFaq() != null && existing.getFaq().itens() != null)
+                    ? existing.getFaq().itens()
+                    : FaqCanonical.CANONICAL_ITEMS;
+
+            java.util.Map<String, String> novasRespostas = patch.getFaq().getItens().stream()
+                    .filter(item -> item != null && item.getId() != null)
+                    .collect(Collectors.toMap(
+                            SiteContentDto.FaqItemDto::getId,
+                            item -> blankToNull(item.getResposta()),
+                            (primeiro, duplicado) -> primeiro
+                    ));
+
+            java.util.List<FaqItem> itensAtualizados = baseItens.stream()
+                    .map(canonico -> {
+                        if (novasRespostas.containsKey(canonico.id())) {
+                            String novaResposta = novasRespostas.get(canonico.id());
+                            // Se for nulo ou vazio, preserva ou atualiza conforme enviado
+                            return novaResposta != null ? canonico.withResposta(novaResposta) : canonico.withResposta(null);
+                        }
+                        return canonico;
+                    })
+                    .collect(Collectors.toList());
+
+            var fDto = new SiteContentDto.FaqDto();
+            fDto.setItens(itensAtualizados.stream()
+                    .map(item -> new SiteContentDto.FaqItemDto(item.id(), item.pergunta(), item.resposta()))
+                    .collect(Collectors.toList()));
+            existingDto.setFaq(fDto);
         }
 
         return toDomain(existingDto);

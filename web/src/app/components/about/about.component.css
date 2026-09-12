@@ -29,6 +29,10 @@
   animation: floatAbout 6s ease-in-out infinite alternate;
 }
 
+.about-image picture {
+  display: contents;
+}
+
 .about-image img {
   z-index: 2;
   width: 100%;

@@ -45,7 +45,11 @@
 
         <div class="hero-image">
             <div class="hero-circle">
-                <img src="/assets/images/eloa_girl.webp" srcset="/assets/images/eloa_girl-sm.webp 260w, /assets/images/eloa_girl.webp 440w" sizes="(max-width: 743px) 248px, 440px" alt="Pães frescos Eloá Mercados e Panificações" width="440" height="660" fetchpriority="high" decoding="async">
+                <picture>
+                    <source type="image/avif" srcset="/assets/images/eloa_girl-sm.avif 260w, /assets/images/eloa_girl.avif 440w" sizes="(max-width: 743px) 248px, 440px">
+                    <source type="image/webp" srcset="/assets/images/eloa_girl-sm.webp 260w, /assets/images/eloa_girl.webp 440w" sizes="(max-width: 743px) 248px, 440px">
+                    <img src="/assets/images/eloa_girl.webp" alt="Pães frescos Eloá Mercados e Panificações" width="440" height="660" fetchpriority="high" decoding="async">
+                </picture>
             </div>
         </div>
     </div>

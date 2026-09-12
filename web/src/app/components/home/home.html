@@ -1,11 +1,41 @@
 <app-header [dados]="content?.dados"></app-header>
 <main class="page-wrapper" id="main-content">
   <app-hero [banner]="content?.banner"></app-hero>
-  <app-features [diferenciais]="content?.diferenciais"></app-features>
-  <app-catalog [catalogo]="content?.catalogo"></app-catalog>
-  <app-about [sobre]="content?.sobre"></app-about>
-  <app-stats [estatisticas]="content?.estatisticas"></app-stats>
-  <app-cta [cta]="content?.cta" [dados]="content?.dados"></app-cta>
-  <app-footer [rodape]="content?.rodape" [dados]="content?.dados"></app-footer>
+
+  @defer (on viewport) {
+    <app-features [diferenciais]="content?.diferenciais"></app-features>
+  } @placeholder {
+    <section class="features-placeholder"></section>
+  }
+
+  @defer (on viewport) {
+    <app-catalog [catalogo]="content?.catalogo"></app-catalog>
+  } @placeholder {
+    <section class="catalog-placeholder"></section>
+  }
+
+  @defer (on viewport) {
+    <app-about [sobre]="content?.sobre"></app-about>
+  } @placeholder {
+    <section class="about-placeholder"></section>
+  }
+
+  @defer (on viewport) {
+    <app-stats [estatisticas]="content?.estatisticas"></app-stats>
+  } @placeholder {
+    <section class="stats-placeholder"></section>
+  }
+
+  @defer (on viewport) {
+    <app-cta [cta]="content?.cta" [dados]="content?.dados"></app-cta>
+  } @placeholder {
+    <section class="cta-placeholder"></section>
+  }
+
+  @defer (on viewport) {
+    <app-footer [rodape]="content?.rodape" [dados]="content?.dados"></app-footer>
+  } @placeholder {
+    <footer class="footer-placeholder"></footer>
+  }
 </main>
 

@@ -1,0 +1,23 @@
+.features-placeholder {
+  min-height: 280px;
+}
+
+.catalog-placeholder {
+  min-height: 480px;
+}
+
+.about-placeholder {
+  min-height: 380px;
+}
+
+.stats-placeholder {
+  min-height: 160px;
+}
+
+.cta-placeholder {
+  min-height: 240px;
+}
+
+.footer-placeholder {
+  min-height: 240px;
+}

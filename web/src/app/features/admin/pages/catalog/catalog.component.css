@@ -60,6 +60,31 @@
   cursor: grabbing;
 }
 
+.drag-handle-hint svg {
+  width: 16px;
+  height: 16px;
+}
+
+.card-media {
+  background: #F5E9DD;
+}
+
+.card-media .no-image {
+  color: #BF9B79;
+}
+
+.card-media .no-image img {
+  width: 26px;
+  height: 26px;
+  opacity: 0.7;
+}
+
+.card-media > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Botão Editar Catálogo — estado ativo (modo edição ligado) */
 .btn-ghost.active {
   background: var(--primary, #C07A45);
@@ -551,6 +576,11 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   cursor: pointer;
+}
+
+.mobile-order-controls .order-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 .mobile-order-controls .order-btn:active {

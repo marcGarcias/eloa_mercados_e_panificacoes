@@ -179,9 +179,11 @@
   color: var(--tan, #BF9B79);
 }
 
-.photo-placeholder svg {
+.photo-placeholder svg,
+.photo-placeholder img {
   width: 28px;
   height: 28px;
+  opacity: 0.6;
 }
 
 .photo-placeholder span {

@@ -28,7 +28,7 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
 
   @Input() set estatisticas(value: ContentEstatisticas | null | undefined) {
     this._estatisticas = value;
-    const validItems = value?.lista?.filter(est => 
+    const validItems = value?.lista?.filter(est =>
       (est.nome && est.nome.trim()) || (est.valor && est.valor.trim())
     );
 
@@ -61,12 +61,11 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
 
     const trimmed = valor.trim();
 
-    // Regex para identificar se o valor é uma métrica numérica (ex: "10", "+10", "100%", "50+", ">500", "2.5k")
     const numericRegex = /^([+><~]?|R\$)\s*(\d+(?:[.,]\d+)?)\s*([%+kKmM]?|\+|mil)?$/i;
     const match = trimmed.match(numericRegex);
 
     if (!match) {
-      // Não é numérico (ex: "Diária", "Artesanal", "Fresco") -> Animação anulada
+
       return {
         target: null,
         prefix: '',
@@ -123,7 +122,7 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
               const animate = (now: number) => {
                 const elapsed = now - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                // easeOutExpo suave para contagem fluida
+
                 const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
                 const current = Math.floor(ease * target);
 
@@ -156,3 +155,4 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
     }
   }
 }
+

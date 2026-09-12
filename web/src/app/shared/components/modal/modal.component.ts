@@ -25,3 +25,4 @@ export class ModalComponent {
     this.close.emit();
   }
 }
+

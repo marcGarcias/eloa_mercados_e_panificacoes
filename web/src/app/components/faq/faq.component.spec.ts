@@ -55,3 +55,4 @@ describe('FaqComponent', () => {
     expect(answers[0].textContent?.trim()).toBe('Resposta dinâmica atualizada pelo painel administrativo!');
   });
 });
+

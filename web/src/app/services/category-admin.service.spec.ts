@@ -41,7 +41,7 @@ describe('CategoryAdminService', () => {
     it('deve realizar GET com parâmetros de paginação e busca por nome', () => {
       service.search(0, 5, 'Confeitaria').subscribe();
 
-      const req = httpMock.expectOne(request => 
+      const req = httpMock.expectOne(request =>
         request.url === '/api/admin/categories' &&
         request.params.get('page') === '0' &&
         request.params.get('size') === '5' &&
@@ -127,3 +127,4 @@ describe('CategoryAdminService', () => {
     });
   });
 });
+

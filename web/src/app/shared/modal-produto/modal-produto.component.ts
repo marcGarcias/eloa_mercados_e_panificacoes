@@ -24,24 +24,6 @@ import { CategoryAdminService } from '../../services/category-admin.service';
 import { ToastService } from '../../services/toast.service';
 import { finalize, Subscription } from 'rxjs';
 
-/**
- * Modal dual-mode de produto.
- *
- * Modo CRIACAO: @Input product = null
- *   - Titulo: "Novo produto"
- *   - Campos: name, categoryId, weight, photo (WebP obrigatoria)
- *   - Submit: valida integridade e existência das categorias na API antes de criar
- *
- * Modo EDICAO: @Input product = ProductAdminResponse
- *   - Titulo: "Editar produto"
- *   - Campos: todos do modo criacao + status + position
- *   - Formulario pre-preenchido com dados do produto
- *   - Submit: monta UpdateProductPayload (somente campos alterados)
- *
- * Emite:
- *   - (saved): ProductAdminResponse apos salvar com sucesso
- *   - (closed): ao fechar sem salvar
- */
 @Component({
   selector: 'app-modal-produto',
   standalone: true,
@@ -53,34 +35,24 @@ import { finalize, Subscription } from 'rxjs';
 export class ModalProdutoComponent implements OnChanges, OnDestroy {
   private readonly subs = new Subscription();
 
-  /** Produto a editar. null = modo criacao */
   @Input() product: ProductAdminResponse | null = null;
 
-  /** Lista de categorias para o select */
   @Input() categories: CategoryAdminResponse[] = [];
 
-  /** Controla visibilidade do modal */
   @Input() isOpen: boolean = false;
 
-  /** Emitido apos salvar com sucesso */
   @Output() saved = new EventEmitter<ProductAdminResponse>();
 
-  /** Emitido ao fechar o modal */
   @Output() closed = new EventEmitter<void>();
 
-  /** Referencia ao arquivo de foto selecionado */
   selectedPhoto: File | null = null;
 
-  /** URL de preview da imagem (local ou da API) */
   photoPreviewUrl: string | null = null;
 
-  /** Mensagem de erro de validacao da imagem */
   photoError: string | null = null;
 
-  /** Estado de submissao */
   isSubmitting: boolean = false;
 
-  /** Enum de status disponivel no template */
   readonly ProductStatus = ProductStatus;
 
   form: FormGroup;
@@ -136,7 +108,6 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
 
     if (!file) return;
 
-    // Validacao de formato WebP
     const isWebp =
       file.type === 'image/webp' ||
       file.name.toLowerCase().endsWith('.webp');
@@ -228,7 +199,7 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
                   this.cdr.markForCheck();
                 })
               ).subscribe({
-                next: (updated) => { 
+                next: (updated) => {
                   this.saved.emit(updated);
                   this.cdr.markForCheck();
                 },
@@ -255,7 +226,7 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
                   this.cdr.markForCheck();
                 })
               ).subscribe({
-                next: (created) => { 
+                next: (created) => {
                   this.saved.emit(created);
                   this.cdr.markForCheck();
                 },
@@ -332,3 +303,4 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     return found ? found.id : '';
   }
 }
+

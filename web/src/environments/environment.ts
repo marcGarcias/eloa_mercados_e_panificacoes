@@ -3,3 +3,4 @@ export const environment = {
   whatsappUrl: 'https://wa.me/xxxx',
   apiUrl: ''
 };
+

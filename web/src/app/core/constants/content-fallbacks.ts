@@ -1,12 +1,5 @@
 import { SiteContent } from '../../models/content.model';
 
-/**
- * Fallbacks Estáticos Centralizados do Projeto.
- * 
- * Editando qualquer valor nesta constante, o frontend sincroniza automaticamente
- * as informações padrão exibidas caso o banco retorne nulo ou vazio.
- * O conteúdo dinâmico do CMS/Admin é SEMPRE prioridade se existir.
- */
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   banner: {
     selo: 'Feito com tradição todos os dias',
@@ -122,11 +115,6 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   }
 };
 
-/**
- * Função inteligente de resolução:
- * O conteúdo dinâmico recebido do servidor tem sempre prioridade absoluta.
- * Caso qualquer seção, campo ou item esteja nulo ou vazio, utiliza automaticamente o fallback de DEFAULT_SITE_CONTENT.
- */
 export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteContent {
   const fallback = DEFAULT_SITE_CONTENT;
   if (!dynamic) {
@@ -137,7 +125,6 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     return dyn && dyn.trim() ? dyn.trim() : (def || '');
   };
 
-  // 1. Banner
   const bannerSelo = pickStr(dynamic.banner?.selo, fallback.banner.selo);
   const bannerTitulo = pickStr(dynamic.banner?.titulo, fallback.banner.titulo);
   const bannerSubtitulo = pickStr(dynamic.banner?.subtitulo, fallback.banner.subtitulo);
@@ -150,7 +137,6 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     };
   });
 
-  // 2. Diferenciais (3 cards)
   const difSelo = pickStr(dynamic.diferenciais?.selo, fallback.diferenciais.selo);
   const difTitulo = pickStr(dynamic.diferenciais?.titulo, fallback.diferenciais.titulo);
   const difDescricao = pickStr(dynamic.diferenciais?.descricao, fallback.diferenciais.descricao);
@@ -162,11 +148,9 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     };
   });
 
-  // 3. Catálogo
   const catSelo = pickStr(dynamic.catalogo?.selo, fallback.catalogo.selo);
   const catDescricao = pickStr(dynamic.catalogo?.descricao, fallback.catalogo.descricao);
 
-  // 4. Sobre Nós
   const sobreSelo = pickStr(dynamic.sobre?.selo, fallback.sobre.selo);
   const sobreTitulo = pickStr(dynamic.sobre?.titulo, fallback.sobre.titulo);
   const sobreDescricao = pickStr(dynamic.sobre?.descricao, fallback.sobre.descricao);
@@ -182,7 +166,6 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     sobreLista = fallback.sobre.lista;
   }
 
-  // 5. Estatísticas
   const dynEstLista = dynamic.estatisticas?.lista;
   let estatisticasLista: Array<{ nome: string; valor: string }>;
   if (dynEstLista && dynEstLista.length > 0) {
@@ -195,17 +178,14 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     estatisticasLista = fallback.estatisticas.lista;
   }
 
-  // 6. CTA
   const ctaSelo = pickStr(dynamic.cta?.selo, fallback.cta.selo);
   const ctaTitulo = pickStr(dynamic.cta?.titulo, fallback.cta.titulo);
   const ctaDescricao = pickStr(dynamic.cta?.descricao, fallback.cta.descricao);
 
-  // 7. Rodapé
   const rodapeDescricao = pickStr(dynamic.rodape?.descricao, fallback.rodape.descricao);
   const rodapeTextoContato = pickStr(dynamic.rodape?.textoContato, fallback.rodape.textoContato);
   const rodapeTextoDireitos = pickStr(dynamic.rodape?.textoDireitos, fallback.rodape.textoDireitos);
 
-  // 8. FAQ (5 perguntas canônicas)
   const faqItens = (fallback.faq?.itens || []).map(defFaq => {
     const dynFaq = dynamic.faq?.itens?.find(f => f.id === defFaq.id);
     return {
@@ -215,7 +195,6 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     };
   });
 
-  // 9. Dados
   const dadosEndereco = pickStr(dynamic.dados?.endereco, fallback.dados.endereco);
   const dadosHorarioAbertura = pickStr(dynamic.dados?.horarioAbertura, fallback.dados.horarioAbertura);
   const dadosHorarioFechamento = pickStr(dynamic.dados?.horarioFechamento, fallback.dados.horarioFechamento);
@@ -273,3 +252,4 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     }
   };
 }
+

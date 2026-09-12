@@ -336,11 +336,10 @@ export class ContentComponent implements OnInit, OnDestroy {
 
     this.isSaving = true;
     this.cdr.markForCheck();
-    
+
     const rawData = this.contentForm.value;
     const contentData = this.normalizePayload(rawData) || {};
-    
-    // Conforme arquitetura de segurança, trafega apenas { id, resposta } para o FAQ
+
     if (this.faqItens.length > 0) {
       contentData.faq = {
         itens: this.faqItens.controls.map(ctrl => {
@@ -353,7 +352,6 @@ export class ContentComponent implements OnInit, OnDestroy {
       };
     }
 
-    // Garante que banner.indicadores envie os 3 indicadores (com valores null se vazios)
     if (this.bannerIndicadores.length > 0) {
       if (!contentData.banner) contentData.banner = {};
       contentData.banner.indicadores = this.bannerIndicadores.controls.map(ctrl => {
@@ -366,7 +364,6 @@ export class ContentComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Garante que diferenciais.cards envie os 3 cards (com valores null se vazios)
     if (this.diferenciaisCards.length > 0) {
       if (!contentData.diferenciais) contentData.diferenciais = {};
       contentData.diferenciais.cards = this.diferenciaisCards.controls.map(ctrl => {
@@ -379,7 +376,6 @@ export class ContentComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Garante que sobre.lista envie todos os itens
     if (this.sobreLista.length > 0) {
       if (!contentData.sobre) contentData.sobre = {};
       contentData.sobre.lista = this.sobreLista.controls.map(ctrl => {
@@ -392,7 +388,6 @@ export class ContentComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Garante que estatisticas.lista envie todos os indicadores
     if (this.estatisticasLista.length > 0) {
       if (!contentData.estatisticas) contentData.estatisticas = {};
       contentData.estatisticas.lista = this.estatisticasLista.controls.map(ctrl => {
@@ -404,7 +399,7 @@ export class ContentComponent implements OnInit, OnDestroy {
         };
       });
     }
-    
+
     this.subs.add(
       this.contentService.saveContent(contentData).pipe(
         finalize(() => {
@@ -425,3 +420,4 @@ export class ContentComponent implements OnInit, OnDestroy {
     );
   }
 }
+

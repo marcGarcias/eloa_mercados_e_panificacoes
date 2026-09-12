@@ -6,7 +6,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
-    canActivate: [authGuard], // Protege todas as rotas filhas para exigir login
+    canActivate: [authGuard],
     children: [
       {
         path: 'home',
@@ -32,3 +32,4 @@ export const ADMIN_ROUTES: Routes = [
     ]
   }
 ];
+

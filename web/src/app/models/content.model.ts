@@ -71,3 +71,4 @@ export interface SiteContent {
   dados: SiteData;
   faq?: ContentFaq;
 }
+

@@ -23,7 +23,6 @@ describe('StatsComponent', () => {
     const items = compiled.querySelectorAll('.numero-item');
     expect(items.length).toBe(4);
 
-    // No fallback: 3 são numéricos animados (+10, +50, 100%) e 1 é texto sem animação (Diária)
     const animatedElements = compiled.querySelectorAll('.numero-val[data-target]');
     expect(animatedElements.length).toBe(3);
 
@@ -47,33 +46,28 @@ describe('StatsComponent', () => {
 
     expect(component.parsedStats.length).toBe(4);
 
-    // 1º item: +15 -> numérico, animação deve ser executada (target = 15)
     expect(component.parsedStats[0].target).toBe(15);
     expect(component.parsedStats[0].prefix).toBe('+');
 
-    // 2º item: 99% -> numérico, animação deve ser executada (target = 99)
     expect(component.parsedStats[1].target).toBe(99);
     expect(component.parsedStats[1].suffix).toBe('%');
 
-    // 3º item: Diária -> texto, animação anulada (target = null)
     expect(component.parsedStats[2].target).toBeNull();
     expect(component.parsedStats[2].text).toBe('Diária');
 
-    // 4º item: Artesanal -> texto, animação anulada (target = null)
     expect(component.parsedStats[3].target).toBeNull();
     expect(component.parsedStats[3].text).toBe('Artesanal');
 
     const compiled = fixture.nativeElement as HTMLElement;
     const values = compiled.querySelectorAll('.numero-val');
-    
-    // Itens com target !== null possuem o atributo data-target para o IntersectionObserver
+
     expect(values[0].getAttribute('data-target')).toBe('15');
     expect(values[1].getAttribute('data-target')).toBe('99');
-    
-    // Itens com target === null NÃO possuem data-target (animação anulada) e exibem o texto diretamente
+
     expect(values[2].getAttribute('data-target')).toBeNull();
     expect(values[2].textContent?.trim()).toBe('Diária');
     expect(values[3].getAttribute('data-target')).toBeNull();
     expect(values[3].textContent?.trim()).toBe('Artesanal');
   });
 });
+

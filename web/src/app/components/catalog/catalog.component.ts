@@ -160,7 +160,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     if (!q) {
       this.filteredCategories = [...this.categories];
     } else {
-      this.filteredCategories = this.categories.filter(c => 
+      this.filteredCategories = this.categories.filter(c =>
         c.toLowerCase().includes(q)
       );
     }
@@ -241,3 +241,4 @@ export class CatalogComponent implements OnInit, OnDestroy {
     return clean || `item-${index + 1}`;
   }
 }
+

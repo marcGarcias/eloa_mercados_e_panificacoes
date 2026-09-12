@@ -12,3 +12,4 @@ import { ContentBanner } from '../../models/content.model';
 export class HeroComponent {
   @Input() banner?: ContentBanner | null;
 }
+

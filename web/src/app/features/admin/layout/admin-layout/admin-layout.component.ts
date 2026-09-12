@@ -5,9 +5,6 @@ import { AuthService } from '../../../../services/auth.service';
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
 import { RoleTranslations } from '../../../../models/user.model';
 
-// ModalProdutoComponent removido do layout global:
-// agora e controlado diretamente pelo CatalogoComponent.
-
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
@@ -36,3 +33,4 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login-cms']);
   }
 }
+

@@ -8,13 +8,11 @@ export interface Product {
   order?: number;
 }
 
-/** Espelho do enum ProductStatus do backend */
 export enum ProductStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
 }
 
-/** Espelho de ProductAdminResponse */
 export interface ProductAdminResponse {
   id: number;
   name: string;
@@ -25,39 +23,27 @@ export interface ProductAdminResponse {
   status: ProductStatus;
 }
 
-/** Espelho de CategoryAdmResponse */
 export interface CategoryAdminResponse {
   id: number;
   name: string;
 }
 
-/**
- * Payload de criação de produto.
- * Todos os campos são obrigatórios para o POST.
- * Será serializado como multipart/form-data.
- */
 export interface CreateProductPayload {
   name: string;
   weight: number;
-  photo: File; // WebP obrigatório — validado na API
+  photo: File;
   categoryId: number;
 }
 
-/**
- * Payload de edição de produto.
- * Todos os campos são opcionais para o PATCH.
- * Será serializado como multipart/form-data.
- */
 export interface UpdateProductPayload {
   name?: string;
   weight?: number;
-  photo?: File; // WebP se enviado — validado na API
+  photo?: File;
   categoryId?: number;
   status?: ProductStatus;
   position?: number;
 }
 
-/** Wrapper de paginação do Spring (Page<T>) */
 export interface SpringPage<T> {
   content: T[];
   totalElements: number;
@@ -73,3 +59,4 @@ export interface ProductPublicResponse {
   categoryName: string;
   position: number;
 }
+

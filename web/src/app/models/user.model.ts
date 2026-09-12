@@ -24,7 +24,6 @@ export interface UpdateUserPayload {
   status: UserStatus;
 }
 
-// Helpers para tradução na UI
 export const RoleTranslations: Record<UserRole, string> = {
   'SUPER_ADMIN': 'Proprietário',
   'ADMIN': 'Administrador',
@@ -35,3 +34,4 @@ export const StatusTranslations: Record<UserStatus, string> = {
   'ACTIVE': 'Ativo',
   'INACTIVE': 'Inativo'
 };
+

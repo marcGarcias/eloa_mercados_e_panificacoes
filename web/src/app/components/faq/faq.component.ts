@@ -31,3 +31,4 @@ export class FaqComponent {
     });
   }
 }
+

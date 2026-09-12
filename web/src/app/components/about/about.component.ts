@@ -13,7 +13,7 @@ export class AboutComponent {
   @Input() sobre?: ContentSobre | null;
 
   get validList() {
-    return (this.sobre?.lista || []).filter(item => 
+    return (this.sobre?.lista || []).filter(item =>
       (item.nome && item.nome.trim()) || (item.descricao && item.descricao.trim())
     );
   }
@@ -22,3 +22,4 @@ export class AboutComponent {
     return this.validList.length > 0;
   }
 }
+

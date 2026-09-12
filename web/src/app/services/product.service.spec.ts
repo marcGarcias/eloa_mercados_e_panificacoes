@@ -29,7 +29,7 @@ describe('ProductService', () => {
 
   describe('searchAdmin() - Listagem com Filtros', () => {
     it('deve realizar GET com parâmetros de busca completos', () => {
-      // Act
+
       service.searchAdmin({
         name: 'Pão',
         categoryId: 3,
@@ -40,8 +40,7 @@ describe('ProductService', () => {
         expect(res.content.length).toBe(1);
       });
 
-      // Assert
-      const req = httpMock.expectOne(request => 
+      const req = httpMock.expectOne(request =>
         request.url === '/api/admin/products' &&
         request.params.get('name') === 'Pão' &&
         request.params.get('categoryId') === '3' &&
@@ -66,7 +65,7 @@ describe('ProductService', () => {
 
   describe('create() - Criação com Multipart/FormData', () => {
     it('deve realizar POST com FormData e retornar o produto criado', () => {
-      // Arrange
+
       const fakeFile = new File(['fake-image'], 'foto.webp', { type: 'image/webp' });
       const payload: CreateProductPayload = {
         name: 'Baguete Tradicional',
@@ -75,13 +74,11 @@ describe('ProductService', () => {
         categoryId: 2
       };
 
-      // Act
       service.create(payload).subscribe(product => {
         expect(product.id).toBe(10);
         expect(product.name).toBe('Baguete Tradicional');
       });
 
-      // Assert
       const req = httpMock.expectOne('/api/admin/products');
       expect(req.request.method).toBe('POST');
       expect(req.request.body instanceof FormData).toBe(true);
@@ -198,7 +195,7 @@ describe('ProductService', () => {
     it('deve realizar GET em /api/public/products com parâmetros padrão', () => {
       service.searchPublic({ page: 0, size: 12 }).subscribe();
 
-      const req = httpMock.expectOne(request => 
+      const req = httpMock.expectOne(request =>
         request.url === '/api/public/products' &&
         request.params.get('page') === '0' &&
         request.params.get('size') === '12'
@@ -208,3 +205,4 @@ describe('ProductService', () => {
     });
   });
 });
+

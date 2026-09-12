@@ -40,7 +40,7 @@ export class Home implements OnInit, OnDestroy {
   private readonly subs = new Subscription();
 
   ngOnInit(): void {
-    // Configura SEO e Schema.org da Home (Catálogo & Pedidos via WhatsApp)
+
     this.seoService.updateMetaTags({
       title: 'Catálogo de Panificação & Pedidos via WhatsApp',
       description: 'Catálogo de produtos da Eloá Mercados & Panificações. Pães, doces, bolos, salgados e insumos de panificação. Consulte e faça seu pedido pelo WhatsApp.',

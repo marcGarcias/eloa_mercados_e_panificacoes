@@ -9,30 +9,17 @@ import { environment } from '../../../environments/environment';
 let isRefreshing = false;
 let refreshTokenSubject = new Subject<string>();
 
-/**
- * Interceptor de autenticação HTTP.
- * 
- * Responsabilidades:
- * 1. Anexar credenciais (cookies HttpOnly) e token JWT Bearer nas requisições à API.
- * 2. Identificar respostas 401 Unauthorized e coordenar um único refresh concorrente.
- * 3. Enfileirar requisições simultâneas durante a rotação do token.
- * 4. Repetir as requisições originais com o novo Access Token após renovação bem-sucedida.
- * 5. Prevenir loops infinitos ignorando rotas de autenticação (/api/auth/*).
- * 6. Efetuar logout somente em caso de falha definitiva de autenticação.
- */
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
+
   const token = authService.getToken();
   const apiUrl = environment?.apiUrl ?? '';
 
-  // Habilita withCredentials para envio seguro do cookie HttpOnly (refresh_token)
   let authReq = req.clone({
     withCredentials: true
   });
 
-  // Anexa X-Requested-With e o token Bearer para requisições à nossa própria API
   if (req.url.startsWith(`${apiUrl}/api/`) || req.url.startsWith('/api/')) {
     const headers: { [key: string]: string } = {
       'X-Requested-With': 'XMLHttpRequest'
@@ -115,7 +102,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
             // Em caso de erro definitivo de autenticação no refresh
             refreshTokenSubject.error(refreshErr);
             refreshTokenSubject = new Subject<string>();
-            
+
             // Só desloga se o erro de refresh for 401/403 (token inválido/expirado)
             if (refreshErr instanceof HttpErrorResponse && (refreshErr.status === 401 || refreshErr.status === 403)) {
               authService.logout();

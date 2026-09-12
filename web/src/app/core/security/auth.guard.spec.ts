@@ -44,87 +44,76 @@ describe('Guards de Autenticação e Autorização', () => {
     const dummyState = {} as RouterStateSnapshot;
 
     it('deve redirecionar para /login-cms quando o usuário não estiver autenticado', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(false));
       const route = { data: {} } as unknown as ActivatedRouteSnapshot;
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authGuard(route, dummyState));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result instanceof UrlTree).toBe(true);
       expect(router.serializeUrl(result as UrlTree)).toBe('/login-cms');
       expect(result).toEqual(router.parseUrl('/login-cms'));
     });
 
     it('deve permitir acesso (true) quando autenticado e a rota não exigir roles específicas', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       const route = { data: {} } as unknown as ActivatedRouteSnapshot;
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authGuard(route, dummyState));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('deve permitir acesso (true) quando o usuário possui uma das roles requeridas', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       authServiceMock.currentUser$.next(createMockUser({ role: 'ADMIN' }));
       const route = {
         data: { roles: ['ADMIN', 'SUPER_ADMIN'] }
       } as unknown as ActivatedRouteSnapshot;
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authGuard(route, dummyState));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('deve redirecionar para /admin quando a role do usuário não for permitida', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       authServiceMock.currentUser$.next(createMockEditor());
       const route = {
         data: { roles: ['SUPER_ADMIN'] }
       } as unknown as ActivatedRouteSnapshot;
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authGuard(route, dummyState));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result instanceof UrlTree).toBe(true);
       expect(router.serializeUrl(result as UrlTree)).toBe('/admin');
       expect(result).toEqual(router.parseUrl('/admin'));
     });
 
     it('deve redirecionar para /admin em caso de timeout aguardando currentUser', async () => {
-      // Arrange
+
       vi.useFakeTimers();
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
-      // currentUser$ permanece null, forçando timeout de 3000ms
+
       const route = {
         data: { roles: ['ADMIN'] }
       } as unknown as ActivatedRouteSnapshot;
 
-      // Act
       let resolvedResult: unknown = null;
       const rawGuard = TestBed.runInInjectionContext(() => authGuard(route, dummyState));
       resolveGuardResult(rawGuard).subscribe(res => {
         resolvedResult = res;
       });
 
-      // Avança além do timeout de 3000ms
       vi.advanceTimersByTime(3500);
 
-      // Assert
       expect(resolvedResult instanceof UrlTree).toBe(true);
       expect(router.serializeUrl(resolvedResult as UrlTree)).toBe('/admin');
 
@@ -136,33 +125,29 @@ describe('Guards de Autenticação e Autorização', () => {
     const dummySegments: UrlSegment[] = [];
 
     it('deve retornar false para usuário anônimo (não autenticado)', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(false));
       const route: Route = { path: 'admin' };
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authMatchGuard(route, dummySegments));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(false);
     });
 
     it('deve retornar true para usuário autenticado quando não há restrição de role', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       const route: Route = { path: 'admin' };
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authMatchGuard(route, dummySegments));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('deve retornar true para SUPER_ADMIN em rota restrita a SUPER_ADMIN', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       authServiceMock.currentUser$.next(createMockSuperAdmin());
       const route: Route = {
@@ -170,16 +155,14 @@ describe('Guards de Autenticação e Autorização', () => {
         data: { roles: ['SUPER_ADMIN'] }
       };
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authMatchGuard(route, dummySegments));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('deve retornar false para ADMIN em rota exclusiva de SUPER_ADMIN', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       authServiceMock.currentUser$.next(createMockUser({ role: 'ADMIN' }));
       const route: Route = {
@@ -187,16 +170,14 @@ describe('Guards de Autenticação e Autorização', () => {
         data: { roles: ['SUPER_ADMIN'] }
       };
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authMatchGuard(route, dummySegments));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(false);
     });
 
     it('deve retornar false para EDITOR em rota restrita a ADMIN', async () => {
-      // Arrange
+
       authServiceMock.checkAuthStatus.mockReturnValue(of(true));
       authServiceMock.currentUser$.next(createMockEditor());
       const route: Route = {
@@ -204,12 +185,11 @@ describe('Guards de Autenticação e Autorização', () => {
         data: { roles: ['ADMIN', 'SUPER_ADMIN'] }
       };
 
-      // Act
       const rawGuard = TestBed.runInInjectionContext(() => authMatchGuard(route, dummySegments));
       const result = await firstValueFrom(resolveGuardResult(rawGuard));
 
-      // Assert
       expect(result).toBe(false);
     });
   });
 });
+

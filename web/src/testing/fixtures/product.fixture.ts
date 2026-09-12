@@ -33,3 +33,4 @@ export function createMockCategory(overrides: Partial<CategoryAdminResponse> = {
     ...overrides
   };
 }
+

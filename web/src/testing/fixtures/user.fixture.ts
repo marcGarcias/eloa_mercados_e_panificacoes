@@ -1,9 +1,6 @@
 import { User, UserRole, UserStatus } from '../../app/models/user.model';
 import { LoginResponse, BootstrapUserResponse } from '../../app/services/auth.service';
 
-/**
- * Cria uma instância de User mockada para testes com valores padrão customizáveis.
- */
 export function createMockUser(overrides: Partial<User> = {}): User {
   return {
     id: 'usr-123456',
@@ -51,3 +48,4 @@ export function createMockBootstrapResponse(): BootstrapUserResponse {
     status: 'ACTIVE'
   };
 }
+

@@ -14,8 +14,7 @@ export class UserService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    
-    // O backend será implementado depois, mas já preparamos para suportar SpringPage
+
     return this.http.get<SpringPage<User>>(this.apiUrl, { params });
   }
 
@@ -24,7 +23,7 @@ export class UserService {
   }
 
   updateData(id: string, user: UpdateUserPayload): Observable<void> {
-    // PATCH endpoint for data update
+
     return this.http.patch<void>(`${this.apiUrl}/${id}`, {
       name: user.name,
       role: user.role,
@@ -41,3 +40,4 @@ export class UserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
+

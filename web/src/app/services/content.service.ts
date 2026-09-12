@@ -26,3 +26,4 @@ export class ContentService {
     return this.http.patch<SiteContent>(this.apiUrl, newContent);
   }
 }
+

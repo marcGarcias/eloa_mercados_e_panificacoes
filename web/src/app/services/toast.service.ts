@@ -87,3 +87,4 @@ export class ToastService {
     setTimeout(removeToast, 3500);
   }
 }
+

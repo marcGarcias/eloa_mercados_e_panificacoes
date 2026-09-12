@@ -54,7 +54,6 @@ export class Setup implements OnDestroy {
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
 
-    // Mascara simples de CPF no subscribe
     this.subs.add(
       this.setupForm.get('cpf')?.valueChanges.subscribe(value => {
         if (value) {
@@ -94,7 +93,7 @@ export class Setup implements OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
     this.cdr.detectChanges();
-    
+
     const { name, password, accessKey, cpf } = this.setupForm.value;
 
     this.subs.add(
@@ -127,3 +126,4 @@ export class Setup implements OnDestroy {
     this.router.navigate(['/login-cms']);
   }
 }
+

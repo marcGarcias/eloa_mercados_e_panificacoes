@@ -16,14 +16,6 @@ import { CategoryAdminService } from '../../services/category-admin.service';
 import { CategoryAdminResponse } from '../../models/product.model';
 import { finalize, Subscription } from 'rxjs';
 
-/**
- * Modal de criacao de categoria.
- *
- * Recebe [isOpen] para controlar visibilidade.
- * Emite:
- *   - (saved): CategoryAdminResponse apos criar com sucesso
- *   - (closed): ao fechar sem salvar
- */
 @Component({
   selector: 'app-modal-categoria',
   standalone: true,
@@ -35,16 +27,12 @@ import { finalize, Subscription } from 'rxjs';
 export class ModalCategoriaComponent implements OnChanges, OnDestroy {
   private readonly subs = new Subscription();
 
-  /** Controla visibilidade do modal */
   @Input() isOpen: boolean = false;
 
-  /** Emitido apos criar com sucesso */
   @Output() saved = new EventEmitter<CategoryAdminResponse>();
 
-  /** Emitido ao fechar o modal */
   @Output() closed = new EventEmitter<void>();
 
-  /** Estado de submissao */
   isSubmitting: boolean = false;
 
   form: FormGroup;
@@ -137,3 +125,4 @@ export class ModalCategoriaComponent implements OnChanges, OnDestroy {
     this.cdr.markForCheck();
   }
 }
+

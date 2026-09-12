@@ -48,7 +48,7 @@ export class LoginCms implements OnDestroy {
     this.isLoading = true;
     this.loginError = '';
     this.cdr.detectChanges();
-    
+
     const { userCode, password } = this.loginForm.value;
 
     this.subs.add(
@@ -83,3 +83,4 @@ export class LoginCms implements OnDestroy {
     );
   }
 }
+

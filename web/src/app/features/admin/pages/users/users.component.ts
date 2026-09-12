@@ -22,37 +22,35 @@ export class UsersComponent implements OnInit, OnDestroy {
   userService = inject(UserService);
   cdr = inject(ChangeDetectorRef);
   toastService = inject(ToastService);
-  
+
   private readonly subs = new Subscription();
   currentUser$ = this.authService.currentUser$;
-  
+
   users: User[] = [];
   page = 0;
   size = 10;
   totalPages = 0;
-  
+
   isModalOpen = false;
   isDeleteModalOpen = false;
   isCreateMode = false;
-  
+
   editingUser: Partial<User> = {};
   showPassword = false;
   isLoading = false;
   errorMessage: string | null = null;
   firstName = '';
   lastName = '';
-  
-  // Confirmação de exclusão simplificada (apenas nome)
+
   deleteUsernameConfirm = '';
   userToDelete: User | null = null;
-  
+
   readonly RoleTranslations = RoleTranslations;
   readonly StatusTranslations = StatusTranslations;
 
   sortField: keyof User | 'lastLoginAt' | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  // Filtro multi-seleção de funções
   readonly allRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'EDITOR'];
   selectedRoles = new Set<UserRole>(['SUPER_ADMIN', 'ADMIN', 'EDITOR']);
   roleFilterOpen = false;
@@ -91,14 +89,14 @@ export class UsersComponent implements OnInit, OnDestroy {
   toggleRoleFilter(role: UserRole, event: Event): void {
     event.stopPropagation();
     if (this.selectedRoles.has(role)) {
-      // Impede desmarcar tudo
+
       if (this.selectedRoles.size > 1) {
         this.selectedRoles.delete(role);
       }
     } else {
       this.selectedRoles.add(role);
     }
-    this.selectedRoles = new Set(this.selectedRoles); // força detecção
+    this.selectedRoles = new Set(this.selectedRoles);
     this.cdr.markForCheck();
   }
 
@@ -132,7 +130,6 @@ export class UsersComponent implements OnInit, OnDestroy {
     const field = this.sortField;
     const dir = this.sortDirection === 'asc' ? 1 : -1;
 
-    // Status: asc = Ativo primeiro
     const statusWeight: Record<string, number> = {
       'ACTIVE': 1,
       'INACTIVE': 2
@@ -160,7 +157,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       return aVal.localeCompare(bVal, 'pt-BR') * dir;
     });
   }
-  
+
   ngOnInit(): void {
     this.subs.add(
       this.authService.currentUser$.subscribe(user => {
@@ -211,7 +208,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     if (this.isOwner) return true;
     return this.currentUser?.id === targetUser.id;
   }
-  
+
   openCreateModal(): void {
     if (!this.isOwner) return;
     this.errorMessage = null;
@@ -238,7 +235,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.isModalOpen = true;
     this.cdr.markForCheck();
   }
-  
+
   togglePassword(): void {
     this.showPassword = !this.showPassword;
     this.cdr.markForCheck();
@@ -246,11 +243,11 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   validateLocalData(): boolean {
     this.errorMessage = null;
-    
+
     if (this.isCreateMode) {
       const firstName = this.firstName.trim();
       const lastName = this.lastName.trim();
-      
+
       if (!firstName) {
         this.errorMessage = 'O nome é obrigatório.';
         return false;
@@ -259,13 +256,13 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.errorMessage = 'O sobrenome é obrigatório.';
         return false;
       }
-      
+
       const fullName = `${firstName} ${lastName}`;
       if (fullName.length > 150) {
         this.errorMessage = 'A combinação de nome e sobrenome não pode exceder 150 caracteres.';
         return false;
       }
-      
+
       const password = this.editingUser.password?.trim();
       if (!password) {
         this.errorMessage = 'A senha é obrigatória para novos usuários.';
@@ -282,7 +279,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -316,7 +313,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     return rawMessage;
   }
-  
+
   saveUser(): void {
     if (!this.validateLocalData()) {
       this.cdr.markForCheck();
@@ -393,7 +390,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       })
     );
   }
-  
+
   openDeleteModal(user: Partial<User>): void {
     if (!this.isOwner || user.id === this.currentUser?.id) return;
     this.userToDelete = user as User;
@@ -402,16 +399,16 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.isModalOpen = false;
     this.cdr.markForCheck();
   }
-  
+
   confirmDelete(): void {
     if (this.deleteUsernameConfirm !== this.userToDelete?.name) return;
     if (!this.userToDelete?.id) return;
-    
+
     this.isLoading = true;
     this.cdr.markForCheck();
-    
+
     const deletedUserName = this.userToDelete.name;
-    
+
     this.subs.add(
       this.userService.delete(this.userToDelete.id).pipe(
         finalize(() => {
@@ -434,14 +431,14 @@ export class UsersComponent implements OnInit, OnDestroy {
       })
     );
   }
-  
+
   nextPage(): void {
     if (this.page < this.totalPages - 1) {
       this.page++;
       this.loadUsers();
     }
   }
-  
+
   prevPage(): void {
     if (this.page > 0) {
       this.page--;
@@ -449,3 +446,4 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
   }
 }
+

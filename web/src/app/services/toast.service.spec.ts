@@ -7,7 +7,7 @@ describe('ToastService', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    // Limpa containers pré-existentes
+
     document.getElementById('toast-container')?.remove();
 
     TestBed.configureTestingModule({
@@ -23,10 +23,9 @@ describe('ToastService', () => {
   });
 
   it('deve criar o container e renderizar o elemento de toast com sucesso', () => {
-    // Act
+
     service.success('Produto salvo com sucesso!', 'Tudo certo');
 
-    // Assert
     const container = document.getElementById('toast-container');
     expect(container).not.toBeNull();
 
@@ -41,43 +40,40 @@ describe('ToastService', () => {
   });
 
   it('deve aplicar a classe show após o delay de entrada', () => {
-    // Act
+
     service.info('Atualizando catálogo...');
     const toast = document.querySelector('.toast-info');
 
     expect(toast?.classList.contains('show')).toBe(false);
 
-    // Avança 25ms (o timeout do service é 20ms)
     vi.advanceTimersByTime(25);
 
     expect(toast?.classList.contains('show')).toBe(true);
   });
 
   it('deve auto-remover o toast e o container após 3.5s + delay de saída', () => {
-    // Act
+
     service.warning('Atenção ao estoque');
     const container = document.getElementById('toast-container');
     expect(container).not.toBeNull();
 
-    // Avança tempo total (3500ms de vida + 300ms de animação de saída)
     vi.advanceTimersByTime(3900);
 
-    // O toast e o container vazio devem ter sido removidos do DOM
     expect(document.querySelector('.toast-warning')).toBeNull();
     expect(document.getElementById('toast-container')).toBeNull();
   });
 
   it('deve remover o toast ao clicar no botão fechar', () => {
-    // Act
+
     service.error('Falha de conexão', 'Erro 500');
     const closeBtn = document.querySelector('.toast-close') as HTMLButtonElement;
     expect(closeBtn).not.toBeNull();
 
     closeBtn.click();
 
-    // Aguarda término da animação de saída (300ms)
     vi.advanceTimersByTime(350);
 
     expect(document.querySelector('.toast-error')).toBeNull();
   });
 });
+

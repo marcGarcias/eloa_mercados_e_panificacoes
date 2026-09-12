@@ -21,3 +21,4 @@ export class FooterComponent {
     return `https://wa.me/${cleanNumber}`;
   }
 }
+

@@ -55,9 +55,6 @@ export class SeoService {
     this.renderer = this.rendererFactory.createRenderer(null, null);
   }
 
-  /**
-   * Atualiza os metadados principais da página (Title, Description, Canonical, OG e Twitter Cards)
-   */
   updateMetaTags(config: SeoConfig): void {
     const title = config.title ? `${config.title} | ${this.siteName}` : this.siteName;
     this.titleService.setTitle(title);
@@ -485,3 +482,4 @@ export class SeoService {
     return specs;
   }
 }
+

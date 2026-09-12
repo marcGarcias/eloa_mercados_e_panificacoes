@@ -20,3 +20,4 @@ export class HeaderComponent {
     return `https://wa.me/${cleanNumber}`;
   }
 }
+

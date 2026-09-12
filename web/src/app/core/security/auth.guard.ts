@@ -16,20 +16,19 @@ export const authGuard: CanActivateFn = (route, state) => {
 
       const requiredRoles = route.data['roles'] as UserRole[];
       if (!requiredRoles || requiredRoles.length === 0) {
-        return of(true); // Nenhuma restrição de role
+        return of(true);
       }
 
-      // Se temos permissões exigidas, aguardamos o currentUser com timeout de segurança
       return authService.currentUser$.pipe(
         filter(user => user !== null),
         take(1),
         timeout({ each: 3000, with: () => of(null) }),
         map(user => {
           if (user && requiredRoles.includes(user.role)) {
-            return true; // Tem permissão
+            return true;
           }
-          // Se não tem permissão, volta pra home do admin
-          return router.parseUrl('/admin'); 
+
+          return router.parseUrl('/admin');
         })
       );
     })
@@ -43,12 +42,12 @@ export const authMatchGuard: CanMatchFn = (route, segments) => {
   return authService.checkAuthStatus().pipe(
     switchMap(isAuthenticated => {
       if (!isAuthenticated) {
-        return of(false); // Não combina a rota se não estiver logado
+        return of(false);
       }
 
       const requiredRoles = route.data?.['roles'] as UserRole[];
       if (!requiredRoles || requiredRoles.length === 0) {
-        return of(true); // Nenhuma restrição
+        return of(true);
       }
 
       return authService.currentUser$.pipe(
@@ -62,3 +61,4 @@ export const authMatchGuard: CanMatchFn = (route, segments) => {
     })
   );
 };
+

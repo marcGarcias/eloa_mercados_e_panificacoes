@@ -22,18 +22,18 @@ export interface BootstrapUserResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private readonly apiUrl = (environment?.apiUrl ?? '') + '/api/auth';
-  
+
   private accessToken: string | null = null;
   private loggedInSubject = new BehaviorSubject<boolean>(false);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  
+
   isLoggedIn$ = this.loggedInSubject.asObservable();
   currentUser$ = this.currentUserSubject.asObservable();
 
   private authInitialized = false;
 
   constructor() {
-    // Na inicialização, não fazemos a chamada aqui. Deixamos o guard ou APP_INITIALIZER fazer para podermos aguardar.
+
   }
 
   get currentUser(): User | null {
@@ -108,7 +108,7 @@ export class AuthService {
     if (this.authInitialized) {
       return of(this.isLoggedIn());
     }
-    
+
     return this.silentRefresh().pipe(
       tap(() => this.authInitialized = true)
     );
@@ -140,3 +140,4 @@ export class AuthService {
     this.loggedInSubject.next(true);
   }
 }
+

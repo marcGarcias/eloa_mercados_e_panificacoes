@@ -63,7 +63,6 @@ export class CatalogComponent implements OnInit, OnDestroy {
   private readonly searchSubject = new Subject<string>();
   private readonly subs = new Subscription();
 
-  // Dropdown de seleção de categoria na aba de produtos
   isCategoryDropdownOpen: boolean = false;
   categoryFilterSearch: string = '';
 
@@ -195,8 +194,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
     const name = this.searchTerm.trim() || undefined;
 
     this.subs.add(
-      this.productService.searchAdmin({ 
-        page: this.page, 
+      this.productService.searchAdmin({
+        page: this.page,
         size: this.size,
         categoryId,
         name
@@ -216,7 +215,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
             imagem: this.productService.getProductImageUrl(p.photo),
             order: p.position
           }));
-          
+
           this.products.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
           this.totalPages = page.totalPages;
           this.totalElements = page.totalElements;
@@ -316,7 +315,6 @@ export class CatalogComponent implements OnInit, OnDestroy {
     const q = this.categoryFilterSearch.toLowerCase().trim();
     return this.adminCategories.filter(c => c.name.toLowerCase().includes(q));
   }
-
 
   get visibleCategories(): string[] {
     return this.categories.filter(c => !this.deletedCategoryNames.has(c));
@@ -510,7 +508,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
           this.deletedCategoryNames.clear();
           this.hasOrderChanges = false;
           this.page = 0;
-          
+
           this.loadProducts();
           this.loadAdminCategories();
           this.loadPagedCategories();
@@ -530,11 +528,11 @@ export class CatalogComponent implements OnInit, OnDestroy {
     if (!this.isEditMode || this.activeFilter !== 'Todos') return;
 
     moveItemInArray(this.products, event.previousIndex, event.currentIndex);
-    
+
     this.products.forEach((p, index) => {
       p.order = index;
     });
-    
+
     this.hasOrderChanges = true;
     this.cdr.markForCheck();
   }
@@ -563,3 +561,4 @@ export class CatalogComponent implements OnInit, OnDestroy {
     }
   }
 }
+

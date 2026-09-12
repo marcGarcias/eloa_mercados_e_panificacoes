@@ -12,3 +12,4 @@ import { ContentDiferenciais } from '../../models/content.model';
 export class FeaturesComponent {
   @Input() diferenciais?: ContentDiferenciais | null;
 }
+

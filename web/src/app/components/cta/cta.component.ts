@@ -21,3 +21,4 @@ export class CtaComponent {
     return `https://wa.me/${cleanNumber}`;
   }
 }
+

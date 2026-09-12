@@ -16,7 +16,7 @@
   padding: 36px 30px;
   text-align: center;
   border: 1px solid rgba(184, 125, 52, 0.15);
-  transition: .3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -30,7 +30,7 @@
   height: 4px;
   background: linear-gradient(90deg, var(--tan), var(--primary));
   opacity: 0;
-  transition: .3s;
+  transition: opacity 0.3s ease;
 }
 
 .diff-card:hover {

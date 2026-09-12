@@ -118,8 +118,10 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
       });
     }, { threshold: 0.5 });
 
-    this.numberElements.forEach(num => {
-      this.observer?.observe(num.nativeElement);
+    requestAnimationFrame(() => {
+      this.numberElements.forEach(num => {
+        this.observer?.observe(num.nativeElement);
+      });
     });
   }
 

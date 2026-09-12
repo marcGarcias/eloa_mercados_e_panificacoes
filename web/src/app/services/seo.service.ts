@@ -131,15 +131,20 @@ export class SeoService {
    * Injeta ou substitui o bloco de dados estruturados JSON-LD por ID
    */
   setJsonLd(schemaId: string, schemaData: object): void {
-    const existingScript = this.document.getElementById(schemaId);
+    const jsonString = JSON.stringify(schemaData, null, 2);
+    const existingScript = this.document.getElementById(schemaId) as HTMLScriptElement | null;
     if (existingScript) {
-      this.renderer.removeChild(this.document.head, existingScript);
+      if (existingScript.text === jsonString) {
+        return;
+      }
+      this.renderer.setProperty(existingScript, 'text', jsonString);
+      return;
     }
 
     const script = this.renderer.createElement('script');
     this.renderer.setAttribute(script, 'type', 'application/ld+json');
     this.renderer.setAttribute(script, 'id', schemaId);
-    this.renderer.setProperty(script, 'text', JSON.stringify(schemaData, null, 2));
+    this.renderer.setProperty(script, 'text', jsonString);
     this.renderer.appendChild(this.document.head, script);
   }
 

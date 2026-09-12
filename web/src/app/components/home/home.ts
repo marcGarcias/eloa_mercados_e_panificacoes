@@ -46,7 +46,6 @@ export class Home implements OnInit, OnDestroy {
       ogDescription: 'Consulte nossa linha completa de panificação e confeitaria. Faça seu pedido diretamente pelo WhatsApp com nossa equipe.',
       ogImage: 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.webp'
     });
-    this.seoService.setHomeStructuredData();
 
     this.subs.add(
       this.contentService.getContentPublic().subscribe({

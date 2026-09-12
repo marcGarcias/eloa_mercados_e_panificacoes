@@ -2,6 +2,8 @@ User-agent: *
 Allow: /
 Allow: /assets/
 Allow: /images/
+Allow: /llms.txt
+Allow: /llms-full.txt
 Disallow: /admin/
 Disallow: /login-cms/
 Disallow: /setup/

@@ -1,0 +1,39 @@
+# Eloá Mercados & Panificações - Contexto Completo
+
+> Documento completo de contexto e dados corporativos da Eloá Mercados & Panificações Ltda. para consumo de Modelos de Linguagem de Grande Porte (LLMs), assistentes de inteligência artificial e indexadores semânticos.
+
+## Sobre a Empresa
+
+A Eloá Mercados & Panificações é uma referência regional em panificação tradicional, artesanal e industrial, com fabricação própria diária e atendimento tanto ao público final quanto a comércios (mercados, empórios, hotéis, restaurantes, lanchonetes e revendedores).
+
+- **Razão Social:** Eloá Mercados e Panificações Ltda.
+- **Setor:** Indústria e Comércio de Produtos Alimentícios, Panificação e Confeitaria
+- **Localização:** São Paulo - SP, Brasil
+- **Site Oficial:** [https://eloapanificacoes.com.br](https://eloapanificacoes.com.br)
+- **Canal de Pedidos e Cotações:** WhatsApp Comercial Oficial
+
+## Links Principais
+
+- [Página Inicial](https://eloapanificacoes.com.br/): Visão geral da marca, produtos e destaques.
+- [Diferenciais de Qualidade](https://eloapanificacoes.com.br/#features): Produção própria diária com receitas tradicionais e controle de qualidade.
+- [Catálogo de Produtos](https://eloapanificacoes.com.br/#catalog): Linha completa de pães, doces, bolos e salgados.
+- [Sobre a Fábrica](https://eloapanificacoes.com.br/#about): Estrutura fabril, capacidade produtiva e anos de experiência no mercado.
+- [Dúvidas Frequentes](https://eloapanificacoes.com.br/#faq): Informações sobre como comprar no atacado e prazos de entrega.
+- [Contato Comercial](https://eloapanificacoes.com.br/#contact): Informações cadastrais e endereço.
+
+## Perguntas Frequentes (FAQ)
+
+### Como faço para pedir ou cotar produtos da Eloá Panificações?
+Você pode consultar todo o catálogo online e clicar no botão de pedido para ser atendido diretamente pela nossa equipe comercial via WhatsApp, com agilidade e cotações personalizadas.
+
+### Quais tipos de produtos a Eloá comercializa?
+Trabalhamos com linha completa de panificação tradicional e especial, pães artesanais, bolos caseiros e recheados, doces finos, salgados para eventos e atacado, além de insumos selecionados.
+
+### A Eloá atende compras no atacado para padarias, mercados e restaurantes?
+Sim. Atendemos tanto clientes diretos quanto compras em grande volume no atacado para estabelecimentos comerciais, com fornecimento programado e condições comerciais especiais.
+
+### Quais regiões são atendidas para entregas e fornecimento?
+Atendemos toda a Grande São Paulo, Região Metropolitana de Campinas, Vale do Paraíba e Litoral de São Paulo através de nossa logística especializada de distribuição.
+
+### Quais são as formas de pagamento aceitas?
+Aceitamos Pix, cartões de crédito e débito, dinheiro e condições faturadas para clientes corporativos e comerciais cadastrados.

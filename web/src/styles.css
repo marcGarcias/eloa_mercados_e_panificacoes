@@ -42,6 +42,47 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Link de salto para acessibilidade de teclado */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 10000;
+  padding: 12px 20px;
+  background: var(--green, #24412A);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+  top: 16px;
+  outline: 3px solid var(--primary, #CC9148);
+  outline-offset: 2px;
+}
+
+/* Indicadores de foco universais e acessíveis para teclado */
+:focus-visible {
+  outline: 2.5px solid var(--primary-dark, #B87D34);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2.5px solid var(--primary-dark, #B87D34);
+  outline-offset: 2px;
+}
+
 .page-wrapper {
   max-width: 97%;
   margin: 0 auto;

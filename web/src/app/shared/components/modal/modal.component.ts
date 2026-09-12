@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -13,6 +13,13 @@ export class ModalComponent {
   @Input() title: string = '';
   @Input() isOpen: boolean = false;
   @Output() close = new EventEmitter<void>();
+
+  @HostListener('keydown.escape')
+  onEscape() {
+    if (this.isOpen) {
+      this.closeModal();
+    }
+  }
 
   closeModal() {
     this.close.emit();

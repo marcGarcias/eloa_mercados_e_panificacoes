@@ -1,6 +1,7 @@
 <div
   class="modal-overlay"
   [class.is-open]="isOpen"
+  [attr.aria-hidden]="!isOpen"
   (click)="onOverlayClick($event)"
   role="dialog"
   aria-modal="true"

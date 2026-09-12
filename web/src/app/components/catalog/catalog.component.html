@@ -11,22 +11,26 @@
           class="category-select-trigger" 
           (click)="toggleCategoryDropdown($event)"
           title="Selecionar categoria"
+          aria-haspopup="listbox"
+          [attr.aria-expanded]="isCategoryDropdownOpen"
+          [attr.aria-label]="'Filtrar por categoria. Categoria atual: ' + activeCategory"
         >
           <span class="selected-cat-name">{{ activeCategory === 'Todos' ? 'Todas as Categorias' : activeCategory }}</span>
-          <svg class="chevron-icon" [class.rotated]="isCategoryDropdownOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="chevron-icon" [class.rotated]="isCategoryDropdownOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
 
-        <div class="category-dropdown-menu" *ngIf="isCategoryDropdownOpen" (click)="$event.stopPropagation()">
+        <div class="category-dropdown-menu" *ngIf="isCategoryDropdownOpen" (click)="$event.stopPropagation()" role="listbox" aria-label="Lista de categorias de produtos">
           <div class="dropdown-search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4.3-4.3" />
             </svg>
             <input 
               type="text" 
               placeholder="Pesquisar entre {{ totalCategoriesCount }} categorias..." 
+              aria-label="Pesquisar categoria de produto"
               [(ngModel)]="categorySearchQuery" 
               (input)="filterCategoryDropdown()"
               autofocus
@@ -37,6 +41,8 @@
             <button 
               type="button" 
               class="dropdown-item" 
+              role="option"
+              [attr.aria-selected]="activeCategory === 'Todos'"
               [class.active]="activeCategory === 'Todos'"
               (click)="selectCategory('Todos')"
             >
@@ -46,6 +52,8 @@
               type="button" 
               *ngFor="let cat of filteredCategories" 
               class="dropdown-item" 
+              role="option"
+              [attr.aria-selected]="activeCategory === cat"
               [class.active]="activeCategory === cat"
               (click)="selectCategory(cat)"
             >
@@ -59,7 +67,7 @@
       </div>
 
       <div class="search-input-wrapper">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
           <path d="M21 21l-4.3-4.3" />
         </svg>
@@ -67,6 +75,7 @@
           id="catalog-search"
           type="text" 
           placeholder="Buscar produto por nome..." 
+          aria-label="Buscar produto por nome no catálogo"
           [(ngModel)]="searchQuery" 
           (input)="onSearchChange()" 
         />
@@ -76,6 +85,7 @@
           class="clear-search-btn" 
           (click)="clearSearch()"
           title="Limpar busca"
+          aria-label="Limpar campo de busca"
         >
           ×
         </button>
@@ -85,7 +95,7 @@
     <div class="active-filter-row" *ngIf="activeCategory !== 'Todos'">
       <div class="active-filter-badge">
         <span>Categoria: <strong>{{ activeCategory }}</strong></span>
-        <button type="button" class="btn-clear-badge" (click)="selectCategory('Todos')" title="Remover filtro de categoria">
+        <button type="button" class="btn-clear-badge" (click)="selectCategory('Todos')" title="Remover filtro de categoria" [attr.aria-label]="'Remover filtro de categoria ' + activeCategory">
           ×
         </button>
       </div>
@@ -124,12 +134,12 @@
     </div>
 
     <div class="pagination-section" *ngIf="totalPages > 1 && !isLoading">
-      <div class="pagination-info">
+      <div class="pagination-info" aria-live="polite">
         Página {{ page + 1 }} de {{ totalPages }}
       </div>
-      <div class="pagination-controls">
-        <button class="page-btn nav-btn" [disabled]="page === 0" (click)="prevPage()" title="Página anterior">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <nav class="pagination-controls" aria-label="Paginação de produtos">
+        <button class="page-btn nav-btn" [disabled]="page === 0" (click)="prevPage()" title="Página anterior" aria-label="Ir para a página anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
           Anterior
@@ -140,19 +150,21 @@
             *ngFor="let pNum of getPageNumbers(page, totalPages)" 
             class="page-btn num-btn" 
             [class.active]="pNum === page"
+            [attr.aria-label]="'Página ' + (pNum + 1)"
+            [attr.aria-current]="pNum === page ? 'page' : null"
             (click)="goToPage(pNum)"
           >
             {{ pNum + 1 }}
           </button>
         </div>
 
-        <button class="page-btn nav-btn" [disabled]="page >= totalPages - 1" (click)="nextPage()" title="Próxima página">
+        <button class="page-btn nav-btn" [disabled]="page >= totalPages - 1" (click)="nextPage()" title="Próxima página" aria-label="Ir para a próxima página">
           Próxima
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 </section>

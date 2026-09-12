@@ -8,6 +8,7 @@ import {
   SimpleChanges,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
@@ -104,6 +105,13 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
 
   get submitLabel(): string {
     return this.isEditMode ? 'Salvar alteracoes' : 'Criar produto';
+  }
+
+  @HostListener('keydown.escape')
+  onEscape(): void {
+    if (this.isOpen) {
+      this.close();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

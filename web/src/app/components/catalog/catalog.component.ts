@@ -226,4 +226,12 @@ export class CatalogComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  @HostListener('keydown.escape')
+  onEscapeKey(): void {
+    if (this.isCategoryDropdownOpen) {
+      this.isCategoryDropdownOpen = false;
+      this.cdr.markForCheck();
+    }
+  }
 }

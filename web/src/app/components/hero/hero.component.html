@@ -17,7 +17,7 @@
                 <a class="btn btn-outline" href="#about">Conheça a Eloa</a>
             </div>
             <div class="search">
-                <input id="search" type="text" placeholder="Buscar pão, bolo, salgado...">
+                <input id="search" type="text" placeholder="Buscar pão, bolo, salgado..." aria-label="Buscar pão, bolo, salgado no catálogo">
             </div>
             <div class="hero-stats" *ngIf="banner?.indicadores && banner!.indicadores!.length > 0; else defaultStats">
                 <div class="stat-item" *ngFor="let ind of banner!.indicadores">

@@ -1,15 +1,15 @@
 <header>
     <div class="container nav">
         <div class="nav-top">
-            <div class="logo">
+            <a href="#home" class="logo" aria-label="Eloá Mercados e Panificações - Início">
                 <div>
                     Eloa
                     <span>MERCADOS &amp; PANIFICAÇÕES</span>
                 </div>
-            </div>
+            </a>
         </div>
 
-        <nav class="menu">
+        <nav class="menu" aria-label="Navegação principal">
             <a href="#home">Início</a>
             <a href="#features">Diferenciais</a>
             <a href="#catalog">Catálogo</a>
@@ -18,8 +18,8 @@
             <a href="#contact">Contato</a>
         </nav>
 
-        <a class="btn" [href]="whatsappLink" target="_blank">
-            <img src="/assets/icons/whatsapp.svg" width="18" height="18" alt="WhatsApp" class="btn-icon">
+        <a class="btn" [href]="whatsappLink" target="_blank" rel="noopener noreferrer" aria-label="Fazer Pedido via WhatsApp (abre em nova aba)">
+            <img src="/assets/icons/whatsapp.svg" width="18" height="18" alt="" aria-hidden="true" class="btn-icon">
             Fazer Pedido
         </a>
     </div>

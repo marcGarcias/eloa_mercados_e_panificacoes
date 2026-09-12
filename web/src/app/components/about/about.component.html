@@ -15,7 +15,7 @@
             <p class="subtitle">{{ (sobre?.descricao && sobre!.descricao!.trim()) ? sobre!.descricao : 'A Eloa Mercados & Panificações nasceu do amor pela boa panificação. Há mais de uma década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.' }}</p>
             <ul *ngIf="hasValidItems; else defaultItems">
                 <li *ngFor="let item of validList">
-                    <span class="check">✓</span>
+                    <span class="check" aria-hidden="true">✓</span>
                     <span *ngIf="item.nome && item.descricao"><strong>{{ item.nome }}</strong> — {{ item.descricao }}</span>
                     <span *ngIf="item.nome && !item.descricao"><strong>{{ item.nome }}</strong></span>
                     <span *ngIf="!item.nome && item.descricao">{{ item.descricao }}</span>
@@ -24,22 +24,22 @@
             <ng-template #defaultItems>
                 <ul>
                     <li>
-                        <span class="check">✓</span>
+                        <span class="check" aria-hidden="true">✓</span>
                         <span><strong>Produção artesanal</strong> — cada produto feito com cuidado e atenção aos
                             detalhes</span>
                     </li>
                     <li>
-                        <span class="check">✓</span>
+                        <span class="check" aria-hidden="true">✓</span>
                         <span><strong>Ingredientes de qualidade</strong> — selecionamos apenas o melhor para a sua
                             família</span>
                     </li>
                     <li>
-                        <span class="check">✓</span>
+                        <span class="check" aria-hidden="true">✓</span>
                         <span><strong>Variedade completa</strong> — pães, bolos, doces, salgados e produtos de
                             mercado</span>
                     </li>
                     <li>
-                        <span class="check">✓</span>
+                        <span class="check" aria-hidden="true">✓</span>
                         <span><strong>Atendimento próximo</strong> — pedidos rápidos via WhatsApp, com entrega e
                             retirada</span>
                     </li>

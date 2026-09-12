@@ -300,33 +300,21 @@ export class SeoService {
     if (!products || products.length === 0) return;
 
     const itemListElements = products.slice(0, 30).map((prod, index) => {
-      const prodUrl = `${this.baseUrl}/#catalog`;
       return {
         "@type": "ListItem",
         "position": index + 1,
         "item": {
           "@type": "Product",
           "name": prod.nome,
-          "description": `${prod.nome} - Linha de panificação e confeitaria Eloá. Disponível sob consulta para pedidos e cotações via WhatsApp.`,
+          "description": `${prod.nome} - Linha de panificação e confeitaria Eloá. Disponível sob consulta para pedidos e cotações no atacado.`,
           "image": prod.imagem || this.defaultOgImage,
           "category": prod.categoria || 'Panificação',
           "brand": {
             "@type": "Brand",
             "name": "Eloá"
           },
-          "offers": {
-            "@type": "Offer",
-            "url": prodUrl,
-            "availability": "https://schema.org/InStock",
-            "itemCondition": "https://schema.org/NewCondition",
-            "priceSpecification": {
-              "@type": "PriceSpecification",
-              "priceCurrency": "BRL",
-              "description": "Produto sob consulta. Pedidos e cotações via WhatsApp."
-            },
-            "seller": {
-              "@id": `${this.baseUrl}/#organization`
-            }
+          "manufacturer": {
+            "@id": `${this.baseUrl}/#organization`
           }
         }
       };
@@ -405,22 +393,6 @@ export class SeoService {
           },
           "manufacturer": {
             "@id": `${this.baseUrl}/#organization`
-          },
-          "offers": {
-            "@type": "Offer",
-            "@id": `${productUrl}#offer`,
-            "url": productUrl,
-            "availability": "https://schema.org/InStock",
-            "itemCondition": "https://schema.org/NewCondition",
-            "businessFunction": "http://purl.org/goodrelations/v1#Sell",
-            "priceSpecification": {
-              "@type": "PriceSpecification",
-              "priceCurrency": "BRL",
-              "description": "Produto disponível sob consulta. Pedidos e cotações realizados diretamente pelo WhatsApp."
-            },
-            "seller": {
-              "@id": `${this.baseUrl}/#organization`
-            }
           }
         }
       ]

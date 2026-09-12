@@ -2,8 +2,10 @@
     <div class="container about-grid">
         <div class="about-image">
             <picture>
-                <source type="image/avif" srcset="/assets/images/eloa_building-sm.avif 240w, /assets/images/eloa_building.avif 480w" sizes="(max-width: 743px) 240px, 480px">
-                <source type="image/webp" srcset="/assets/images/eloa_building-sm.webp 240w, /assets/images/eloa_building.webp 480w" sizes="(max-width: 743px) 240px, 480px">
+                <source media="(max-width: 743px)" type="image/avif" srcset="/assets/images/eloa_building-sm.avif">
+                <source media="(max-width: 743px)" type="image/webp" srcset="/assets/images/eloa_building-sm.webp">
+                <source media="(min-width: 744px)" type="image/avif" srcset="/assets/images/eloa_building.avif">
+                <source media="(min-width: 744px)" type="image/webp" srcset="/assets/images/eloa_building.webp">
                 <img src="/assets/images/eloa_building.webp" alt="Sobre a Eloá Mercados e Panificações" width="480" height="320" loading="lazy" decoding="async">
             </picture>
         </div>

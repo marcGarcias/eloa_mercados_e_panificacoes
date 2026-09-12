@@ -33,6 +33,12 @@
   }
 
   @defer (on viewport) {
+    <app-faq></app-faq>
+  } @placeholder {
+    <section class="faq-placeholder"></section>
+  }
+
+  @defer (on viewport) {
     <app-footer [rodape]="content?.rodape" [dados]="content?.dados"></app-footer>
   } @placeholder {
     <footer class="footer-placeholder"></footer>

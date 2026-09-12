@@ -9,9 +9,10 @@
   <meta name="description"
     content="Catálogo de produtos da Eloá Mercados & Panificações. Pães frescos, doces, bolos e salgados. Conheça nossa linha e faça seu pedido diretamente pelo WhatsApp.">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <meta name="author" content="Eloá Mercados & Panificações">
   <meta name="geo.region" content="BR-SP">
-  <meta name="geo.placename" content="São Paulo">
+  <meta name="geo.placename" content="São Paulo, Brasil">
+  <meta name="geo.position" content="-23.550520;-46.633308">
+  <meta name="ICBM" content="-23.550520, -46.633308">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://eloapanificacoes.com.br/">
@@ -52,11 +53,22 @@
     rel="stylesheet">
 
 
-  <!-- JSON-LD Inicial (SEO Técnico Google 2026) -->
+  <!-- JSON-LD Inicial (SEO Técnico Google & AEO/GEO 2026) -->
   <script type="application/ld+json" id="json-ld-initial">
   {
     "@context": "https://schema.org",
     "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://eloapanificacoes.com.br/#website",
+        "url": "https://eloapanificacoes.com.br",
+        "name": "Eloá Mercados & Panificações",
+        "description": "Catálogo de produtos da Eloá Mercados & Panificações. Pães frescos, confeitaria e atacado para pedidos via WhatsApp.",
+        "publisher": {
+          "@id": "https://eloapanificacoes.com.br/#organization"
+        },
+        "inLanguage": "pt-BR"
+      },
       {
         "@type": "Organization",
         "@id": "https://eloapanificacoes.com.br/#organization",
@@ -80,17 +92,23 @@
             "areaServed": "BR",
             "availableLanguage": ["Portuguese"]
           }
+        ],
+        "sameAs": [
+          "https://www.instagram.com/eloapanificacoes",
+          "https://www.facebook.com/eloapanificacoes"
         ]
       },
       {
         "@type": ["Bakery", "WholesaleStore"],
         "@id": "https://eloapanificacoes.com.br/#localbusiness",
-        "name": "Eloá Mercados & Panificações - Distribuição B2B",
+        "name": "Eloá Mercados & Panificações - Catálogo & Pedidos via WhatsApp",
         "image": "https://eloapanificacoes.com.br/assets/images/fachada-fabrica-eloa.webp",
         "url": "https://eloapanificacoes.com.br",
         "telephone": "+55-11-99999-9999",
         "priceRange": "$$",
-        "servesCuisine": "Panificação Industrial e Confeitaria Atacadista",
+        "currenciesAccepted": "BRL",
+        "paymentAccepted": "Dinheiro, Cartão de Crédito, Cartão de Débito, Pix",
+        "servesCuisine": "Panificação, Confeitaria e Alimentos para Revenda",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Av. Principal das Indústrias, 1000",
@@ -99,7 +117,13 @@
           "postalCode": "01000-000",
           "addressCountry": "BR"
         },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -23.550520,
+          "longitude": -46.633308
+        },
         "areaServed": [
+          { "@type": "AdministrativeArea", "name": "São Paulo" },
           { "@type": "AdministrativeArea", "name": "Grande São Paulo" },
           { "@type": "AdministrativeArea", "name": "Região Metropolitana de Campinas" },
           { "@type": "AdministrativeArea", "name": "Vale do Paraíba" },
@@ -108,6 +132,52 @@
         "parentOrganization": {
           "@id": "https://eloapanificacoes.com.br/#organization"
         }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://eloapanificacoes.com.br/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Como faço para pedir ou cotar produtos da Eloá Panificações?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Você pode consultar todo o catálogo online e clicar no botão de pedido para ser atendido diretamente pela nossa equipe comercial via WhatsApp, com agilidade e cotações personalizadas."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quais tipos de produtos a Eloá comercializa?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Trabalhamos com linha completa de panificação tradicional e especial, pães artesanais, bolos caseiros e recheados, doces finos, salgados para eventos e atacado, além de insumos selecionados."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "A Eloá atende compras no atacado para padarias, mercados e restaurantes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim. Atendemos tanto clientes diretos quanto compras em grande volume no atacado para estabelecimentos comerciais, com fornecimento programado e condições comerciais especiais."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quais regiões são atendidas para entregas e fornecimento?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Atendemos toda a Grande São Paulo, Região Metropolitana de Campinas, Vale do Paraíba e Litoral de São Paulo através de nossa logística especializada de distribuição."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quais são as formas de pagamento aceitas?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Aceitamos Pix, cartões de crédito e débito, dinheiro e condições faturadas para clientes corporativos e comerciais cadastrados."
+            }
+          }
+        ]
       }
     ]
   }

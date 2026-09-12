@@ -1,0 +1,29 @@
+<section class="faq-section" id="faq" aria-labelledby="faq-title">
+  <div class="faq-container">
+    <div class="faq-header">
+      <span class="faq-badge">Dúvidas Frequentes</span>
+      <h2 id="faq-title" class="faq-title">Perguntas &amp; Respostas</h2>
+      <p class="faq-subtitle">
+        Tudo o que você precisa saber sobre nossos produtos, encomendas, atacado e entregas.
+      </p>
+    </div>
+
+    <div class="faq-list">
+      @for (faq of faqs; track faq.pergunta) {
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>{{ faq.pergunta }}</span>
+            <span class="faq-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-answer">
+            <p>{{ faq.resposta }}</p>
+          </div>
+        </details>
+      }
+    </div>
+  </div>
+</section>

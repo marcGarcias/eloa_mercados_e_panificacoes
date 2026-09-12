@@ -7,6 +7,7 @@ import { CatalogComponent } from '../catalog/catalog.component';
 import { AboutComponent } from '../about/about.component';
 import { StatsComponent } from '../stats/stats.component';
 import { CtaComponent } from '../cta/cta.component';
+import { FaqComponent } from '../faq/faq.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ContentService } from '../../services/content.service';
 import { SeoService } from '../../services/seo.service';
@@ -24,6 +25,7 @@ import { Subscription } from 'rxjs';
     AboutComponent,
     StatsComponent,
     CtaComponent,
+    FaqComponent,
     FooterComponent
   ],
   templateUrl: './home.html',

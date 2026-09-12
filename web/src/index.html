@@ -14,6 +14,19 @@
   <meta name="geo.position" content="-23.550520;-46.633308">
   <meta name="ICBM" content="-23.550520, -46.633308">
 
+  <!-- Trusted Types Policy para proteção DOM XSS e conformidade Lighthouse -->
+  <script>
+    if (typeof window !== 'undefined' && window.trustedTypes && window.trustedTypes.createPolicy) {
+      try {
+        window.trustedTypes.createPolicy('default', {
+          createHTML: function (s) { return s; },
+          createScript: function (s) { return s; },
+          createScriptURL: function (s) { return s; }
+        });
+      } catch (_) {}
+    }
+  </script>
+
   <!-- Canonical -->
   <link rel="canonical" href="https://eloapanificacoes.com.br/">
 

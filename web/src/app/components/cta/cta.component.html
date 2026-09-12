@@ -1,9 +1,9 @@
 <section class="parceria" id="parceria">
     <div class="container">
         <div class="cta-box">
-            <div class="section-tag">{{ cta?.selo || 'Faça seu Pedido' }}</div>
-            <h2 [innerHTML]="cta?.titulo || 'Pronto para provar<br>o sabor da Eloa?'"></h2>
-            <p>{{ cta?.descricao || 'Entre em contato via WhatsApp e faça seu pedido agora. Pães frescos, entrega prática e um atendimento que faz a diferença.' }}</p>
+            <div class="section-tag">{{ (cta?.selo && cta!.selo!.trim()) ? cta!.selo : 'Faça seu Pedido' }}</div>
+            <h2 [innerHTML]="(cta?.titulo && cta!.titulo!.trim()) ? cta!.titulo : 'Pronto para provar o sabor da Eloa?'"></h2>
+            <p>{{ (cta?.descricao && cta!.descricao!.trim()) ? cta!.descricao : 'Entre em contato via WhatsApp e faça seu pedido agora. Pães frescos, entrega prática e um atendimento que faz a diferença.' }}</p>
             <div class="cta-btns">
                 <a class="btn" [href]="whatsappLink" target="_blank">
                     <img src="/assets/icons/whatsapp.svg" width="18" height="18" alt="WhatsApp" class="btn-icon">

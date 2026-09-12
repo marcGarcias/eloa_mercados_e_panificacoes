@@ -3,14 +3,14 @@
         <div>
             <div class="hero-badge">
                 <img src="/assets/icons/star.svg" width="16" height="16" alt="Selo" class="badge-icon">
-                {{ banner?.selo || 'Feito com tradição todos os dias' }}
+                {{ (banner?.selo && banner!.selo!.trim()) ? banner!.selo : 'Feito com tradição todos os dias' }}
             </div>
             <h1>
-                {{ banner?.titulo || 'Pães fresquinhos' }}
-                <span>{{ banner?.subtitulo || 'com sabor de sempre.' }}</span>
+                {{ (banner?.titulo && banner!.titulo!.trim()) ? banner!.titulo : 'Pães fresquinhos' }}
+                <span>{{ (banner?.subtitulo && banner!.subtitulo!.trim()) ? banner!.subtitulo : 'com sabor de sempre.' }}</span>
             </h1>
             <p>
-                {{ banner?.descricao || 'Produzidos diariamente com ingredientes selecionados. Pães, bolos, doces, salgados e produtos de mercado — tudo em um só lugar para você e sua família.' }}
+                {{ (banner?.descricao && banner!.descricao!.trim()) ? banner!.descricao : 'Produzidos diariamente com ingredientes selecionados. Pães, bolos, doces, salgados e produtos de mercado — tudo em um só lugar para você e sua família.' }}
             </p>
             <div class="hero-btns">
                 <a class="btn" href="#catalog">Ver Catálogo</a>
@@ -19,10 +19,10 @@
             <div class="search">
                 <input id="search" type="text" placeholder="Buscar pão, bolo, salgado...">
             </div>
-            <div class="hero-stats" *ngIf="banner?.indicadores as indicadores; else defaultStats">
-                <div class="stat-item" *ngFor="let ind of indicadores">
-                    <span class="stat-num">{{ ind.valor }}</span>
-                    <span class="stat-label" [innerHTML]="ind.nome"></span>
+            <div class="hero-stats" *ngIf="banner?.indicadores && banner!.indicadores!.length > 0; else defaultStats">
+                <div class="stat-item" *ngFor="let ind of banner!.indicadores">
+                    <span class="stat-num">{{ (ind.valor && ind.valor.trim()) ? ind.valor : '-' }}</span>
+                    <span class="stat-label" [innerHTML]="(ind.nome && ind.nome.trim()) ? ind.nome : ''"></span>
                 </div>
             </div>
             <ng-template #defaultStats>

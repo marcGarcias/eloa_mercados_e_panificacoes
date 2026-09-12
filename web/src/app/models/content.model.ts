@@ -50,6 +50,16 @@ export interface SiteData {
   cnpj: string;
 }
 
+export interface ContentFaqItem {
+  id: string;
+  pergunta: string;
+  resposta: string;
+}
+
+export interface ContentFaq {
+  itens: ContentFaqItem[];
+}
+
 export interface SiteContent {
   banner: ContentBanner;
   diferenciais: ContentDiferenciais;
@@ -59,4 +69,5 @@ export interface SiteContent {
   cta: ContentCta;
   rodape: ContentRodape;
   dados: SiteData;
+  faq?: ContentFaq;
 }

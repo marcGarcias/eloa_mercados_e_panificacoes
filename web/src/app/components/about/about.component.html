@@ -10,13 +10,15 @@
             </picture>
         </div>
         <div class="about-content">
-            <div class="section-tag">{{ sobre?.selo || 'Nossa História' }}</div>
-            <h2 class="title" [innerHTML]="sobre?.titulo || 'Tradição e qualidade<br>em cada pão'"></h2>
-            <p class="subtitle">{{ sobre?.descricao || 'A Eloa Mercados & Panificações nasceu do amor pela boa panificação. Há mais de uma década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.' }}</p>
-            <ul *ngIf="sobre?.lista as lista; else defaultItems">
-                <li *ngFor="let item of lista">
+            <div class="section-tag">{{ (sobre?.selo && sobre!.selo!.trim()) ? sobre!.selo : 'Nossa História' }}</div>
+            <h2 class="title" [innerHTML]="(sobre?.titulo && sobre!.titulo!.trim()) ? sobre!.titulo : 'Tradição e qualidade em cada pão'"></h2>
+            <p class="subtitle">{{ (sobre?.descricao && sobre!.descricao!.trim()) ? sobre!.descricao : 'A Eloa Mercados & Panificações nasceu do amor pela boa panificação. Há mais de uma década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.' }}</p>
+            <ul *ngIf="hasValidItems; else defaultItems">
+                <li *ngFor="let item of validList">
                     <span class="check">✓</span>
-                    <span><strong>{{ item.nome }}</strong> — {{ item.descricao }}</span>
+                    <span *ngIf="item.nome && item.descricao"><strong>{{ item.nome }}</strong> — {{ item.descricao }}</span>
+                    <span *ngIf="item.nome && !item.descricao"><strong>{{ item.nome }}</strong></span>
+                    <span *ngIf="!item.nome && item.descricao">{{ item.descricao }}</span>
                 </li>
             </ul>
             <ng-template #defaultItems>

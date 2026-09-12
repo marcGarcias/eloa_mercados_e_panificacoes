@@ -11,4 +11,14 @@ import { ContentSobre } from '../../models/content.model';
 })
 export class AboutComponent {
   @Input() sobre?: ContentSobre | null;
+
+  get validList() {
+    return (this.sobre?.lista || []).filter(item => 
+      (item.nome && item.nome.trim()) || (item.descricao && item.descricao.trim())
+    );
+  }
+
+  get hasValidItems(): boolean {
+    return this.validList.length > 0;
+  }
 }

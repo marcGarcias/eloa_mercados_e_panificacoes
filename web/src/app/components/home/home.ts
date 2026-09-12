@@ -12,6 +12,7 @@ import { FooterComponent } from '../footer/footer.component';
 import { ContentService } from '../../services/content.service';
 import { SeoService } from '../../services/seo.service';
 import { SiteContent } from '../../models/content.model';
+import { resolveSiteContent, DEFAULT_SITE_CONTENT } from '../../core/constants/content-fallbacks';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -32,7 +33,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './home.css',
 })
 export class Home implements OnInit, OnDestroy {
-  content: SiteContent | null = null;
+  content: SiteContent = DEFAULT_SITE_CONTENT;
   private readonly contentService = inject(ContentService);
   private readonly seoService = inject(SeoService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -52,14 +53,14 @@ export class Home implements OnInit, OnDestroy {
     this.subs.add(
       this.contentService.getContentPublic().subscribe({
         next: (data) => {
-          this.content = data;
-          if (data) {
-            this.seoService.updateFromSiteContent(data);
+          this.content = resolveSiteContent(data);
+          if (this.content) {
+            this.seoService.updateFromSiteContent(this.content);
           }
           this.cdr.markForCheck();
         },
         error: () => {
-          this.content = null;
+          this.content = resolveSiteContent(null);
           this.cdr.markForCheck();
         }
       })

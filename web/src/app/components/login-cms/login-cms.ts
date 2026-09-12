@@ -60,7 +60,13 @@ export class LoginCms implements OnDestroy {
       ).subscribe({
         next: () => {
           this.toastService.success('Bem-vindo de volta ao painel!', 'Login Realizado');
-          this.router.navigate(['/admin']);
+          this.router.navigate(['/admin']).then(navigated => {
+            if (!navigated) {
+              this.router.navigate(['/admin/catalog']);
+            }
+          }).catch(err => {
+            console.error('Falha na navegação pós-login:', err);
+          });
           this.cdr.detectChanges();
         },
         error: (err) => {

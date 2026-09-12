@@ -9,9 +9,9 @@
                         <span>MERCADOS &amp; PADARIAS</span>
                     </div>
                 </div>
-                <p class="footer-desc">{{ rodape?.descricao || 'Pães frescos, doces, salgados e produtos de qualidade produzidos todos os dias com cuidado e tradição.' }}</p>
-                <div class="footer-cnpj" *ngIf="dados?.cnpj as cnpj">
-                    CNPJ: {{ cnpj }}
+                <p class="footer-desc">{{ (rodape?.descricao && rodape!.descricao!.trim()) ? rodape!.descricao : 'Pães frescos, doces, salgados e produtos de qualidade produzidos todos os dias com cuidado e tradição.' }}</p>
+                <div class="footer-cnpj">
+                    CNPJ: {{ (dados?.cnpj && dados!.cnpj!.trim()) ? dados!.cnpj : '57.068.741/0001-38' }}
                 </div>
             </div>
 
@@ -33,13 +33,13 @@
                 <ul class="footer-info">
                     <li>
                         <img src="/assets/icons/map-pin.svg" width="20" height="20" alt="Localização" class="footer-icon">
-                        <span [innerHTML]="dados?.endereco || 'Rua Exemplo, 123 - Centro<br>Sua Cidade - UF'"></span>
+                        <span [innerHTML]="(dados?.endereco && dados!.endereco!.trim()) ? dados!.endereco : 'Rua Exemplo, 123 - Centro, Sua Cidade - UF'"></span>
                     </li>
                     <li>
                         <img src="/assets/icons/clock.svg" width="20" height="20" alt="Horário" class="footer-icon">
                         <span>
-                            {{ dados?.diasFuncionamento || 'Seg a Sáb' }}:<br>
-                            {{ dados?.horarioAbertura || '06h' }} às {{ dados?.horarioFechamento || '20h' }}
+                            {{ (dados?.diasFuncionamento && dados!.diasFuncionamento!.trim()) ? dados!.diasFuncionamento : 'Seg a Sáb' }}:<br>
+                            {{ (dados?.horarioAbertura && dados!.horarioAbertura!.trim()) ? dados!.horarioAbertura : '06h' }} às {{ (dados?.horarioFechamento && dados!.horarioFechamento!.trim()) ? dados!.horarioFechamento : '20h' }}
                         </span>
                     </li>
                 </ul>
@@ -48,17 +48,16 @@
             <!-- Column 4: Direct Contact -->
             <div class="footer-col">
                 <h3 class="footer-heading">Faça seu Pedido</h3>
-                <p class="footer-contact-txt">{{ rodape?.textoContato || 'Contate-nos via WhatsApp para pedidos rápidos e dúvidas.' }}</p>
+                <p class="footer-contact-txt">{{ (rodape?.textoContato && rodape!.textoContato!.trim()) ? rodape!.textoContato : 'Contate-nos via WhatsApp para pedidos rápidos e dúvidas.' }}</p>
                 <a class="btn footer-btn" [href]="whatsappLink" target="_blank">
                     <img src="/assets/icons/whatsapp.svg" width="18" height="18" alt="WhatsApp" class="btn-icon">
-                    {{ dados?.whatsapp || 'Fazer Pedido' }}
+                    {{ (dados?.whatsapp && dados!.whatsapp!.trim()) ? dados!.whatsapp : 'Fazer Pedido' }}
                 </a>
             </div>
         </div>
 
         <div class="copy">
-            <span>{{ rodape?.textoDireitos || '© 2026 Eloa Mercados. Todos os direitos reservados.' }}</span>
-            <span class="copy-cnpj" *ngIf="dados?.cnpj as cnpj"> &bull; CNPJ: {{ cnpj }}</span>
+            <span>{{ (rodape?.textoDireitos && rodape!.textoDireitos!.trim()) ? rodape!.textoDireitos : '© 2026 Eloa Mercados. Todos os direitos reservados.' }}</span>
         </div>
     </div>
 </footer>

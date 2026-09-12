@@ -28,12 +28,16 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
 
   @Input() set estatisticas(value: ContentEstatisticas | null | undefined) {
     this._estatisticas = value;
-    if (value && value.lista) {
-      this.parsedStats = value.lista.map(est => {
+    const validItems = value?.lista?.filter(est => 
+      (est.nome && est.nome.trim()) || (est.valor && est.valor.trim())
+    );
+
+    if (validItems && validItems.length > 0) {
+      this.parsedStats = validItems.map(est => {
         const parsed = this.parseStatValue(est.valor);
         return {
-          nome: est.nome,
-          valorOriginal: est.valor,
+          nome: est.nome || '',
+          valorOriginal: est.valor || '',
           target: parsed.target,
           prefix: parsed.prefix,
           suffix: parsed.suffix,
@@ -51,23 +55,40 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
   }
 
   private parseStatValue(valor: string) {
-    if (!valor) return { target: null, prefix: '', suffix: '', text: '' };
-    
-    const cleanNumStr = valor.replace(/[^\d]/g, '');
-    const target = cleanNumStr ? parseInt(cleanNumStr, 10) : null;
-    
-    if (target === null || isNaN(target)) {
-      return { target: null, prefix: '', suffix: '', text: valor };
+    if (!valor || !valor.trim()) {
+      return { target: null, prefix: '', suffix: '', text: '' };
     }
-    
-    const prefix = valor.startsWith('+') ? '+' : '';
-    const suffix = valor.endsWith('%') ? '%' : (valor.endsWith('+') ? '' : valor.substring(valor.indexOf(target.toString()) + target.toString().length));
-    
+
+    const trimmed = valor.trim();
+
+    // Regex para identificar se o valor é uma métrica numérica (ex: "10", "+10", "100%", "50+", ">500", "2.5k")
+    const numericRegex = /^([+><~]?|R\$)\s*(\d+(?:[.,]\d+)?)\s*([%+kKmM]?|\+|mil)?$/i;
+    const match = trimmed.match(numericRegex);
+
+    if (!match) {
+      // Não é numérico (ex: "Diária", "Artesanal", "Fresco") -> Animação anulada
+      return {
+        target: null,
+        prefix: '',
+        suffix: '',
+        text: trimmed
+      };
+    }
+
+    const prefix = (match[1] || '').trim();
+    const rawNum = match[2].replace(',', '.');
+    const suffix = (match[3] || '').trim();
+    const parsedNumber = Math.round(parseFloat(rawNum));
+
+    if (isNaN(parsedNumber)) {
+      return { target: null, prefix: '', suffix: '', text: trimmed };
+    }
+
     return {
-      target,
+      target: parsedNumber,
       prefix,
       suffix,
-      text: valor
+      text: trimmed
     };
   }
 
@@ -76,6 +97,10 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
   }
 
   private initObserver() {
+    if (typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
     if (this.observer) {
       this.observer.disconnect();
     }

@@ -11,7 +11,7 @@ import { FooterComponent } from '../footer/footer.component';
 import { ContentService } from '../../services/content.service';
 import { SeoService } from '../../services/seo.service';
 import { SiteContent } from '../../models/content.model';
-import { finalize, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',

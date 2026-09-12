@@ -162,10 +162,18 @@
    ======================================================== */
 .category-filter-area {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   flex: 1;
   min-width: 0;
+}
+
+@media (min-width: 769px) {
+  .category-filter-area {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .category-dropdown-wrapper {
@@ -176,6 +184,8 @@
 .category-select-trigger {
   display: inline-flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: 8px;
   padding: 8px 14px;
   background: #fff;
@@ -187,6 +197,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+}
+
+@media (min-width: 769px) {
+  .category-select-trigger {
+    width: auto;
+    justify-content: flex-start;
+  }
 }
 
 .category-select-trigger:hover {
@@ -214,7 +231,8 @@
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  width: 280px;
+  width: 100%;
+  min-width: 260px;
   max-height: 340px;
   background: #fff;
   border: 1px solid var(--line, #E7DACB);
@@ -225,6 +243,12 @@
   flex-direction: column;
   overflow: hidden;
   animation: dropdownSlide 0.2s ease;
+}
+
+@media (min-width: 769px) {
+  .category-dropdown-menu {
+    width: 280px;
+  }
 }
 
 @keyframes dropdownSlide {
@@ -363,7 +387,16 @@
 .pagination-controls {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
+}
+
+@media (min-width: 769px) {
+  .pagination-controls {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
 }
 
 .page-btn {
@@ -592,36 +625,4 @@
   opacity: 0.4;
   color: var(--gray, #8A7F74);
   cursor: not-allowed;
-}
-
-/* Responsividade Mobile */
-@media (max-width: 768px) {
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .category-filter-area {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .category-select-trigger {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .category-dropdown-menu {
-    width: 100%;
-  }
-
-  .scroll-arrow {
-    display: none;
-  }
-
-  .pagination-controls {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
 }

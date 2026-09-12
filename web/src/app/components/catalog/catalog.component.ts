@@ -206,6 +206,10 @@ export class CatalogComponent implements OnInit, OnDestroy {
   }
 
   private scrollToTop(): void {
+    const scrollWrapper = this.elementRef.nativeElement.querySelector('.catalog-scroll-wrapper');
+    if (scrollWrapper) {
+      scrollWrapper.scrollTop = 0;
+    }
     const section = this.elementRef.nativeElement.querySelector('#catalog');
     if (section) {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });

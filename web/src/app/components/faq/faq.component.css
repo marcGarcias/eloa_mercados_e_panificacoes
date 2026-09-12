@@ -1,83 +1,82 @@
 .faq-section {
-  padding: 80px 20px;
-  background: var(--bg, #fdfbf7);
+  padding: 54px 16px;
+  background: var(--bg, #F5E9DD);
 }
 
 .faq-container {
-  max-width: 860px;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .faq-header {
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
 }
 
 .faq-badge {
   display: inline-block;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--primary, #b87d34);
-  background: rgba(184, 125, 52, 0.1);
-  padding: 6px 16px;
-  border-radius: 50px;
-  margin-bottom: 14px;
+  letter-spacing: 1.4px;
+  color: #9E6628;
+  background: rgba(204, 145, 72, 0.1);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
 }
 
 .faq-title {
-  font-family: 'Lora', serif;
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-  font-weight: 700;
-  color: var(--text-dark, #332115);
-  margin: 0 0 14px;
+  font-family: var(--font-title, 'Lora', serif);
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  font-weight: 600;
+  color: var(--dark-premium, #4C2D19);
+  margin: 0 0 10px;
+  letter-spacing: -0.015em;
   line-height: 1.25;
 }
 
 .faq-subtitle {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  color: #6b5a4e;
-  max-width: 580px;
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 0.95rem;
+  color: #76665A;
+  max-width: 500px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
+/* Acordeon Minimalista (Base Mobile) */
 .faq-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .faq-item {
   background: #ffffff;
-  border: 1px solid rgba(184, 125, 52, 0.18);
-  border-radius: 16px;
+  border: 1px solid rgba(76, 45, 25, 0.08);
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(76, 45, 25, 0.04);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 1px 3px rgba(46, 36, 28, 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .faq-item:hover {
-  border-color: rgba(184, 125, 52, 0.4);
-  box-shadow: 0 8px 25px rgba(76, 45, 25, 0.08);
+  border-color: rgba(76, 45, 25, 0.16);
+  box-shadow: 0 4px 14px rgba(46, 36, 28, 0.04);
 }
 
 .faq-item[open] {
-  border-color: var(--primary, #b87d34);
+  border-color: rgba(204, 145, 72, 0.38);
+  box-shadow: 0 4px 18px rgba(76, 45, 25, 0.05);
 }
 
 .faq-question {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 16px 18px;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--text-dark, #332115);
   user-select: none;
   list-style: none;
   transition: color 0.2s ease;
@@ -87,39 +86,65 @@
   display: none;
 }
 
-.faq-item[open] .faq-question {
-  color: var(--primary, #b87d34);
+.faq-question-text {
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: #2E241C;
+  line-height: 1.45;
+  transition: color 0.2s ease;
 }
 
+.faq-item:hover .faq-question-text {
+  color: #17110C;
+}
+
+.faq-item[open] .faq-question-text {
+  color: var(--dark-premium, #4C2D19);
+  font-weight: 600;
+}
+
+/* Ícone Redondo Sutil e Elegante */
 .faq-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #F7F3EE;
+  color: #8A7B70;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-left: 16px;
-  color: var(--primary, #b87d34);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 14px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faq-item:hover .faq-icon {
+  background: #EFE8DE;
+  color: #4C2D19;
 }
 
 .faq-item[open] .faq-icon {
+  background: var(--primary, #CC9148);
+  color: #ffffff;
   transform: rotate(180deg);
 }
 
+/* Resposta Expandida */
 .faq-answer {
-  padding: 0 24px 22px;
-  border-top: 1px solid rgba(184, 125, 52, 0.08);
-  animation: fadeIn 0.25s ease;
+  padding: 0 18px 18px;
+  animation: faqSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .faq-answer p {
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.95rem;
-  line-height: 1.65;
-  color: #554439;
-  margin: 14px 0 0;
+  font-family: var(--font-body, 'Poppins', sans-serif);
+  font-size: 0.89rem;
+  line-height: 1.68;
+  color: #5C4D42;
+  margin: 0;
 }
 
-@keyframes fadeIn {
+@keyframes faqSlideDown {
   from {
     opacity: 0;
     transform: translateY(-4px);
@@ -130,17 +155,29 @@
   }
 }
 
-@media (max-width: 600px) {
+/* Telas Maiores (Progressive Enhancement - Mobile First) */
+@media (min-width: 744px) {
   .faq-section {
-    padding: 60px 16px;
+    padding: 72px 20px;
+  }
+
+  .faq-header {
+    margin-bottom: 40px;
   }
 
   .faq-question {
-    padding: 16px 18px;
+    padding: 18px 22px;
+  }
+
+  .faq-question-text {
     font-size: 0.98rem;
   }
 
   .faq-answer {
-    padding: 0 18px 18px;
+    padding: 0 22px 20px 22px;
+  }
+
+  .faq-answer p {
+    font-size: 0.925rem;
   }
 }

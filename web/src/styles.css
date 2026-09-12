@@ -145,14 +145,16 @@ a {
 
 #toast-container {
   position: fixed;
-  top: 24px;
-  right: 24px;
+  top: auto;
+  bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  left: 16px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 400px;
-  width: calc(100% - 48px);
+  width: auto;
+  max-width: none;
   pointer-events: none;
   font-family: var(--font-body, 'Poppins', sans-serif);
 }
@@ -163,13 +165,13 @@ a {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 18px 20px;
   box-shadow: 0 8px 32px rgba(76, 45, 25, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  transform: translateX(120%);
+  transform: translateY(120%);
   opacity: 0;
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.1), opacity 0.4s ease;
   box-sizing: border-box;
@@ -178,7 +180,7 @@ a {
 }
 
 .toast.show {
-  transform: translateX(0);
+  transform: translateY(0);
   opacity: 1;
 }
 
@@ -219,15 +221,15 @@ a {
   border: none;
   color: #999;
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
   opacity: 0.7;
   transition: opacity 0.2s, color 0.2s, background 0.2s;
   font-size: 20px;
   line-height: 1;
   margin-left: 8px;
   flex-shrink: 0;
-  margin-top: -4px;
-  margin-right: -8px;
+  margin-top: -8px;
+  margin-right: -12px;
   border-radius: 6px;
 }
 
@@ -253,29 +255,30 @@ a {
   100% { width: 0%; }
 }
 
-@media (max-width: 767px) {
+/* Progressive Enhancement para Desktop */
+@media (min-width: 768px) {
   #toast-container {
-    top: auto;
-    bottom: calc(64px + 12px + env(safe-area-inset-bottom, 0px));
-    right: 16px;
-    left: 16px;
-    width: auto;
-    max-width: none;
+    top: 24px;
+    bottom: auto;
+    left: auto;
+    right: 24px;
+    width: calc(100% - 48px);
+    max-width: 400px;
   }
 
   .toast {
-    transform: translateY(120%);
-    padding: 18px 20px;
+    transform: translateX(120%);
+    padding: 16px 20px;
   }
 
   .toast.show {
-    transform: translateY(0);
+    transform: translateX(0);
   }
 
   .toast-close {
-    padding: 8px;
-    margin-top: -8px;
-    margin-right: -12px;
+    padding: 4px;
+    margin-top: -4px;
+    margin-right: -8px;
   }
 }
 

@@ -1,8 +1,8 @@
 <section class="catalog" id="catalog">
   <div class="container">
-    <div class="section-tag">{{ catalogo?.selo || 'Nosso Cardápio' }}</div>
+    <div class="section-tag">{{ (catalogo?.selo && catalogo!.selo!.trim()) ? catalogo!.selo : 'Nosso Cardápio' }}</div>
     <h2 class="title">Catálogo de Produtos</h2>
-    <p class="subtitle">{{ catalogo?.descricao || 'Escolha seus favoritos e faça o pedido diretamente via WhatsApp.' }}</p>
+    <p class="subtitle">{{ (catalogo?.descricao && catalogo!.descricao!.trim()) ? catalogo!.descricao : 'Escolha seus favoritos e faça o pedido diretamente via WhatsApp.' }}</p>
 
     <div class="catalog-toolbar">
       <div class="category-dropdown-wrapper">
@@ -96,18 +96,20 @@
       <p>Carregando produtos...</p>
     </div>
 
-    <div class="grid" *ngIf="!isLoading && products.length > 0">
-      <div class="card" *ngFor="let produto of products">
-        <div class="photo">
-          <img *ngIf="produto.imagem" [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
-          <span class="no-image" *ngIf="!produto.imagem">
-            <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" class="no-image-icon">
-          </span>
-        </div>
-        <div class="info">
-          <div class="category">{{ produto.categoria }}</div>
-          <h3>{{ produto.nome }}</h3>
-          <div class="weight">{{ produto.peso }}</div>
+    <div class="catalog-scroll-wrapper" *ngIf="!isLoading && products.length > 0">
+      <div class="grid">
+        <div class="card" *ngFor="let produto of products">
+          <div class="photo">
+            <img *ngIf="produto.imagem" [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
+            <span class="no-image" *ngIf="!produto.imagem">
+              <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" class="no-image-icon">
+            </span>
+          </div>
+          <div class="info">
+            <div class="category">{{ produto.categoria }}</div>
+            <h3>{{ produto.nome }}</h3>
+            <div class="weight">{{ produto.peso }}</div>
+          </div>
         </div>
       </div>
     </div>

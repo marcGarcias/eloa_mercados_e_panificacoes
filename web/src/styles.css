@@ -42,10 +42,15 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* Link de salto para acessibilidade de teclado */
 .skip-to-content {
-  position: absolute;
-  top: -100px;
+  position: fixed;
+  top: -200px;
   left: 16px;
   z-index: 10000;
   padding: 12px 20px;

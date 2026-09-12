@@ -6,6 +6,10 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "cross-origin"
         }
       ]
     },
@@ -35,11 +39,7 @@
         },
         {
           "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Cross-Origin-Resource-Policy",
-          "value": "same-origin"
+          "value": "same-origin-allow-popups"
         },
         {
           "key": "Referrer-Policy",
@@ -51,7 +51,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://eloa-mercados-e-panificacoes.onrender.com https://eloapanificacoes.com.br https://res.cloudinary.com https:; connect-src 'self' https://eloa-mercados-e-panificacoes.onrender.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types angular angular#unsafe-bypass default 'allow-duplicates';"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://eloa-mercados-e-panificacoes.onrender.com https://eloapanificacoes.com.br https://res.cloudinary.com https:; connect-src 'self' https://eloa-mercados-e-panificacoes.onrender.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests;"
         }
       ]
     }

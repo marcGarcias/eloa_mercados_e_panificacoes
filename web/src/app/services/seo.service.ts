@@ -230,11 +230,11 @@ export class SeoService {
           "logo": {
             "@type": "ImageObject",
             "@id": `${this.baseUrl}/#logo`,
-            "url": `${this.baseUrl}/assets/images/logo-eloa.webp`,
-            "contentUrl": `${this.baseUrl}/assets/images/logo-eloa.webp`,
+            "url": `${this.baseUrl}/assets/images/og-eloa-banner.webp`,
+            "contentUrl": `${this.baseUrl}/assets/images/og-eloa-banner.webp`,
             "caption": "Eloá Panificações e Alimentos para Atacado",
-            "width": "512",
-            "height": "512"
+            "width": "1200",
+            "height": "630"
           },
           "image": {
             "@id": `${this.baseUrl}/#logo`
@@ -257,7 +257,7 @@ export class SeoService {
           "@type": ["Bakery", "WholesaleStore"],
           "@id": `${this.baseUrl}/#localbusiness`,
           "name": "Eloá Mercados & Panificações - Catálogo & Pedidos via WhatsApp",
-          "image": `${this.baseUrl}/assets/images/fachada-fabrica-eloa.webp`,
+          "image": `${this.baseUrl}/assets/images/eloa_building.webp`,
           "url": this.baseUrl,
           "telephone": formattedPhone,
           "priceRange": "$$",

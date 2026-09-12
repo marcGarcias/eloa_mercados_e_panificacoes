@@ -44,7 +44,7 @@ export class Home implements OnInit, OnDestroy {
       canonicalUrl: 'https://eloapanificacoes.com.br/',
       ogTitle: 'Eloá Mercados & Panificações | Catálogo & Pedidos via WhatsApp',
       ogDescription: 'Consulte nossa linha completa de panificação e confeitaria. Faça seu pedido diretamente pelo WhatsApp com nossa equipe.',
-      ogImage: 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.jpg'
+      ogImage: 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.webp'
     });
     this.seoService.setHomeStructuredData();
 

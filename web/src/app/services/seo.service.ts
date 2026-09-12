@@ -45,7 +45,7 @@ export class SeoService {
 
   private readonly siteName = 'Eloá Mercados & Panificações';
   private readonly baseUrl = 'https://eloapanificacoes.com.br';
-  private readonly defaultOgImage = 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.jpg';
+  private readonly defaultOgImage = 'https://eloapanificacoes.com.br/assets/images/og-eloa-banner.webp';
 
   constructor() {
     this.renderer = this.rendererFactory.createRenderer(null, null);

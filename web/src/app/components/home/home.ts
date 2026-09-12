@@ -49,21 +49,17 @@ export class Home implements OnInit, OnDestroy {
     this.seoService.setHomeStructuredData();
 
     this.subs.add(
-      this.contentService.getContentPublic().pipe(
-        finalize(() => {
-          this.cdr.detectChanges();
-        })
-      ).subscribe({
+      this.contentService.getContentPublic().subscribe({
         next: (data) => {
           this.content = data;
           if (data) {
             this.seoService.updateFromSiteContent(data);
           }
-          this.cdr.detectChanges();
+          this.cdr.markForCheck();
         },
         error: () => {
           this.content = null;
-          this.cdr.detectChanges();
+          this.cdr.markForCheck();
         }
       })
     );

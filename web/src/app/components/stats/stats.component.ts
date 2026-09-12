@@ -1,4 +1,4 @@
-import { Component, ElementRef, QueryList, ViewChildren, AfterViewInit, OnDestroy, Input } from '@angular/core';
+import { Component, ElementRef, QueryList, ViewChildren, AfterViewInit, OnDestroy, Input, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentEstatisticas } from '../../models/content.model';
 
@@ -21,6 +21,7 @@ interface ParsedStat {
 export class StatsComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('numeroVal') numberElements!: QueryList<ElementRef>;
   private observer: IntersectionObserver | null = null;
+  private readonly ngZone = inject(NgZone);
 
   private _estatisticas: ContentEstatisticas | null | undefined = null;
   parsedStats: ParsedStat[] = [];
@@ -90,18 +91,27 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
             const target = +targetStr;
             const prefix = el.getAttribute('data-prefix') || '';
             const suffix = el.getAttribute('data-suffix') || '';
-            const duration = 2000;
-            const stepTime = Math.abs(Math.floor(duration / target));
+            const duration = 1600;
 
-            let current = 0;
-            const timer = setInterval(() => {
-              current += 1;
-              el.innerText = `${prefix}${current}${suffix}`;
-              if (current >= target) {
-                clearInterval(timer);
-                el.innerText = `${prefix}${target}${suffix}`;
-              }
-            }, stepTime);
+            this.ngZone.runOutsideAngular(() => {
+              const startTime = performance.now();
+              const animate = (now: number) => {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // easeOutExpo suave para contagem fluida
+                const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                const current = Math.floor(ease * target);
+
+                el.textContent = `${prefix}${current}${suffix}`;
+
+                if (progress < 1) {
+                  requestAnimationFrame(animate);
+                } else {
+                  el.textContent = `${prefix}${target}${suffix}`;
+                }
+              };
+              requestAnimationFrame(animate);
+            });
           }
           obs.unobserve(el);
         }

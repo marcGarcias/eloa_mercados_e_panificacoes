@@ -198,8 +198,26 @@ describe('UsersComponent (Admin)', () => {
     expect(component.translateErrorMessage({ error: { message: 'SUPER_ADMIN user. Only one owner is allowed' } }))
       .toBe('Já existe um Proprietário cadastrado no sistema.');
 
+    expect(component.translateErrorMessage({ error: { message: 'Creating a SUPER_ADMIN user is not allowed' } }))
+      .toBe('Não é permitido criar usuários com perfil de Proprietário.');
+
+    expect(component.translateErrorMessage({ error: { message: 'Modifying the role to/from SUPER_ADMIN' } }))
+      .toBe('Não é permitido alterar ou promover usuários para a função de Proprietário.');
+
+    expect(component.translateErrorMessage({ error: { message: 'User not found' } }))
+      .toBe('Usuário não encontrado.');
+
     expect(component.translateErrorMessage({ error: { message: 'Erro desconhecido' } }))
       .toBe('Erro desconhecido');
+  });
+
+  it('deve tratar erro ao atualizar dados de usuário e exibir mensagem', () => {
+    mockUserService.updateData.mockReturnValue(throwError(() => ({ error: { message: 'User name cannot be empty' } })));
+    component.openEditModal(mockEditorUser);
+
+    component.saveUser();
+
+    expect(component.errorMessage).toBe('O nome do usuário não pode ficar em branco.');
   });
 
   it('deve controlar modal de exclusão e confirmar deleção com match exato de nome', () => {
@@ -211,10 +229,16 @@ describe('UsersComponent (Admin)', () => {
     component.confirmDelete();
     expect(mockUserService.delete).not.toHaveBeenCalled();
 
-    // Confirmação correta -> deleta
+    // Confirmação correta com erro da API
+    mockUserService.delete.mockReturnValue(throwError(() => ({ error: { message: 'Erro ao deletar' } })));
     component.deleteUsernameConfirm = 'Editor Um';
     component.confirmDelete();
-    expect(mockUserService.delete).toHaveBeenCalledWith('u-editor');
+    expect(mockToastService.error).toHaveBeenCalledWith('Erro ao deletar', 'Erro ao Excluir');
+
+    // Confirmação correta com sucesso
+    mockUserService.delete.mockReturnValue(of(null));
+    component.deleteUsernameConfirm = 'Editor Um';
+    component.confirmDelete();
     expect(mockToastService.success).toHaveBeenCalledWith(expect.any(String), 'Usuário Excluído');
     expect(component.isDeleteModalOpen).toBeFalsy();
   });

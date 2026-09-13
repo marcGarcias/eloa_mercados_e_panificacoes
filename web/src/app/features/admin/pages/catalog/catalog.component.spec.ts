@@ -252,6 +252,43 @@ describe('CatalogComponent (Admin)', () => {
     expect(mockToastService.success).toHaveBeenCalledWith(expect.any(String), 'Catálogo Atualizado');
   });
 
+  it('deve reordenar itens via onDrop quando em modo de edição', () => {
+    fixture.detectChanges();
+    component.isEditMode = true;
+    component.activeFilter = 'Todos';
+
+    const dropEvent = {
+      previousIndex: 0,
+      currentIndex: 1
+    } as any;
+
+    component.onDrop(dropEvent);
+
+    expect(component.hasOrderChanges).toBe(true);
+    expect(component.products[0].nome).toBe('Bolo de Rolo');
+    expect(component.products[1].nome).toBe('Pão Francês');
+  });
+
+  it('deve tratar erro ao salvar alterações do catálogo', () => {
+    fixture.detectChanges();
+    component.isEditMode = true;
+    component.markProductForDeletion(10);
+    mockProductService.deleteProducts.mockReturnValue(throwError(() => ({ error: { message: 'Erro ao deletar' } })));
+
+    component.saveChanges();
+
+    expect(mockToastService.error).toHaveBeenCalledWith('Erro ao deletar', 'Erro ao Salvar');
+  });
+
+  it('deve tratar erro na exclusão direta de categoria', () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    mockCategoryAdminService.delete.mockReturnValue(throwError(() => ({ error: { message: 'Categoria vinculada' } })));
+
+    component.deleteCategoryDirectly(mockAdminCats[0]);
+
+    expect(mockToastService.error).toHaveBeenCalledWith('Categoria vinculada', 'Erro ao Excluir');
+  });
+
   it('deve reagir ao redimensionamento de tela para mobile', () => {
     component.onResize();
     expect(component.isMobile).toBeDefined();

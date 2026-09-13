@@ -169,6 +169,45 @@ describe('AuthService', () => {
       expect(status).toBe(true);
       httpMock.expectNone('/api/auth/refresh');
     });
+
+    it('deve disparar silentRefresh e setar authInitialized como true na inicialização', () => {
+      (service as any).authInitialized = false;
+
+      let status: boolean | undefined;
+      service.checkAuthStatus().subscribe(res => (status = res));
+
+      const req = httpMock.expectOne('/api/auth/refresh');
+      req.flush({ accessToken: 'token-novo' });
+
+      const reqMe = httpMock.expectOne('/api/auth/me');
+      reqMe.flush(createMockUser());
+
+      expect(status).toBe(true);
+      expect((service as any).authInitialized).toBe(true);
+    });
+
+    it('deve retornar false caso o refresh não contenha accessToken', () => {
+      let status: boolean | undefined;
+      service.silentRefresh().subscribe(res => (status = res));
+
+      const req = httpMock.expectOne('/api/auth/refresh');
+      req.flush({}); // Sem accessToken
+
+      expect(status).toBe(false);
+    });
+
+    it('deve retornar true mesmo se a chamada para me falhar durante o refresh', () => {
+      let status: boolean | undefined;
+      service.silentRefresh().subscribe(res => (status = res));
+
+      const req = httpMock.expectOne('/api/auth/refresh');
+      req.flush({ accessToken: 'token-ok' });
+
+      const reqMe = httpMock.expectOne('/api/auth/me');
+      reqMe.flush('Erro', { status: 500, statusText: 'Server Error' });
+
+      expect(status).toBe(true);
+    });
   });
 });
 

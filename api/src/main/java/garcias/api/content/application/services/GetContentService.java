@@ -3,6 +3,8 @@ package garcias.api.content.application.services;
 import garcias.api.content.application.usecases.GetContentUseCase;
 import garcias.api.content.domain.entities.SiteContent;
 import garcias.api.content.domain.repositories.SiteContentRepository;
+import garcias.api.shared.config.CacheNames;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -16,8 +18,8 @@ public class GetContentService implements GetContentUseCase {
     }
 
     @Override
+    @Cacheable(value = CacheNames.HOME_CONTENT, key = "'site-content'")
     public Optional<SiteContent> execute() {
         return repository.find();
     }
 }
-

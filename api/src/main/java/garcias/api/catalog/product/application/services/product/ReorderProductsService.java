@@ -6,8 +6,10 @@ import garcias.api.catalog.product.domain.entities.Product;
 import garcias.api.catalog.product.domain.repositories.ProductRepository;
 import garcias.api.catalog.product.domain.valueobjects.CatalogPosition;
 import garcias.api.catalog.product.domain.valueobjects.ProductId;
+import garcias.api.shared.config.CacheNames;
 import garcias.api.shared.exceptions.ObjectNotFoundException;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class ReorderProductsService implements ReorderProductsUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.HOME_PRODUCTS, allEntries = true)
     public void execute(ReorderProductsRequest request) {
 
         List<Long> rawIds = request.order();

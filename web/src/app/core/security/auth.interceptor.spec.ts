@@ -207,6 +207,23 @@ describe('authInterceptor (HttpInterceptorFn)', () => {
       expect(authServiceMock.logout).not.toHaveBeenCalled();
       expect(error404).toBeInstanceOf(HttpErrorResponse);
     });
+
+    it('deve realizar logout e redirecionar quando silentRefresh retornar false', () => {
+      authServiceMock.getToken.mockReturnValue('expired-token');
+      authServiceMock.silentRefresh.mockReturnValue(of(false));
+
+      let error: unknown = null;
+      http.get('/api/products/1').subscribe({
+        error: (err) => (error = err)
+      });
+
+      const req = httpMock.expectOne('/api/products/1');
+      req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+      expect(authServiceMock.logout).toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/login-cms']);
+      expect(error).toBeDefined();
+    });
   });
 });
 

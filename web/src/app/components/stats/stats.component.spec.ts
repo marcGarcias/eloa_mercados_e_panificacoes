@@ -1,19 +1,39 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StatsComponent } from './stats.component';
 import { ContentEstatisticas } from '../../models/content.model';
 
 describe('StatsComponent', () => {
   let component: StatsComponent;
   let fixture: ComponentFixture<StatsComponent>;
+  let originalIO: any;
 
   beforeEach(async () => {
+    originalIO = (globalThis as any).IntersectionObserver;
+
+    class MockIntersectionObserver {
+      callback: (entries: any[], obs: any) => void;
+      constructor(cb: any) {
+        this.callback = cb;
+      }
+      observe(el: any) {
+        this.callback([{ isIntersecting: true, target: el }], this);
+      }
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    }
+    (globalThis as any).IntersectionObserver = MockIntersectionObserver;
+
     await TestBed.configureTestingModule({
       imports: [StatsComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StatsComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    (globalThis as any).IntersectionObserver = originalIO;
   });
 
   it('deve usar o fallback default com 4 estatísticas quando nenhum input for fornecido', () => {
@@ -37,7 +57,8 @@ describe('StatsComponent', () => {
         { nome: 'Anos de Mercado', valor: '+15' },
         { nome: 'Satisfação', valor: '99%' },
         { nome: 'Produção', valor: 'Diária' },
-        { nome: 'Tipo de Massa', valor: 'Artesanal' }
+        { nome: 'Tipo de Massa', valor: 'Artesanal' },
+        { nome: '   ', valor: '' } // item vazio para cobrir filtro
       ]
     };
 
@@ -69,5 +90,14 @@ describe('StatsComponent', () => {
     expect(values[3].getAttribute('data-target')).toBeNull();
     expect(values[3].textContent?.trim()).toBe('Artesanal');
   });
-});
 
+  it('deve lidar com valores vazios ou nulos de estatisticas e chamar ngOnDestroy', () => {
+    fixture.componentRef.setInput('estatisticas', null);
+    fixture.detectChanges();
+    expect(component.parsedStats).toEqual([]);
+    expect(component.estatisticas).toBeNull();
+
+    component.ngOnDestroy();
+    expect(component).toBeTruthy();
+  });
+});

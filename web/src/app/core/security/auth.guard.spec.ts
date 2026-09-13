@@ -190,6 +190,27 @@ describe('Guards de Autenticação e Autorização', () => {
 
       expect(result).toBe(false);
     });
+
+    it('deve retornar false em authMatchGuard em caso de timeout aguardando currentUser', () => {
+      vi.useFakeTimers();
+      authServiceMock.checkAuthStatus.mockReturnValue(of(true));
+
+      const route: Route = {
+        path: 'admin/products',
+        data: { roles: ['ADMIN'] }
+      };
+
+      let resolvedResult: unknown = null;
+      const rawGuard = TestBed.runInInjectionContext(() => authMatchGuard(route, dummySegments));
+      resolveGuardResult(rawGuard).subscribe(res => {
+        resolvedResult = res;
+      });
+
+      vi.advanceTimersByTime(3500);
+
+      expect(resolvedResult).toBe(false);
+      vi.useRealTimers();
+    });
   });
 });
 

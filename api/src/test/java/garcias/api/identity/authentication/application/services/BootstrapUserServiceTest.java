@@ -118,5 +118,37 @@ class BootstrapUserServiceTest {
         assertThrows(InvalidSetupAccessKeyException.class, () -> bootstrapUserService.execute(request));
         verify(userAuthenticationPort, never()).createInitialUser(anyString(), anyString());
     }
+
+    @Test
+    @DisplayName("Should throw InvalidSetupCpfException when CPF is null")
+    void shouldThrowExceptionWhenCpfIsNull() {
+        BootstrapUserRequest request = new BootstrapUserRequest(
+                "Admin",
+                "12345678",
+                validServerKey,
+                null
+        );
+
+        when(userAuthenticationPort.existsAnyUser()).thenReturn(false);
+
+        assertThrows(InvalidSetupCpfException.class, () -> bootstrapUserService.execute(request));
+        verify(userAuthenticationPort, never()).createInitialUser(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidSetupAccessKeyException when access key is null")
+    void shouldThrowExceptionWhenAccessKeyIsNull() {
+        BootstrapUserRequest request = new BootstrapUserRequest(
+                "Admin",
+                "12345678",
+                null,
+                validServerCpf
+        );
+
+        when(userAuthenticationPort.existsAnyUser()).thenReturn(false);
+
+        assertThrows(InvalidSetupAccessKeyException.class, () -> bootstrapUserService.execute(request));
+        verify(userAuthenticationPort, never()).createInitialUser(anyString(), anyString());
+    }
 }
 

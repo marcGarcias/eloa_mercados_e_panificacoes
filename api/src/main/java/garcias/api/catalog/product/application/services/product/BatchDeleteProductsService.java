@@ -6,7 +6,9 @@ import garcias.api.catalog.product.application.usecases.product.BatchDeleteProdu
 import garcias.api.catalog.product.domain.entities.Product;
 import garcias.api.catalog.product.domain.repositories.ProductRepository;
 import garcias.api.catalog.product.domain.valueobjects.ProductId;
+import garcias.api.shared.config.CacheNames;
 import garcias.api.shared.exceptions.ObjectNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -31,6 +33,7 @@ public class BatchDeleteProductsService implements BatchDeleteProductsUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.HOME_PRODUCTS, allEntries = true)
     public void execute(BatchDeleteProductsRequest request) {
         List<ProductId> productIds = request.ids().stream()
                 .map(ProductId::new)

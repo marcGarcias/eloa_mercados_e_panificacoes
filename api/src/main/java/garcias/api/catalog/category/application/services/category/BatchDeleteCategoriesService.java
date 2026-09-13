@@ -5,9 +5,11 @@ import garcias.api.catalog.category.application.usecases.category.BatchDeleteCat
 import garcias.api.catalog.category.domain.entities.Category;
 import garcias.api.catalog.category.domain.exceptions.CategoryHasProductsException;
 import garcias.api.catalog.category.domain.persistence.CategoryRepository;
-import garcias.api.catalog.product.domain.repositories.ProductRepository;
 import garcias.api.catalog.category.domain.valueobjects.CategoryId;
+import garcias.api.catalog.product.domain.repositories.ProductRepository;
+import garcias.api.shared.config.CacheNames;
 import garcias.api.shared.exceptions.ObjectNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class BatchDeleteCategoriesService implements BatchDeleteCategoriesUseCas
 
     @Override
     @Transactional
+    @CacheEvict(value = {CacheNames.HOME_CATEGORIES, CacheNames.HOME_PRODUCTS}, allEntries = true)
     public void execute(BatchDeleteCategoriesRequest request) {
         List<CategoryId> categoryIds = request.ids().stream()
                 .map(CategoryId::new)
@@ -46,4 +49,3 @@ public class BatchDeleteCategoriesService implements BatchDeleteCategoriesUseCas
         }
     }
 }
-

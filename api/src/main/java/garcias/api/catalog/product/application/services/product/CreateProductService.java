@@ -14,6 +14,8 @@ import garcias.api.catalog.product.domain.valueobjects.ProductWeight;
 import org.springframework.context.ApplicationEventPublisher;
 import garcias.api.catalog.category.domain.persistence.CategoryRepository;
 import garcias.api.shared.exceptions.ObjectNotFoundException;
+import garcias.api.shared.config.CacheNames;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,7 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.HOME_PRODUCTS, allEntries = true)
     public Product execute(CreateProductRequest request) {
 
         String imagePath = null;

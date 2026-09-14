@@ -76,8 +76,7 @@ export class ContentComponent implements OnInit, OnDestroy {
       }),
       rodape: this.fb.group({
         descricao: ['', [Validators.maxLength(300)]],
-        textoContato: ['', [Validators.maxLength(150)]],
-        textoDireitos: ['', [Validators.maxLength(150)]]
+        textoContato: ['', [Validators.maxLength(150)]]
       }),
       dados: this.fb.group({
         endereco: ['', [Validators.maxLength(250)]],

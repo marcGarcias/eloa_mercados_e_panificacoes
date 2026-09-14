@@ -38,7 +38,6 @@ export interface ContentCta {
 export interface ContentRodape {
   descricao: string;
   textoContato: string;
-  textoDireitos: string;
 }
 
 export interface SiteData {

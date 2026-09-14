@@ -73,8 +73,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   rodape: {
     descricao: 'Pães frescos, doces, salgados e produtos de qualidade produzidos todos os dias com cuidado e tradição.',
-    textoContato: 'Contate-nos via WhatsApp para pedidos rápidos e dúvidas.',
-    textoDireitos: '© 2026 Eloa Mercados. Todos os direitos reservados.'
+    textoContato: 'Contate-nos via WhatsApp para pedidos rápidos e dúvidas.'
   },
   dados: {
     endereco: 'Rua Exemplo, 123 - Centro, Sua Cidade - UF',
@@ -184,7 +183,6 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
 
   const rodapeDescricao = pickStr(dynamic.rodape?.descricao, fallback.rodape.descricao);
   const rodapeTextoContato = pickStr(dynamic.rodape?.textoContato, fallback.rodape.textoContato);
-  const rodapeTextoDireitos = pickStr(dynamic.rodape?.textoDireitos, fallback.rodape.textoDireitos);
 
   const faqItens = (fallback.faq?.itens || []).map(defFaq => {
     const dynFaq = dynamic.faq?.itens?.find(f => f.id === defFaq.id);
@@ -236,8 +234,7 @@ export function resolveSiteContent(dynamic?: Partial<SiteContent> | null): SiteC
     },
     rodape: {
       descricao: rodapeDescricao,
-      textoContato: rodapeTextoContato,
-      textoDireitos: rodapeTextoDireitos
+      textoContato: rodapeTextoContato
     },
     dados: {
       endereco: dadosEndereco,

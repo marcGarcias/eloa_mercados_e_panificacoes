@@ -18,7 +18,7 @@ public class GetContentService implements GetContentUseCase {
     }
 
     @Override
-    @Cacheable(value = CacheNames.HOME_CONTENT, key = "'site-content'")
+    @Cacheable(value = CacheNames.HOME_CONTENT, key = "'site-content'", unless = "#result == null")
     public Optional<SiteContent> execute() {
         return repository.find();
     }

@@ -5,6 +5,7 @@ import garcias.api.content.domain.entities.SiteContent;
 import garcias.api.content.infrastructure.mapper.ContentDtoMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 import java.util.List;
@@ -13,7 +14,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RedisCacheSerializationTest {
 
-    private final RedisSerializer<Object> serializer = RedisSerializer.json();
+    private final SafeRedisJsonSerializer safeSerializer = new SafeRedisJsonSerializer();
+
+    @Test
+    void testSafeRedisJsonSerializer() {
+        SafeRedisJsonSerializer safeSerializer = new SafeRedisJsonSerializer();
+
+        garcias.api.catalog.category.domain.entities.Category cat1 =
+                new garcias.api.catalog.category.domain.entities.Category(
+                        new garcias.api.catalog.category.domain.valueobjects.CategoryId(1L),
+                        new garcias.api.catalog.category.domain.valueobjects.CategoryName("Pães")
+                );
+
+        List<garcias.api.catalog.category.domain.entities.Category> list = List.of(cat1);
+        byte[] bytes = safeSerializer.serialize(list);
+        System.out.println("WRAPPER LIST JSON: " + new String(bytes, java.nio.charset.StandardCharsets.UTF_8));
+        Object res = safeSerializer.deserialize(bytes);
+        System.out.println("WRAPPER DESERIALIZED LIST: " + res);
+        assertNotNull(res);
+        assertInstanceOf(List.class, res);
+        List<?> resList = (List<?>) res;
+        assertEquals(1, resList.size());
+        garcias.api.catalog.category.domain.entities.Category restoredCat = (garcias.api.catalog.category.domain.entities.Category) resList.get(0);
+        assertEquals("Pães", restoredCat.getName().value());
+    }
 
     @Test
     @DisplayName("Deve serializar e desserializar SiteContent populado com sucesso")
@@ -45,10 +69,10 @@ class RedisCacheSerializationTest {
         SiteContent original = ContentDtoMapper.toDomain(dto);
         assertNotNull(original);
 
-        byte[] bytes = serializer.serialize(original);
+        byte[] bytes = safeSerializer.serialize(original);
         assertNotNull(bytes);
 
-        Object deserialized = serializer.deserialize(bytes);
+        Object deserialized = safeSerializer.deserialize(bytes);
         assertNotNull(deserialized);
         assertInstanceOf(SiteContent.class, deserialized);
 

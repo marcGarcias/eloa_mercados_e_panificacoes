@@ -80,7 +80,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     horarioAbertura: '06h',
     horarioFechamento: '20h',
     diasFuncionamento: 'Seg a Sáb',
-    whatsapp: 'Fazer Pedido',
+    whatsapp: '11999999999',
     cnpj: '00.000.000/0001-00'
   },
   faq: {

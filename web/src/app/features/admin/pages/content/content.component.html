@@ -23,21 +23,21 @@
                 <div class="accordion-body" formGroupName="banner">
                     <div class="field">
                         <label>Selo <span class="field-hint">(deixe em branco para usar o fallback)</span></label>
-                        <input type="text" formControlName="selo" [placeholder]="'Padrão: ' + defaultBanner.selo">
+                        <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultBanner.selo">
                     </div>
                     <div class="field-row">
                         <div class="field">
                             <label>Título</label>
-                            <input type="text" formControlName="titulo" [placeholder]="'Padrão: ' + defaultBanner.titulo">
+                            <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultBanner.titulo">
                         </div>
                         <div class="field">
                             <label>Subtítulo</label>
-                            <input type="text" formControlName="subtitulo" [placeholder]="'Padrão: ' + defaultBanner.subtitulo">
+                            <input type="text" formControlName="subtitulo" maxlength="150" [placeholder]="'Padrão: ' + defaultBanner.subtitulo">
                         </div>
                     </div>
                     <div class="field">
                         <label>Descrição</label>
-                        <textarea rows="3" formControlName="descricao" [placeholder]="'Padrão: ' + defaultBanner.descricao"></textarea>
+                        <textarea rows="3" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultBanner.descricao"></textarea>
                     </div>
                     <div class="field">
                         <label>Indicadores <span class="field-hint">(3 indicadores)</span></label>
@@ -47,11 +47,11 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Título</label>
-                                        <input type="text" formControlName="nome" [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.nome || '')">
+                                        <input type="text" formControlName="nome" maxlength="100" [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.nome || '')">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Valor</label>
-                                        <input type="text" formControlName="valor" [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.valor || '')">
+                                        <input type="text" formControlName="valor" maxlength="50" [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.valor || '')">
                                     </div>
                                 </div>
                             </div>
@@ -74,16 +74,16 @@
                     <div class="field-row">
                         <div class="field">
                             <label>Selo</label>
-                            <input type="text" formControlName="selo" [placeholder]="'Padrão: ' + defaultDiferenciais.selo">
+                            <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultDiferenciais.selo">
                         </div>
                         <div class="field">
                             <label>Título Principal</label>
-                            <input type="text" formControlName="titulo" [placeholder]="'Padrão: ' + defaultDiferenciais.titulo">
+                            <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultDiferenciais.titulo">
                         </div>
                     </div>
                     <div class="field">
                         <label>Descrição da Seção</label>
-                        <textarea rows="2" formControlName="descricao" [placeholder]="'Padrão: ' + defaultDiferenciais.descricao"></textarea>
+                        <textarea rows="2" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultDiferenciais.descricao"></textarea>
                     </div>
                     <div class="field">
                         <label>3 Cards de Diferenciais <span class="field-hint">(deixe em branco para usar o fallback)</span></label>
@@ -95,11 +95,11 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Título do Card</label>
-                                        <input type="text" formControlName="titulo" [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.titulo || '')">
+                                        <input type="text" formControlName="titulo" maxlength="120" [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.titulo || '')">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Texto do Card</label>
-                                        <textarea rows="2" formControlName="texto" [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.texto || '')"></textarea>
+                                        <textarea rows="2" formControlName="texto" maxlength="300" [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.texto || '')"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -121,11 +121,11 @@
                 <div class="accordion-body" formGroupName="catalogo">
                     <div class="field">
                         <label>Selo</label>
-                        <input type="text" formControlName="selo" [placeholder]="'Padrão: ' + defaultCatalogo.selo">
+                        <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultCatalogo.selo">
                     </div>
                     <div class="field">
                         <label>Descrição</label>
-                        <textarea rows="3" formControlName="descricao" [placeholder]="'Padrão: ' + defaultCatalogo.descricao"></textarea>
+                        <textarea rows="3" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultCatalogo.descricao"></textarea>
                     </div>
                 </div>
             </div>
@@ -144,16 +144,16 @@
                     <div class="field-row">
                         <div class="field">
                             <label>Selo</label>
-                            <input type="text" formControlName="selo" [placeholder]="'Padrão: ' + defaultSobre.selo">
+                            <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultSobre.selo">
                         </div>
                         <div class="field">
                             <label>Título Principal</label>
-                            <input type="text" formControlName="titulo" [placeholder]="'Padrão: ' + defaultSobre.titulo">
+                            <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultSobre.titulo">
                         </div>
                     </div>
                     <div class="field">
                         <label>Descrição Institucional</label>
-                        <textarea rows="3" formControlName="descricao" [placeholder]="'Padrão: ' + defaultSobre.descricao"></textarea>
+                        <textarea rows="3" formControlName="descricao" maxlength="1000" [placeholder]="'Padrão: ' + defaultSobre.descricao"></textarea>
                     </div>
                     <div class="field">
                         <div class="section-sub-header">
@@ -174,11 +174,11 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Título / Destaque</label>
-                                        <input type="text" formControlName="nome" [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.nome || 'Título do item')">
+                                        <input type="text" formControlName="nome" maxlength="100" [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.nome || 'Título do item')">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Descrição / Complemento</label>
-                                        <textarea rows="2" formControlName="descricao" [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.descricao || 'Descrição do item')"></textarea>
+                                        <textarea rows="2" formControlName="descricao" maxlength="300" [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.descricao || 'Descrição do item')"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -231,11 +231,11 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Estatística / Rótulo</label>
-                                        <input type="text" formControlName="nome" [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.nome || 'Rótulo')">
+                                        <input type="text" formControlName="nome" maxlength="100" [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.nome || 'Rótulo')">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Valor</label>
-                                        <input type="text" formControlName="valor" [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.valor || 'Valor')">
+                                        <input type="text" formControlName="valor" maxlength="50" [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.valor || 'Valor')">
                                     </div>
                                 </div>
                             </div>
@@ -257,15 +257,15 @@
                 <div class="accordion-body" formGroupName="cta">
                     <div class="field">
                         <label>Selo</label>
-                        <input type="text" formControlName="selo" [placeholder]="'Padrão: ' + defaultCta.selo">
+                        <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultCta.selo">
                     </div>
                     <div class="field">
                         <label>Título</label>
-                        <input type="text" formControlName="titulo" [placeholder]="'Padrão: ' + defaultCta.titulo">
+                        <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultCta.titulo">
                     </div>
                     <div class="field">
                         <label>Descrição</label>
-                        <textarea rows="2" formControlName="descricao" [placeholder]="'Padrão: ' + defaultCta.descricao"></textarea>
+                        <textarea rows="2" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultCta.descricao"></textarea>
                     </div>
                 </div>
             </div>
@@ -283,11 +283,11 @@
                 <div class="accordion-body" formGroupName="rodape">
                     <div class="field">
                         <label>Descrição</label>
-                        <textarea rows="2" formControlName="descricao" [placeholder]="'Padrão: ' + defaultRodape.descricao"></textarea>
+                        <textarea rows="2" formControlName="descricao" maxlength="300" [placeholder]="'Padrão: ' + defaultRodape.descricao"></textarea>
                     </div>
                     <div class="field">
                         <label>Texto para Contato</label>
-                        <input type="text" formControlName="textoContato" [placeholder]="'Padrão: ' + defaultRodape.textoContato">
+                        <input type="text" formControlName="textoContato" maxlength="150" [placeholder]="'Padrão: ' + defaultRodape.textoContato">
                     </div>
                 </div>
             </div>
@@ -374,12 +374,12 @@
             </div>
             <div class="field">
                 <label>Endereço</label>
-                <input type="text" formControlName="endereco" [placeholder]="'Padrão: ' + defaultDados.endereco">
+                <input type="text" formControlName="endereco" maxlength="250" [placeholder]="'Padrão: ' + defaultDados.endereco">
             </div>
             <div class="field-row">
                 <div class="field">
                     <label>Dias de Funcionamento</label>
-                    <input type="text" formControlName="diasFuncionamento" [placeholder]="'Padrão: ' + defaultDados.diasFuncionamento">
+                    <input type="text" formControlName="diasFuncionamento" maxlength="100" [placeholder]="'Padrão: ' + defaultDados.diasFuncionamento">
                 </div>
                 <div class="field">
                     <label>Horário de Abertura</label>
@@ -393,13 +393,24 @@
             <div class="field-row">
                 <div class="field">
                     <label>Número do WhatsApp (com DDD)</label>
-                    <input type="text" formControlName="whatsapp" [placeholder]="'Padrão: ' + defaultDados.whatsapp">
+                    <input
+                        type="text"
+                        formControlName="whatsapp"
+                        maxlength="30"
+                        (blur)="formatWhatsappField()"
+                        [placeholder]="'Padrão: ' + defaultDados.whatsapp"
+                        [class.input-error]="contentForm.get('dados.whatsapp')?.invalid && contentForm.get('dados.whatsapp')?.touched">
+                    <small class="field-hint" *ngIf="!contentForm.get('dados.whatsapp')?.invalid">Ex: (11) 98765-4321 ou apenas dígitos com DDD</small>
+                    <span class="field-error" *ngIf="contentForm.get('dados.whatsapp')?.invalid && contentForm.get('dados.whatsapp')?.touched">
+                        Informe um número de telefone com DDD válido (Ex: (11) 98765-4321)
+                    </span>
                 </div>
                 <div class="field">
                     <label>CNPJ</label>
                     <input
                         type="text"
                         formControlName="cnpj"
+                        (blur)="formatCnpjField()"
                         [placeholder]="'Padrão: ' + defaultDados.cnpj"
                         maxlength="18"
                         [class.input-error]="contentForm.get('dados.cnpj')?.invalid && contentForm.get('dados.cnpj')?.touched">
@@ -426,3 +437,4 @@
     </div>
 
 </section>
+

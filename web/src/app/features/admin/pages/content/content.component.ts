@@ -1,12 +1,46 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  ReactiveFormsModule,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn
+} from '@angular/forms';
 import { ContentService } from '../../../../services/content.service';
 import { SiteContent } from '../../../../models/content.model';
 import { DEFAULT_SITE_CONTENT } from '../../../../core/constants/content-fallbacks';
 import { ToastService } from '../../../../services/toast.service';
 import { formatCnpj, formatPhone } from '../../../../core/utils/formatters.util';
 import { finalize, Subscription } from 'rxjs';
+
+/** Validador leve para CNPJ: opcional, mas se preenchido aceita 14 alfanuméricos ou formato padrão XX.XXX.XXX/XXXX-XX */
+export function optionalCnpjValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const trimmed = value.toString().trim();
+    const regex = /^([A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}|[A-Z0-9]{14})$/i;
+    return regex.test(trimmed) ? null : { invalidCnpj: true };
+  };
+}
+
+/** Validador leve para Telefone/WhatsApp: opcional, mas se preenchido deve conter entre 10 e 13 dígitos numéricos */
+export function optionalPhoneValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const digits = value.toString().replace(/\D/g, '');
+    return (digits.length >= 10 && digits.length <= 13) ? null : { invalidPhone: true };
+  };
+}
 
 @Component({
   selector: 'app-content',
@@ -84,8 +118,8 @@ export class ContentComponent implements OnInit, OnDestroy {
         horarioAbertura: [''],
         horarioFechamento: [''],
         diasFuncionamento: ['', [Validators.maxLength(100)]],
-        whatsapp: ['', [Validators.maxLength(30)]],
-        cnpj: ['', [Validators.pattern(/^([A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}|[A-Z0-9]{14})$/)]]
+        whatsapp: ['', [Validators.maxLength(30), optionalPhoneValidator()]],
+        cnpj: ['', [optionalCnpjValidator()]]
       }),
       faq: this.fb.group({
         itens: this.fb.array([])
@@ -106,6 +140,22 @@ export class ContentComponent implements OnInit, OnDestroy {
   readonly defaultRodape = DEFAULT_SITE_CONTENT.rodape;
   readonly defaultDados = DEFAULT_SITE_CONTENT.dados;
   readonly defaultFaqItens = DEFAULT_SITE_CONTENT.faq!.itens;
+
+  formatCnpjField(): void {
+    const ctrl = this.contentForm.get('dados.cnpj');
+    if (ctrl?.value && typeof ctrl.value === 'string' && ctrl.value.trim()) {
+      const formatted = formatCnpj(ctrl.value);
+      ctrl.setValue(formatted, { emitEvent: false });
+    }
+  }
+
+  formatWhatsappField(): void {
+    const ctrl = this.contentForm.get('dados.whatsapp');
+    if (ctrl?.value && typeof ctrl.value === 'string' && ctrl.value.trim()) {
+      const formatted = formatPhone(ctrl.value);
+      ctrl.setValue(formatted, { emitEvent: false });
+    }
+  }
 
   private getMergedFaqItems(serverItens?: any[]): any[] {
     const serverMap = new Map<string, any>();
@@ -284,7 +334,7 @@ export class ContentComponent implements OnInit, OnDestroy {
 
   private createCard(item?: any): FormGroup {
     return this.fb.group({
-      titulo: [item?.titulo || '', [Validators.maxLength(100)]],
+      titulo: [item?.titulo || '', [Validators.maxLength(120)]],
       texto: [item?.texto || '', [Validators.maxLength(300)]]
     });
   }
@@ -326,16 +376,35 @@ export class ContentComponent implements OnInit, OnDestroy {
     return obj;
   }
 
+  private findFirstInvalidSection(): string | null {
+    const sections = ['banner', 'diferenciais', 'catalogo', 'sobre', 'estatisticas', 'cta', 'rodape', 'faq', 'dados'];
+    for (const sec of sections) {
+      const group = this.contentForm.get(sec);
+      if (group && group.invalid) {
+        return sec;
+      }
+    }
+    return null;
+  }
+
   saveContent(): void {
-    const cnpjCtrl = this.contentForm.get('dados.cnpj');
-    if (cnpjCtrl?.value && cnpjCtrl.value.trim() && cnpjCtrl.invalid) {
-      this.toastService.error('Formato de CNPJ inválido. Ex: 00.000.000/0000-00');
+    if (this.contentForm.invalid) {
+      this.contentForm.markAllAsTouched();
+      const invalidSection = this.findFirstInvalidSection();
+      if (invalidSection && invalidSection !== 'dados') {
+        this.openSection = invalidSection;
+      }
+      this.toastService.error('Revise os campos destacados antes de salvar.');
       this.cdr.markForCheck();
       return;
     }
 
     this.isSaving = true;
     this.cdr.markForCheck();
+
+    // Formata campos no próprio formulário para feedback imediato
+    this.formatCnpjField();
+    this.formatWhatsappField();
 
     const rawData = this.contentForm.value;
     const contentData = this.normalizePayload(rawData) || {};
@@ -427,4 +496,5 @@ export class ContentComponent implements OnInit, OnDestroy {
     );
   }
 }
+
 

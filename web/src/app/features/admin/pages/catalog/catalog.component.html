@@ -308,14 +308,12 @@
       <table class="categories-table">
         <thead>
           <tr>
-            <th class="col-id">#ID</th>
             <th class="col-name">Nome da Categoria</th>
             <th class="col-actions">Ações</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let cat of categoryList">
-            <td class="col-id font-mono">#{{ cat.id }}</td>
             <td class="col-name">
               <span class="category-pill">{{ cat.name }}</span>
             </td>

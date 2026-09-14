@@ -40,7 +40,7 @@ describe('FooterComponent', () => {
     const expectedYear = new Date().getFullYear();
 
     expect(copySpan).toBeTruthy();
-    expect(copySpan?.textContent?.trim()).toBe(`© ${expectedYear} Eloa Mercados. Todos os direitos reservados.`);
+    expect(copySpan?.textContent?.trim()).toBe(`© ${expectedYear} Eloa Mercados e Panificações. Todos os direitos reservados.`);
   });
 
   it('o texto de copy não depende de textoDireitos', () => {
@@ -57,7 +57,7 @@ describe('FooterComponent', () => {
     const copySpan = compiled.querySelector('.copy span');
     const expectedYear = new Date().getFullYear();
 
-    expect(copySpan?.textContent?.trim()).toBe(`© ${expectedYear} Eloa Mercados. Todos os direitos reservados.`);
+    expect(copySpan?.textContent?.trim()).toBe(`© ${expectedYear} Eloa Mercados e Panificações. Todos os direitos reservados.`);
     expect(copySpan?.textContent).not.toContain('Texto Antigo Customizado');
   });
 

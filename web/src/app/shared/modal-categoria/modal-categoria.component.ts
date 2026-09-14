@@ -43,7 +43,7 @@ export class ModalCategoriaComponent implements OnChanges, OnDestroy {
     private readonly cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(16)]],
     });
   }
 

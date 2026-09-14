@@ -261,12 +261,13 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     if (ctrl.errors['notFound'])  return 'Categoria inexistente. Selecione uma da lista.';
     if (ctrl.errors['min'])       return `Valor minimo: ${ctrl.errors['min'].min}.`;
     if (ctrl.errors['minlength']) return `Minimo de ${ctrl.errors['minlength'].requiredLength} caracteres.`;
+    if (ctrl.errors['maxlength']) return `Maximo de ${ctrl.errors['maxlength'].requiredLength} caracteres.`;
     return 'Valor invalido.';
   }
 
   private buildForm(): FormGroup {
     return this.fb.group({
-      name:       ['', [Validators.required, Validators.minLength(2)]],
+      name:       ['', [Validators.required, Validators.minLength(2), Validators.maxLength(16)]],
       categoryId: [null, [Validators.required, (ctrl: AbstractControl) => (Number(ctrl.value) > 0 ? null : { required: true })]],
       weight:     ['', [Validators.required, Validators.min(0.001)]],
       // Campos exclusivos do modo edicao

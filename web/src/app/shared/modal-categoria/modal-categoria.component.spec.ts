@@ -43,9 +43,9 @@ describe('ModalCategoriaComponent', () => {
     expect(nameControl?.valid).toBeFalsy();
     expect(component.getFieldError('name')).toContain('Minimo de 2 caracteres');
 
-    nameControl?.setValue('A'.repeat(51));
+    nameControl?.setValue('A'.repeat(17));
     expect(nameControl?.valid).toBeFalsy();
-    expect(component.getFieldError('name')).toContain('Maximo de 50 caracteres');
+    expect(component.getFieldError('name')).toContain('Maximo de 16 caracteres');
 
     nameControl?.setValue('Padaria');
     expect(nameControl?.valid).toBeTruthy();

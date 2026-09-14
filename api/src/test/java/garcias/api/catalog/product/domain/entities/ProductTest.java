@@ -3,7 +3,11 @@ package garcias.api.catalog.product.domain.entities;
 import garcias.api.catalog.category.domain.valueobjects.CategoryId;
 import garcias.api.catalog.category.domain.valueobjects.CategoryName;
 import garcias.api.catalog.product.domain.enums.ProductStatus;
-import garcias.api.catalog.product.domain.valueobjects.*;
+import garcias.api.catalog.product.domain.valueobjects.CatalogPosition;
+import garcias.api.catalog.product.domain.valueobjects.ProductId;
+import garcias.api.catalog.product.domain.valueobjects.ProductName;
+import garcias.api.catalog.product.domain.valueobjects.ProductPhoto;
+import garcias.api.catalog.product.domain.valueobjects.ProductWeight;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ProductTest {
 
     private final ProductId productId = new ProductId(1L);
-    private final ProductName productName = new ProductName("Bolo de Chocolate");
+    private final ProductName productName = new ProductName("Bolo Chocolate");
     private final ProductWeight productWeight = new ProductWeight(new BigDecimal("1.200"));
     private final CatalogPosition catalogPosition = new CatalogPosition(1L);
     private final CategoryId categoryId = new CategoryId(10L);

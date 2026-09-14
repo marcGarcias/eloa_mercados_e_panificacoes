@@ -24,7 +24,7 @@ class ProductResponseMappersTest {
                 new ProductWeight(new BigDecimal("0.800")),
                 new CatalogPosition(2L),
                 new CategoryId(1L),
-                new CategoryName("Bolos Tradicionais"),
+                new CategoryName("Bolos Caseiros"),
                 ProductStatus.ACTIVE,
                 new ProductPhoto("fuba.webp")
         );
@@ -42,7 +42,7 @@ class ProductResponseMappersTest {
         assertThat(response.weight()).isEqualByComparingTo("0.800");
         assertThat(response.position()).isEqualTo(2L);
         assertThat(response.photo()).isEqualTo("fuba.webp");
-        assertThat(response.categoryName()).isEqualTo("Bolos Tradicionais");
+        assertThat(response.categoryName()).isEqualTo("Bolos Caseiros");
         assertThat(response.status()).isEqualTo(ProductStatus.ACTIVE);
     }
 
@@ -56,7 +56,7 @@ class ProductResponseMappersTest {
         assertThat(response.name()).isEqualTo("Bolo de Fubá");
         assertThat(response.weight()).isEqualByComparingTo("0.800");
         assertThat(response.photoUrl()).isEqualTo("fuba.webp");
-        assertThat(response.categoryName()).isEqualTo("Bolos Tradicionais");
+        assertThat(response.categoryName()).isEqualTo("Bolos Caseiros");
         assertThat(response.position()).isEqualTo(2L);
     }
 }

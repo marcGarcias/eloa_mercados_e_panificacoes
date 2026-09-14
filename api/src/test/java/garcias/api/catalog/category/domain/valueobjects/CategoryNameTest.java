@@ -2,6 +2,7 @@ package garcias.api.catalog.category.domain.valueobjects;
 
 import garcias.api.shared.exceptions.AttributeCannotBeEmptyException;
 import garcias.api.shared.exceptions.AttributeTooLongException;
+import garcias.api.shared.exceptions.AttributeTooShortException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,9 +17,9 @@ class CategoryNameTest {
     @Test
     @DisplayName("Deve criar CategoryName válido")
     void shouldCreateCategoryNameWithValidValue() {
-        CategoryName name = new CategoryName("Padaria & Confeitaria");
+        CategoryName name = new CategoryName("Padaria");
 
-        assertThat(name.value()).isEqualTo("Padaria & Confeitaria");
+        assertThat(name.value()).isEqualTo("Padaria");
     }
 
     @Test
@@ -38,9 +39,17 @@ class CategoryNameTest {
     }
 
     @Test
-    @DisplayName("Deve lançar AttributeTooLongException quando nome ultrapassar 50 caracteres")
-    void shouldThrowWhenValueExceeds50Characters() {
-        String longName = "a".repeat(51);
+    @DisplayName("Deve lançar AttributeTooShortException quando nome tiver menos de 2 caracteres")
+    void shouldThrowWhenValueIsShorterThan2Characters() {
+        assertThatThrownBy(() -> new CategoryName("A"))
+                .isInstanceOf(AttributeTooShortException.class)
+                .hasMessageContaining("Category name");
+    }
+
+    @Test
+    @DisplayName("Deve lançar AttributeTooLongException quando nome ultrapassar 16 caracteres")
+    void shouldThrowWhenValueExceeds16Characters() {
+        String longName = "a".repeat(17);
 
         assertThatThrownBy(() -> new CategoryName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
@@ -48,11 +57,11 @@ class CategoryNameTest {
     }
 
     @Test
-    @DisplayName("Deve aceitar nome no limite de 50 caracteres")
-    void shouldAcceptNameWithExactly50Characters() {
-        String exactName = "a".repeat(50);
+    @DisplayName("Deve aceitar nome no limite de 16 caracteres")
+    void shouldAcceptNameWithExactly16Characters() {
+        String exactName = "a".repeat(16);
         CategoryName name = new CategoryName(exactName);
 
-        assertThat(name.value()).hasSize(50);
+        assertThat(name.value()).hasSize(16);
     }
 }

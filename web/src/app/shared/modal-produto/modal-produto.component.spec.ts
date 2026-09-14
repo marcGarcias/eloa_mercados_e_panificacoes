@@ -138,10 +138,10 @@ describe('ModalProdutoComponent', () => {
 
   it('deve atualizar produto com sucesso no modo edição', () => {
     component.product = sampleProduct;
-    component.form.patchValue({ name: 'Pão de Batata Atualizado', weight: 200, categoryId: 1 });
+    component.form.patchValue({ name: 'Pão Especial', weight: 200, categoryId: 1 });
     const savedSpy = vi.spyOn(component.saved, 'emit');
 
-    const updatedProduct = { ...sampleProduct, name: 'Pão de Batata Atualizado' };
+    const updatedProduct = { ...sampleProduct, name: 'Pão Especial' };
     productServiceMock.update.mockReturnValue(of(updatedProduct));
 
     component.onSubmit();

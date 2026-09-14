@@ -2,6 +2,7 @@ package garcias.api.catalog.product.domain.valueobjects;
 
 import garcias.api.shared.exceptions.AttributeCannotBeEmptyException;
 import garcias.api.shared.exceptions.AttributeTooLongException;
+import garcias.api.shared.exceptions.AttributeTooShortException;
 import garcias.api.shared.exceptions.ValueObjectCannotBeNullException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,9 @@ class ProductNameTest {
     @Test
     @DisplayName("Deve criar ProductName com valor válido")
     void shouldCreateProductNameWithValidValue() {
-        ProductName name = new ProductName("Pão Francês Tradicional");
+        ProductName name = new ProductName("Pão Francês");
 
-        assertThat(name.value()).isEqualTo("Pão Francês Tradicional");
+        assertThat(name.value()).isEqualTo("Pão Francês");
     }
 
     @Test
@@ -40,9 +41,17 @@ class ProductNameTest {
     }
 
     @Test
-    @DisplayName("Deve lançar AttributeTooLongException quando valor exceder 120 caracteres")
-    void shouldThrowWhenValueExceeds120Characters() {
-        String longName = "p".repeat(121);
+    @DisplayName("Deve lançar AttributeTooShortException quando valor tiver menos de 2 caracteres")
+    void shouldThrowWhenValueIsShorterThan2Characters() {
+        assertThatThrownBy(() -> new ProductName("P"))
+                .isInstanceOf(AttributeTooShortException.class)
+                .hasMessageContaining("Product name");
+    }
+
+    @Test
+    @DisplayName("Deve lançar AttributeTooLongException quando valor exceder 16 caracteres")
+    void shouldThrowWhenValueExceeds16Characters() {
+        String longName = "p".repeat(17);
 
         assertThatThrownBy(() -> new ProductName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
@@ -50,11 +59,11 @@ class ProductNameTest {
     }
 
     @Test
-    @DisplayName("Deve aceitar nome com exatamente 120 caracteres")
-    void shouldAcceptNameWithExactly120Characters() {
-        String exactName = "p".repeat(120);
+    @DisplayName("Deve aceitar nome com exatamente 16 caracteres")
+    void shouldAcceptNameWithExactly16Characters() {
+        String exactName = "p".repeat(16);
         ProductName name = new ProductName(exactName);
 
-        assertThat(name.value()).hasSize(120);
+        assertThat(name.value()).hasSize(16);
     }
 }

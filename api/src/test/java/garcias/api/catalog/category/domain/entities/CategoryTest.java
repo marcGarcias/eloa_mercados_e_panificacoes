@@ -27,7 +27,7 @@ class CategoryTest {
     @DisplayName("Deve instanciar Category através do método factory create com sucesso")
     void shouldCreateCategoryViaFactorySuccessfully() {
         CategoryId id = CategoryId.empty();
-        CategoryName name = new CategoryName("Frios e Laticínios");
+        CategoryName name = new CategoryName("Laticínios");
 
         Category category = Category.create(id, name);
 

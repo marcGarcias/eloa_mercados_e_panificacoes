@@ -80,7 +80,7 @@ class UpdateProductServiceTest {
         Product product = createSampleProduct();
 
         UpdateProductRequest request = new UpdateProductRequest(
-                "Pão Francês Especial",
+                "Pão Especial",
                 new BigDecimal("0.060"),
                 null,
                 null,
@@ -93,7 +93,7 @@ class UpdateProductServiceTest {
 
         Product result = updateProductService.execute(id, request);
 
-        assertThat(result.getName().value()).isEqualTo("Pão Francês Especial");
+        assertThat(result.getName().value()).isEqualTo("Pão Especial");
         assertThat(result.getWeight().value()).isEqualByComparingTo("0.060");
         assertThat(result.getStatus()).isEqualTo(ProductStatus.INACTIVE);
         assertThat(result.getPhoto().value()).isEqualTo("uploads/old-photo.webp");

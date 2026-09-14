@@ -2,6 +2,7 @@ package garcias.api.catalog.product.domain.valueobjects;
 
 import garcias.api.shared.exceptions.AttributeCannotBeEmptyException;
 import garcias.api.shared.exceptions.AttributeTooLongException;
+import garcias.api.shared.exceptions.AttributeTooShortException;
 import garcias.api.shared.exceptions.ValueObjectCannotBeNullException;
 
 public record ProductName(String value) {
@@ -16,8 +17,12 @@ public record ProductName(String value) {
             throw new AttributeCannotBeEmptyException("Product name");
         }
 
-        if (value.length() > 120) {
-            throw new AttributeTooLongException("Product name", "120");
+        if (value.length() < 2) {
+            throw new AttributeTooShortException("Product name", "2");
+        }
+
+        if (value.length() > 16) {
+            throw new AttributeTooLongException("Product name", "16");
         }
     }
 

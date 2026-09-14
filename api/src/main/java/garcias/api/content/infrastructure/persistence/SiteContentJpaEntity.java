@@ -1,6 +1,10 @@
 package garcias.api.content.infrastructure.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "site_content")
@@ -9,7 +13,6 @@ public class SiteContentJpaEntity {
     @Id
     private Long id;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String data;
 
@@ -42,4 +45,3 @@ public class SiteContentJpaEntity {
         return version;
     }
 }
-

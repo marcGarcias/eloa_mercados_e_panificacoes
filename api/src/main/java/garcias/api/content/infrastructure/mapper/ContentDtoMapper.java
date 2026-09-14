@@ -75,8 +75,7 @@ public class ContentDtoMapper {
         var rodDto = dto.getRodape() != null ? dto.getRodape() : new SiteContentDto.RodapeDto();
         var rodape = new Rodape(
                 blankToNull(rodDto.getDescricao()),
-                blankToNull(rodDto.getTextoContato()),
-                blankToNull(rodDto.getTextoDireitos())
+                blankToNull(rodDto.getTextoContato())
         );
 
         var dadDto = dto.getDados() != null ? dto.getDados() : new SiteContentDto.DadosDto();
@@ -203,7 +202,6 @@ public class ContentDtoMapper {
         if (domain.getRodape() != null) {
             rodDto.setDescricao(domain.getRodape().descricao());
             rodDto.setTextoContato(domain.getRodape().textoContato());
-            rodDto.setTextoDireitos(domain.getRodape().textoDireitos());
         }
         dto.setRodape(rodDto);
 
@@ -318,7 +316,6 @@ public class ContentDtoMapper {
             if (existingDto.getRodape() == null) existingDto.setRodape(new SiteContentDto.RodapeDto());
             existingDto.getRodape().setDescricao(blankToNull(patch.getRodape().getDescricao()));
             existingDto.getRodape().setTextoContato(blankToNull(patch.getRodape().getTextoContato()));
-            existingDto.getRodape().setTextoDireitos(blankToNull(patch.getRodape().getTextoDireitos()));
         }
 
         if (patch.getDados() != null) {

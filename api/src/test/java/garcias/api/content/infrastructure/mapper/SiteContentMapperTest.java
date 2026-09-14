@@ -18,7 +18,7 @@ public class SiteContentMapperTest {
         Sobre sobre = new Sobre("selo-sobre", "titulo-sobre", "desc", java.util.Collections.emptyList());
         Estatisticas est = new Estatisticas(java.util.Collections.emptyList());
         Cta cta = new Cta("selo-cta", "titulo-cta", "desc");
-        Rodape rod = new Rodape("desc", "contato", "direitos");
+        Rodape rod = new Rodape("desc", "contato");
         Dados dados = new Dados("end", "9", "18", "seg-sex", "123", "123");
 
         SiteContent content = new SiteContent(banner, dif, cat, sobre, est, cta, rod, dados, Faq.defaultFaq());

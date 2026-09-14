@@ -75,7 +75,6 @@ class ContentDtoMapperFullTest {
         SiteContentDto.RodapeDto rod = new SiteContentDto.RodapeDto();
         rod.setDescricao("Desc Rodape");
         rod.setTextoContato("Contato");
-        rod.setTextoDireitos("Direitos");
         dto.setRodape(rod);
 
         SiteContentDto.DadosDto dados = new SiteContentDto.DadosDto();

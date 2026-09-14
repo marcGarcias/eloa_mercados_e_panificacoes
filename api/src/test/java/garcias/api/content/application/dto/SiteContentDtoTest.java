@@ -92,11 +92,9 @@ class SiteContentDtoTest {
         SiteContentDto.RodapeDto rodape = new SiteContentDto.RodapeDto();
         rodape.setDescricao("Desc Rodape");
         rodape.setTextoContato("Contato");
-        rodape.setTextoDireitos("Direitos");
         root.setRodape(rodape);
         assertThat(root.getRodape().getDescricao()).isEqualTo("Desc Rodape");
         assertThat(root.getRodape().getTextoContato()).isEqualTo("Contato");
-        assertThat(root.getRodape().getTextoDireitos()).isEqualTo("Direitos");
 
         SiteContentDto.DadosDto dados = new SiteContentDto.DadosDto();
         dados.setEndereco("Rua A");

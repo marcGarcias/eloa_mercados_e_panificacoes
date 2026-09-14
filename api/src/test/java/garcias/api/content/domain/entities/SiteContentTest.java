@@ -35,7 +35,7 @@ class SiteContentTest {
         FaqItem faqItem = new FaqItem("faq-1", "Pergunta teste?", "Resposta teste.");
         Faq faq = new Faq(List.of(faqItem));
 
-        Rodape rodape = new Rodape("Descrição Rodapé", "Contato", "© 2026 Eloá");
+        Rodape rodape = new Rodape("Descrição Rodapé", "Contato");
 
         SiteContent siteContent = new SiteContent(
                 banner, diferenciais, catalogo, sobre, estatisticas, cta, rodape, dados, faq

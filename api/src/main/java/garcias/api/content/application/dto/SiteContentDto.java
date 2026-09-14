@@ -265,15 +265,10 @@ public class SiteContentDto {
         @Size(max = 150, message = "O texto de contato do rodapé deve ter no máximo 150 caracteres.")
         private String textoContato;
 
-        @Size(max = 150, message = "O texto de direitos autorais do rodapé deve ter no máximo 150 caracteres.")
-        private String textoDireitos;
-
         public String getDescricao() { return descricao; }
         public void setDescricao(String descricao) { this.descricao = descricao; }
         public String getTextoContato() { return textoContato; }
         public void setTextoContato(String textoContato) { this.textoContato = textoContato; }
-        public String getTextoDireitos() { return textoDireitos; }
-        public void setTextoDireitos(String textoDireitos) { this.textoDireitos = textoDireitos; }
     }
 
     public static class DadosDto {

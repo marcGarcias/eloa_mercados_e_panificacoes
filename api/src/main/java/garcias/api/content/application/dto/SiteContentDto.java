@@ -107,10 +107,10 @@ public class SiteContentDto {
     }
 
     public static class IndicadorDto {
-        @Size(max = 100, message = "O nome do indicador deve ter no máximo 100 caracteres.")
+        @Size(min = 3, max = 30, message = "O rótulo do indicador/estatística deve ter entre 3 e 30 caracteres.")
         private String nome;
 
-        @Size(max = 50, message = "O valor do indicador deve ter no máximo 50 caracteres.")
+        @Size(min = 1, max = 15, message = "O valor do indicador/estatística deve ter entre 1 e 15 caracteres.")
         private String valor;
 
         public String getNome() { return nome; }
@@ -120,10 +120,10 @@ public class SiteContentDto {
     }
 
     public static class CardDto {
-        @Size(max = 120, message = "O título do card deve ter no máximo 120 caracteres.")
+        @Size(min = 4, max = 35, message = "O título do card de diferencial deve ter entre 4 e 35 caracteres.")
         private String titulo;
 
-        @Size(max = 300, message = "O texto do card deve ter no máximo 300 caracteres.")
+        @Size(min = 15, max = 200, message = "O texto do card de diferencial deve ter entre 15 e 200 caracteres.")
         private String texto;
 
         public String getTitulo() { return titulo; }
@@ -272,14 +272,22 @@ public class SiteContentDto {
     }
 
     public static class DadosDto {
-        @Size(max = 250, message = "O endereço deve ter no máximo 250 caracteres.")
+        @Size(min = 8, max = 150, message = "O endereço deve ter entre 8 e 150 caracteres.")
+        @Pattern(
+                regexp = "^(?=.*[a-zA-ZÀ-ÿ]).+$",
+                message = "O endereço deve conter o nome do logradouro."
+        )
         private String endereco;
 
         private String horarioAbertura;
 
         private String horarioFechamento;
 
-        @Size(max = 100, message = "Os dias de funcionamento devem ter no máximo 100 caracteres.")
+        @Size(min = 3, max = 40, message = "Os dias de funcionamento devem ter entre 3 e 40 caracteres.")
+        @Pattern(
+                regexp = "^[a-zA-ZÀ-ÿ0-9\\s,.\\-–—/&eE]+$",
+                message = "Os dias de funcionamento devem conter uma descrição válida (Ex: Seg a Sáb)."
+        )
         private String diasFuncionamento;
 
         @Size(max = 30, message = "O WhatsApp deve ter no máximo 30 caracteres.")

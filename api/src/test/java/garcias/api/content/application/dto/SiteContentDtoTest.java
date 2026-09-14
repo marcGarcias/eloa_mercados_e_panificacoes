@@ -73,6 +73,55 @@ class SiteContentDtoTest {
     }
 
     @Test
+    @DisplayName("Deve validar limites contextuais em CardDto (titulo 4-35, texto 15-200)")
+    void shouldValidateCardDtoContextualLimits() {
+        SiteContentDto.CardDto validCard = new SiteContentDto.CardDto();
+        validCard.setTitulo("Ingredientes Selecionados");
+        validCard.setTexto("Usamos apenas farinha de qualidade para garantir o melhor sabor.");
+        assertThat(validator.validate(validCard)).isEmpty();
+
+        SiteContentDto.CardDto invalidCard = new SiteContentDto.CardDto();
+        invalidCard.setTitulo("Oi"); // < 4
+        invalidCard.setTexto("Curto"); // < 15
+        assertThat(validator.validate(invalidCard)).hasSize(2);
+
+        SiteContentDto.CardDto tooLongCard = new SiteContentDto.CardDto();
+        tooLongCard.setTitulo("A".repeat(36)); // > 35
+        tooLongCard.setTexto("A".repeat(201)); // > 200
+        assertThat(validator.validate(tooLongCard)).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Deve validar limites contextuais em IndicadorDto (nome 3-30, valor 1-15)")
+    void shouldValidateIndicadorDtoContextualLimits() {
+        SiteContentDto.IndicadorDto validInd = new SiteContentDto.IndicadorDto();
+        validInd.setNome("Anos de Tradição");
+        validInd.setValor("+10");
+        assertThat(validator.validate(validInd)).isEmpty();
+
+        SiteContentDto.IndicadorDto invalidInd = new SiteContentDto.IndicadorDto();
+        invalidInd.setNome("Oi"); // < 3
+        invalidInd.setValor("A".repeat(16)); // > 15
+        assertThat(validator.validate(invalidInd)).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Deve validar limites contextuais em DadosDto (endereco 8-150 com logradouro, diasFuncionamento 3-40)")
+    void shouldValidateDadosDtoContextualLimits() {
+        SiteContentDto.DadosDto validDados = new SiteContentDto.DadosDto();
+        validDados.setEndereco("Rua Exemplo, 123 - Centro, São Paulo - SP");
+        validDados.setDiasFuncionamento("Seg a Sáb");
+        validDados.setWhatsapp("11999999999");
+        validDados.setCnpj("00.000.000/0001-00");
+        assertThat(validator.validate(validDados)).isEmpty();
+
+        SiteContentDto.DadosDto invalidDados = new SiteContentDto.DadosDto();
+        invalidDados.setEndereco("12345"); // < 8 e sem letras
+        invalidDados.setDiasFuncionamento("<script>"); // caracteres inválidos
+        assertThat(validator.validate(invalidDados)).hasSize(3); // min size endereco + pattern endereco + pattern dias
+    }
+
+    @Test
     @DisplayName("Deve cobrir todos os getters e setters de SiteContentDto e seus sub-DTOs")
     void shouldCoverAllGettersAndSetters() {
         SiteContentDto root = new SiteContentDto();

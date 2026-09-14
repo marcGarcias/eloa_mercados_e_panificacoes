@@ -1,6 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { ContentComponent, optionalCnpjValidator, optionalPhoneValidator, optionalLengthValidator } from './content.component';
+import {
+  ContentComponent,
+  optionalCnpjValidator,
+  optionalPhoneValidator,
+  optionalLengthValidator,
+  contextualAddressValidator,
+  contextualWorkingDaysValidator,
+  contextualCardTitleValidator,
+  contextualCardTextValidator,
+  contextualStatNameValidator,
+  contextualStatValueValidator
+} from './content.component';
 import { ContentService } from '../../../../services/content.service';
 import { ToastService } from '../../../../services/toast.service';
 import { of, throwError } from 'rxjs';
@@ -111,6 +122,59 @@ describe('ContentComponent (Admin)', () => {
       const validator = optionalPhoneValidator();
       expect(validator(new FormControl('12345'))).toEqual({ invalidPhone: true });
       expect(validator(new FormControl('TelefoneEloa'))).toEqual({ invalidPhone: true });
+    });
+
+    it('contextualAddressValidator deve aceitar endereço válido e rejeitar inválidos', () => {
+      const validator = contextualAddressValidator();
+      expect(validator(new FormControl(''))).toBeNull();
+      expect(validator(new FormControl('Rua das Flores, 123 - Centro'))).toBeNull();
+      expect(validator(new FormControl('Rua 1'))).toEqual({ minlength: { requiredLength: 8, actualLength: 5 } });
+      expect(validator(new FormControl('1234567890'))).toEqual({ invalidAddress: true });
+      expect(validator(new FormControl('A'.repeat(151)))).toEqual({ maxlength: { requiredLength: 150, actualLength: 151 } });
+    });
+
+    it('contextualWorkingDaysValidator deve validar dias de funcionamento', () => {
+      const validator = contextualWorkingDaysValidator();
+      expect(validator(new FormControl(''))).toBeNull();
+      expect(validator(new FormControl('Segunda a Sábado'))).toBeNull();
+      expect(validator(new FormControl('Seg a Sex'))).toBeNull();
+      expect(validator(new FormControl('Seg - Dom'))).toBeNull();
+      expect(validator(new FormControl('Oi'))).toEqual({ minlength: { requiredLength: 3, actualLength: 2 } });
+      expect(validator(new FormControl('12345'))).toEqual({ invalidWorkingDays: true });
+      expect(validator(new FormControl('A'.repeat(41)))).toEqual({ maxlength: { requiredLength: 40, actualLength: 41 } });
+    });
+
+    it('contextualCardTitleValidator e contextualCardTextValidator devem validar cards de diferenciais', () => {
+      const titleValidator = contextualCardTitleValidator();
+      const textValidator = contextualCardTextValidator();
+
+      expect(titleValidator(new FormControl(''))).toBeNull();
+      expect(titleValidator(new FormControl('Receitas Tradicionais'))).toBeNull();
+      expect(titleValidator(new FormControl('Pão'))).toEqual({ minlength: { requiredLength: 4, actualLength: 3 } });
+      expect(titleValidator(new FormControl('12345'))).toEqual({ invalidCardTitle: true });
+      expect(titleValidator(new FormControl('A'.repeat(36)))).toEqual({ maxlength: { requiredLength: 35, actualLength: 36 } });
+
+      expect(textValidator(new FormControl(''))).toBeNull();
+      expect(textValidator(new FormControl('Texto com mais de 15 caracteres para o card.'))).toBeNull();
+      expect(textValidator(new FormControl('Texto curto'))).toEqual({ minlength: { requiredLength: 15, actualLength: 11 } });
+      expect(textValidator(new FormControl('A'.repeat(201)))).toEqual({ maxlength: { requiredLength: 200, actualLength: 201 } });
+    });
+
+    it('contextualStatNameValidator e contextualStatValueValidator devem validar estatísticas', () => {
+      const nameValidator = contextualStatNameValidator();
+      const valueValidator = contextualStatValueValidator();
+
+      expect(nameValidator(new FormControl(''))).toBeNull();
+      expect(nameValidator(new FormControl('Anos de Tradição'))).toBeNull();
+      expect(nameValidator(new FormControl('Oi'))).toEqual({ minlength: { requiredLength: 3, actualLength: 2 } });
+      expect(nameValidator(new FormControl('12345'))).toEqual({ invalidStatName: true });
+      expect(nameValidator(new FormControl('A'.repeat(31)))).toEqual({ maxlength: { requiredLength: 30, actualLength: 31 } });
+
+      expect(valueValidator(new FormControl(''))).toBeNull();
+      expect(valueValidator(new FormControl('+10'))).toBeNull();
+      expect(valueValidator(new FormControl('100%'))).toBeNull();
+      expect(valueValidator(new FormControl('Diária'))).toBeNull();
+      expect(valueValidator(new FormControl('A'.repeat(16)))).toEqual({ maxlength: { requiredLength: 15, actualLength: 16 } });
     });
   });
 

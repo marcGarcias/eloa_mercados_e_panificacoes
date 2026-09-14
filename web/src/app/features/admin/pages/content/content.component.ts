@@ -63,6 +63,127 @@ export function optionalPhoneValidator(): ValidatorFn {
   };
 }
 
+/** Validador contextual para Endereço: opcional, 8 a 150 caracteres, deve conter logradouro */
+export function contextualAddressValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length < 8) {
+      return { minlength: { requiredLength: 8, actualLength: str.length } };
+    }
+    if (str.length > 150) {
+      return { maxlength: { requiredLength: 150, actualLength: str.length } };
+    }
+    if (!/[a-zA-ZÀ-ÿ]/.test(str)) {
+      return { invalidAddress: true };
+    }
+    return null;
+  };
+}
+
+/** Validador contextual para Dias de Funcionamento: opcional, 3 a 40 caracteres com descrição válida */
+export function contextualWorkingDaysValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length < 3) {
+      return { minlength: { requiredLength: 3, actualLength: str.length } };
+    }
+    if (str.length > 40) {
+      return { maxlength: { requiredLength: 40, actualLength: str.length } };
+    }
+    const regex = /^[a-zA-ZÀ-ÿ0-9\s,.–—/&eE-]+$/;
+    if (!regex.test(str) || !/[a-zA-ZÀ-ÿ]/.test(str)) {
+      return { invalidWorkingDays: true };
+    }
+    return null;
+  };
+}
+
+/** Validador contextual para Título de Card de Diferencial: opcional, 4 a 35 caracteres */
+export function contextualCardTitleValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length < 4) {
+      return { minlength: { requiredLength: 4, actualLength: str.length } };
+    }
+    if (str.length > 35) {
+      return { maxlength: { requiredLength: 35, actualLength: str.length } };
+    }
+    if (!/[a-zA-ZÀ-ÿ]/.test(str)) {
+      return { invalidCardTitle: true };
+    }
+    return null;
+  };
+}
+
+/** Validador contextual para Texto de Card de Diferencial: opcional, 15 a 200 caracteres */
+export function contextualCardTextValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length < 15) {
+      return { minlength: { requiredLength: 15, actualLength: str.length } };
+    }
+    if (str.length > 200) {
+      return { maxlength: { requiredLength: 200, actualLength: str.length } };
+    }
+    return null;
+  };
+}
+
+/** Validador contextual para Rótulo/Nome de Estatística: opcional, 3 a 30 caracteres */
+export function contextualStatNameValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length < 3) {
+      return { minlength: { requiredLength: 3, actualLength: str.length } };
+    }
+    if (str.length > 30) {
+      return { maxlength: { requiredLength: 30, actualLength: str.length } };
+    }
+    if (!/[a-zA-ZÀ-ÿ]/.test(str)) {
+      return { invalidStatName: true };
+    }
+    return null;
+  };
+}
+
+/** Validador contextual para Valor de Estatística: opcional, 1 a 15 caracteres */
+export function contextualStatValueValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value || !value.toString().trim()) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length < 1) {
+      return { minlength: { requiredLength: 1, actualLength: str.length } };
+    }
+    if (str.length > 15) {
+      return { maxlength: { requiredLength: 15, actualLength: str.length } };
+    }
+    return null;
+  };
+}
+
 @Component({
   selector: 'app-content',
   standalone: true,
@@ -135,10 +256,10 @@ export class ContentComponent implements OnInit, OnDestroy {
         textoContato: ['', [optionalLengthValidator(4, 150)]]
       }),
       dados: this.fb.group({
-        endereco: ['', [optionalLengthValidator(5, 250)]],
+        endereco: ['', [contextualAddressValidator()]],
         horarioAbertura: [''],
         horarioFechamento: [''],
-        diasFuncionamento: ['', [optionalLengthValidator(3, 100)]],
+        diasFuncionamento: ['', [contextualWorkingDaysValidator()]],
         whatsapp: ['', [Validators.maxLength(30), optionalPhoneValidator()]],
         cnpj: ['', [optionalCnpjValidator()]]
       }),
@@ -348,15 +469,15 @@ export class ContentComponent implements OnInit, OnDestroy {
 
   private createIndicador(item?: any): FormGroup {
     return this.fb.group({
-      nome: [item?.nome || '', [optionalLengthValidator(2, 100)]],
-      valor: [item?.valor || '', [optionalLengthValidator(1, 50)]]
+      nome: [item?.nome || '', [contextualStatNameValidator()]],
+      valor: [item?.valor || '', [contextualStatValueValidator()]]
     });
   }
 
   private createCard(item?: any): FormGroup {
     return this.fb.group({
-      titulo: [item?.titulo || '', [optionalLengthValidator(4, 120)]],
-      texto: [item?.texto || '', [optionalLengthValidator(10, 300)]]
+      titulo: [item?.titulo || '', [contextualCardTitleValidator()]],
+      texto: [item?.texto || '', [contextualCardTextValidator()]]
     });
   }
 

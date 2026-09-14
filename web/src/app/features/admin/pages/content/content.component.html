@@ -78,22 +78,28 @@
                                 <div class="list-item-label">Indicador {{ i + 1 }}</div>
                                 <div class="field-row">
                                     <div class="field">
-                                        <label class="field-sublabel">Título</label>
+                                        <label class="field-sublabel">Título <span class="field-hint">(3 a 30 car.)</span></label>
                                         <input
                                             type="text"
                                             formControlName="nome"
-                                            maxlength="100"
+                                            maxlength="30"
                                             [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.nome || '')"
                                             [class.input-error]="ind.get('nome')?.invalid && ind.get('nome')?.touched">
+                                        <span class="field-error" *ngIf="ind.get('nome')?.invalid && ind.get('nome')?.touched">
+                                            O título deve ter entre 3 e 30 caracteres.
+                                        </span>
                                     </div>
                                     <div class="field">
-                                        <label class="field-sublabel">Valor</label>
+                                        <label class="field-sublabel">Valor <span class="field-hint">(1 a 15 car.)</span></label>
                                         <input
                                             type="text"
                                             formControlName="valor"
-                                            maxlength="50"
+                                            maxlength="15"
                                             [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.valor || '')"
                                             [class.input-error]="ind.get('valor')?.invalid && ind.get('valor')?.touched">
+                                        <span class="field-error" *ngIf="ind.get('valor')?.invalid && ind.get('valor')?.touched">
+                                            O valor deve ter entre 1 e 15 caracteres.
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -160,22 +166,28 @@
                                 </div>
                                 <div class="field-row">
                                     <div class="field">
-                                        <label class="field-sublabel">Título do Card</label>
+                                        <label class="field-sublabel">Título do Card <span class="field-hint">(4 a 35 car.)</span></label>
                                         <input
                                             type="text"
                                             formControlName="titulo"
-                                            maxlength="120"
+                                            maxlength="35"
                                             [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.titulo || '')"
                                             [class.input-error]="card.get('titulo')?.invalid && card.get('titulo')?.touched">
+                                        <span class="field-error" *ngIf="card.get('titulo')?.invalid && card.get('titulo')?.touched">
+                                            O título do card deve ter entre 4 e 35 caracteres.
+                                        </span>
                                     </div>
                                     <div class="field">
-                                        <label class="field-sublabel">Texto do Card</label>
+                                        <label class="field-sublabel">Texto do Card <span class="field-hint">(15 a 200 car.)</span></label>
                                         <textarea
                                             rows="2"
                                             formControlName="texto"
-                                            maxlength="300"
+                                            maxlength="200"
                                             [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.texto || '')"
                                             [class.input-error]="card.get('texto')?.invalid && card.get('texto')?.touched"></textarea>
+                                        <span class="field-error" *ngIf="card.get('texto')?.invalid && card.get('texto')?.touched">
+                                            O texto do card deve ter entre 15 e 200 caracteres.
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -356,22 +368,28 @@
                                 </div>
                                 <div class="field-row">
                                     <div class="field">
-                                        <label class="field-sublabel">Estatística / Rótulo</label>
+                                        <label class="field-sublabel">Estatística / Rótulo <span class="field-hint">(3 a 30 car.)</span></label>
                                         <input
                                             type="text"
                                             formControlName="nome"
-                                            maxlength="100"
+                                            maxlength="30"
                                             [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.nome || 'Rótulo')"
                                             [class.input-error]="est.get('nome')?.invalid && est.get('nome')?.touched">
+                                        <span class="field-error" *ngIf="est.get('nome')?.invalid && est.get('nome')?.touched">
+                                            O rótulo deve ter entre 3 e 30 caracteres.
+                                        </span>
                                     </div>
                                     <div class="field">
-                                        <label class="field-sublabel">Valor</label>
+                                        <label class="field-sublabel">Valor <span class="field-hint">(1 a 15 car.)</span></label>
                                         <input
                                             type="text"
                                             formControlName="valor"
-                                            maxlength="50"
+                                            maxlength="15"
                                             [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.valor || 'Valor')"
                                             [class.input-error]="est.get('valor')?.invalid && est.get('valor')?.touched">
+                                        <span class="field-error" *ngIf="est.get('valor')?.invalid && est.get('valor')?.touched">
+                                            O valor deve ter entre 1 e 15 caracteres (ex: +10, 100%, Diária).
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -549,28 +567,28 @@
                 <div class="dados-sub">Informações gerais do estabelecimento (deixe em branco para usar o fallback).</div>
             </div>
             <div class="field">
-                <label>Endereço <span class="field-hint">(5 a 250 caracteres)</span></label>
+                <label>Endereço <span class="field-hint">(8 a 150 caracteres)</span></label>
                 <input
                     type="text"
                     formControlName="endereco"
-                    maxlength="250"
+                    maxlength="150"
                     [placeholder]="'Padrão: ' + defaultDados.endereco"
                     [class.input-error]="contentForm.get('dados.endereco')?.invalid && contentForm.get('dados.endereco')?.touched">
                 <span class="field-error" *ngIf="contentForm.get('dados.endereco')?.invalid && contentForm.get('dados.endereco')?.touched">
-                    O endereço deve ter entre 5 e 250 caracteres.
+                    O endereço deve conter o nome do logradouro e ter entre 8 e 150 caracteres.
                 </span>
             </div>
             <div class="field-row">
                 <div class="field">
-                    <label>Dias de Funcionamento <span class="field-hint">(3 a 100 caracteres)</span></label>
+                    <label>Dias de Funcionamento <span class="field-hint">(3 a 40 caracteres)</span></label>
                     <input
                         type="text"
                         formControlName="diasFuncionamento"
-                        maxlength="100"
+                        maxlength="40"
                         [placeholder]="'Padrão: ' + defaultDados.diasFuncionamento"
                         [class.input-error]="contentForm.get('dados.diasFuncionamento')?.invalid && contentForm.get('dados.diasFuncionamento')?.touched">
                     <span class="field-error" *ngIf="contentForm.get('dados.diasFuncionamento')?.invalid && contentForm.get('dados.diasFuncionamento')?.touched">
-                        Os dias devem ter entre 3 e 100 caracteres.
+                        Os dias devem ter entre 3 e 40 caracteres válidos (Ex: Seg a Sex, Segunda a Sábado).
                     </span>
                 </div>
                 <div class="field">

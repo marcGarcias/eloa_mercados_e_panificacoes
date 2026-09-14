@@ -40,6 +40,13 @@ body {
   color: var(--dark);
   min-height: 100vh;
   -webkit-overflow-scrolling: touch;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, a, label, .section-tag, .title, .subtitle {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 a {

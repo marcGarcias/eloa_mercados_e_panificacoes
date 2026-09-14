@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { ContentComponent, optionalCnpjValidator, optionalPhoneValidator } from './content.component';
+import { ContentComponent, optionalCnpjValidator, optionalPhoneValidator, optionalLengthValidator } from './content.component';
 import { ContentService } from '../../../../services/content.service';
 import { ToastService } from '../../../../services/toast.service';
 import { of, throwError } from 'rxjs';
@@ -37,6 +37,41 @@ describe('ContentComponent (Admin)', () => {
   });
 
   describe('Validadores Customizados', () => {
+    it('optionalLengthValidator deve aceitar valor vazio/nulo', () => {
+      const validator = optionalLengthValidator(4, 21);
+      expect(validator(new FormControl(''))).toBeNull();
+      expect(validator(new FormControl(null))).toBeNull();
+      expect(validator(new FormControl('   '))).toBeNull();
+    });
+
+    it('optionalLengthValidator deve validar limites de selo (4 a 31)', () => {
+      const validator = optionalLengthValidator(4, 31);
+      expect(validator(new FormControl('Selo Válido'))).toBeNull();
+      expect(validator(new FormControl('123'))).toEqual({ minlength: { requiredLength: 4, actualLength: 3 } });
+      expect(validator(new FormControl('A'.repeat(32)))).toEqual({ maxlength: { requiredLength: 31, actualLength: 32 } });
+    });
+
+    it('optionalLengthValidator deve validar limites de título (4 a 21)', () => {
+      const validator = optionalLengthValidator(4, 21);
+      expect(validator(new FormControl('Pães Fresquinhos'))).toBeNull();
+      expect(validator(new FormControl('Oi'))).toEqual({ minlength: { requiredLength: 4, actualLength: 2 } });
+      expect(validator(new FormControl('Título Muito Longo Aqui'))).toEqual({ maxlength: { requiredLength: 21, actualLength: 23 } });
+    });
+
+    it('optionalLengthValidator deve validar limites de subtítulo (4 a 26)', () => {
+      const validator = optionalLengthValidator(4, 26);
+      expect(validator(new FormControl('com sabor de sempre.'))).toBeNull();
+      expect(validator(new FormControl('abc'))).toEqual({ minlength: { requiredLength: 4, actualLength: 3 } });
+      expect(validator(new FormControl('A'.repeat(27)))).toEqual({ maxlength: { requiredLength: 26, actualLength: 27 } });
+    });
+
+    it('optionalLengthValidator deve validar limites de descrição (10 a 351)', () => {
+      const validator = optionalLengthValidator(10, 351);
+      expect(validator(new FormControl('Descrição válida com mais de dez caracteres.'))).toBeNull();
+      expect(validator(new FormControl('Curta'))).toEqual({ minlength: { requiredLength: 10, actualLength: 5 } });
+      expect(validator(new FormControl('A'.repeat(352)))).toEqual({ maxlength: { requiredLength: 351, actualLength: 352 } });
+    });
+
     it('optionalCnpjValidator deve aceitar valor vazio/nulo', () => {
       const validator = optionalCnpjValidator();
       expect(validator(new FormControl(''))).toBeNull();

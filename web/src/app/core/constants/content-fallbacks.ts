@@ -2,7 +2,7 @@ import { SiteContent } from '../../models/content.model';
 
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   banner: {
-    selo: 'Feito com tradição todos os dias',
+    selo: 'Feito com tradição todo dia',
     titulo: 'Pães fresquinhos',
     subtitulo: 'com sabor de sempre.',
     descricao: 'Produzidos diariamente com ingredientes selecionados. Pães, bolos, doces, salgados e produtos de mercado — tudo em um só lugar para você e sua família.',
@@ -14,7 +14,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   diferenciais: {
     selo: 'Por que a Eloa?',
-    titulo: 'Qualidade que você sente',
+    titulo: 'Qualidade Garantida',
     descricao: 'Cada produto é preparado com cuidado e ingredientes frescos, para garantir o melhor sabor na sua mesa.',
     cards: [
       {
@@ -37,7 +37,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   sobre: {
     selo: 'Nossa História',
-    titulo: 'Tradição e qualidade em cada pão',
+    titulo: 'Tradição e Qualidade',
     descricao: 'A Eloa Mercados & Panificações nasceu do amor pela boa panificação. Há mais de uma década, produzimos pães, doces e salgados com a dedicação de quem coloca o coração em cada receita.',
     lista: [
       {
@@ -68,7 +68,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   cta: {
     selo: 'Torne-se um parceiro Eloá',
-    titulo: 'Faça parte da nossa rede de parceiros',
+    titulo: 'Seja Nosso Parceiro',
     descricao: 'Entre em contato via WhatsApp e faça seu pedido agora. Pães frescos, entrega prática e um atendimento que faz a diferença.'
   },
   rodape: {

@@ -22,22 +22,54 @@
                 </button>
                 <div class="accordion-body" formGroupName="banner">
                     <div class="field">
-                        <label>Selo <span class="field-hint">(deixe em branco para usar o fallback)</span></label>
-                        <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultBanner.selo">
+                        <label>Selo <span class="field-hint">(4 a 31 caracteres - deixe em branco para usar o padrão)</span></label>
+                        <input
+                            type="text"
+                            formControlName="selo"
+                            maxlength="31"
+                            [placeholder]="'Padrão: ' + defaultBanner.selo"
+                            [class.input-error]="contentForm.get('banner.selo')?.invalid && contentForm.get('banner.selo')?.touched">
+                        <span class="field-error" *ngIf="contentForm.get('banner.selo')?.invalid && contentForm.get('banner.selo')?.touched">
+                            O selo deve ter entre 4 e 31 caracteres.
+                        </span>
                     </div>
                     <div class="field-row">
                         <div class="field">
-                            <label>Título</label>
-                            <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultBanner.titulo">
+                            <label>Título <span class="field-hint">(4 a 21 caracteres)</span></label>
+                            <input
+                                type="text"
+                                formControlName="titulo"
+                                maxlength="21"
+                                [placeholder]="'Padrão: ' + defaultBanner.titulo"
+                                [class.input-error]="contentForm.get('banner.titulo')?.invalid && contentForm.get('banner.titulo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('banner.titulo')?.invalid && contentForm.get('banner.titulo')?.touched">
+                                O título deve ter entre 4 e 21 caracteres.
+                            </span>
                         </div>
                         <div class="field">
-                            <label>Subtítulo</label>
-                            <input type="text" formControlName="subtitulo" maxlength="150" [placeholder]="'Padrão: ' + defaultBanner.subtitulo">
+                            <label>Subtítulo <span class="field-hint">(4 a 26 caracteres)</span></label>
+                            <input
+                                type="text"
+                                formControlName="subtitulo"
+                                maxlength="26"
+                                [placeholder]="'Padrão: ' + defaultBanner.subtitulo"
+                                [class.input-error]="contentForm.get('banner.subtitulo')?.invalid && contentForm.get('banner.subtitulo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('banner.subtitulo')?.invalid && contentForm.get('banner.subtitulo')?.touched">
+                                O subtítulo deve ter entre 4 e 26 caracteres.
+                            </span>
                         </div>
                     </div>
                     <div class="field">
-                        <label>Descrição</label>
-                        <textarea rows="3" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultBanner.descricao"></textarea>
+                        <label>Descrição <span class="field-hint">(10 a 351 caracteres)</span></label>
+                        <textarea
+                            rows="3"
+                            formControlName="descricao"
+                            maxlength="351"
+                            [placeholder]="'Padrão: ' + defaultBanner.descricao"
+                            [class.input-error]="contentForm.get('banner.descricao')?.invalid && contentForm.get('banner.descricao')?.touched"></textarea>
+                        <span class="field-error" *ngIf="contentForm.get('banner.descricao')?.invalid && contentForm.get('banner.descricao')?.touched">
+                            A descrição deve ter entre 10 e 351 caracteres.
+                        </span>
                     </div>
                     <div class="field">
                         <label>Indicadores <span class="field-hint">(3 indicadores)</span></label>
@@ -47,11 +79,21 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Título</label>
-                                        <input type="text" formControlName="nome" maxlength="100" [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.nome || '')">
+                                        <input
+                                            type="text"
+                                            formControlName="nome"
+                                            maxlength="100"
+                                            [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.nome || '')"
+                                            [class.input-error]="ind.get('nome')?.invalid && ind.get('nome')?.touched">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Valor</label>
-                                        <input type="text" formControlName="valor" maxlength="50" [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.valor || '')">
+                                        <input
+                                            type="text"
+                                            formControlName="valor"
+                                            maxlength="50"
+                                            [placeholder]="'Padrão: ' + (defaultBannerIndicadores[i]?.valor || '')"
+                                            [class.input-error]="ind.get('valor')?.invalid && ind.get('valor')?.touched">
                                     </div>
                                 </div>
                             </div>
@@ -73,20 +115,44 @@
                 <div class="accordion-body" formGroupName="diferenciais">
                     <div class="field-row">
                         <div class="field">
-                            <label>Selo</label>
-                            <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultDiferenciais.selo">
+                            <label>Selo <span class="field-hint">(4 a 31 caracteres)</span></label>
+                            <input
+                                type="text"
+                                formControlName="selo"
+                                maxlength="31"
+                                [placeholder]="'Padrão: ' + defaultDiferenciais.selo"
+                                [class.input-error]="contentForm.get('diferenciais.selo')?.invalid && contentForm.get('diferenciais.selo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('diferenciais.selo')?.invalid && contentForm.get('diferenciais.selo')?.touched">
+                                O selo deve ter entre 4 e 31 caracteres.
+                            </span>
                         </div>
                         <div class="field">
-                            <label>Título Principal</label>
-                            <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultDiferenciais.titulo">
+                            <label>Título Principal <span class="field-hint">(4 a 21 caracteres)</span></label>
+                            <input
+                                type="text"
+                                formControlName="titulo"
+                                maxlength="21"
+                                [placeholder]="'Padrão: ' + defaultDiferenciais.titulo"
+                                [class.input-error]="contentForm.get('diferenciais.titulo')?.invalid && contentForm.get('diferenciais.titulo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('diferenciais.titulo')?.invalid && contentForm.get('diferenciais.titulo')?.touched">
+                                O título deve ter entre 4 e 21 caracteres.
+                            </span>
                         </div>
                     </div>
                     <div class="field">
-                        <label>Descrição da Seção</label>
-                        <textarea rows="2" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultDiferenciais.descricao"></textarea>
+                        <label>Descrição da Seção <span class="field-hint">(10 a 351 caracteres)</span></label>
+                        <textarea
+                            rows="2"
+                            formControlName="descricao"
+                            maxlength="351"
+                            [placeholder]="'Padrão: ' + defaultDiferenciais.descricao"
+                            [class.input-error]="contentForm.get('diferenciais.descricao')?.invalid && contentForm.get('diferenciais.descricao')?.touched"></textarea>
+                        <span class="field-error" *ngIf="contentForm.get('diferenciais.descricao')?.invalid && contentForm.get('diferenciais.descricao')?.touched">
+                            A descrição deve ter entre 10 e 351 caracteres.
+                        </span>
                     </div>
                     <div class="field">
-                        <label>3 Cards de Diferenciais <span class="field-hint">(deixe em branco para usar o fallback)</span></label>
+                        <label>3 Cards de Diferenciais <span class="field-hint">(deixe em branco para usar o padrão)</span></label>
                         <div class="list-items" formArrayName="cards">
                             <div class="list-item" *ngFor="let card of diferenciaisCards.controls; let i = index" [formGroupName]="i">
                                 <div class="list-item-header-clean">
@@ -95,11 +161,21 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Título do Card</label>
-                                        <input type="text" formControlName="titulo" maxlength="120" [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.titulo || '')">
+                                        <input
+                                            type="text"
+                                            formControlName="titulo"
+                                            maxlength="120"
+                                            [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.titulo || '')"
+                                            [class.input-error]="card.get('titulo')?.invalid && card.get('titulo')?.touched">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Texto do Card</label>
-                                        <textarea rows="2" formControlName="texto" maxlength="300" [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.texto || '')"></textarea>
+                                        <textarea
+                                            rows="2"
+                                            formControlName="texto"
+                                            maxlength="300"
+                                            [placeholder]="'Padrão: ' + (defaultDiferenciaisCards[i]?.texto || '')"
+                                            [class.input-error]="card.get('texto')?.invalid && card.get('texto')?.touched"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -120,12 +196,28 @@
                 </button>
                 <div class="accordion-body" formGroupName="catalogo">
                     <div class="field">
-                        <label>Selo</label>
-                        <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultCatalogo.selo">
+                        <label>Selo <span class="field-hint">(4 a 31 caracteres)</span></label>
+                        <input
+                            type="text"
+                            formControlName="selo"
+                            maxlength="31"
+                            [placeholder]="'Padrão: ' + defaultCatalogo.selo"
+                            [class.input-error]="contentForm.get('catalogo.selo')?.invalid && contentForm.get('catalogo.selo')?.touched">
+                        <span class="field-error" *ngIf="contentForm.get('catalogo.selo')?.invalid && contentForm.get('catalogo.selo')?.touched">
+                            O selo deve ter entre 4 e 31 caracteres.
+                        </span>
                     </div>
                     <div class="field">
-                        <label>Descrição</label>
-                        <textarea rows="3" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultCatalogo.descricao"></textarea>
+                        <label>Descrição <span class="field-hint">(10 a 351 caracteres)</span></label>
+                        <textarea
+                            rows="3"
+                            formControlName="descricao"
+                            maxlength="351"
+                            [placeholder]="'Padrão: ' + defaultCatalogo.descricao"
+                            [class.input-error]="contentForm.get('catalogo.descricao')?.invalid && contentForm.get('catalogo.descricao')?.touched"></textarea>
+                        <span class="field-error" *ngIf="contentForm.get('catalogo.descricao')?.invalid && contentForm.get('catalogo.descricao')?.touched">
+                            A descrição deve ter entre 10 e 351 caracteres.
+                        </span>
                     </div>
                 </div>
             </div>
@@ -143,21 +235,45 @@
                 <div class="accordion-body" formGroupName="sobre">
                     <div class="field-row">
                         <div class="field">
-                            <label>Selo</label>
-                            <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultSobre.selo">
+                            <label>Selo <span class="field-hint">(4 a 31 caracteres)</span></label>
+                            <input
+                                type="text"
+                                formControlName="selo"
+                                maxlength="31"
+                                [placeholder]="'Padrão: ' + defaultSobre.selo"
+                                [class.input-error]="contentForm.get('sobre.selo')?.invalid && contentForm.get('sobre.selo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('sobre.selo')?.invalid && contentForm.get('sobre.selo')?.touched">
+                                O selo deve ter entre 4 e 31 caracteres.
+                            </span>
                         </div>
                         <div class="field">
-                            <label>Título Principal</label>
-                            <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultSobre.titulo">
+                            <label>Título Principal <span class="field-hint">(4 a 21 caracteres)</span></label>
+                            <input
+                                type="text"
+                                formControlName="titulo"
+                                maxlength="21"
+                                [placeholder]="'Padrão: ' + defaultSobre.titulo"
+                                [class.input-error]="contentForm.get('sobre.titulo')?.invalid && contentForm.get('sobre.titulo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('sobre.titulo')?.invalid && contentForm.get('sobre.titulo')?.touched">
+                                O título deve ter entre 4 e 21 caracteres.
+                            </span>
                         </div>
                     </div>
                     <div class="field">
-                        <label>Descrição Institucional</label>
-                        <textarea rows="3" formControlName="descricao" maxlength="1000" [placeholder]="'Padrão: ' + defaultSobre.descricao"></textarea>
+                        <label>Descrição Institucional <span class="field-hint">(10 a 351 caracteres)</span></label>
+                        <textarea
+                            rows="3"
+                            formControlName="descricao"
+                            maxlength="351"
+                            [placeholder]="'Padrão: ' + defaultSobre.descricao"
+                            [class.input-error]="contentForm.get('sobre.descricao')?.invalid && contentForm.get('sobre.descricao')?.touched"></textarea>
+                        <span class="field-error" *ngIf="contentForm.get('sobre.descricao')?.invalid && contentForm.get('sobre.descricao')?.touched">
+                            A descrição deve ter entre 10 e 351 caracteres.
+                        </span>
                     </div>
                     <div class="field">
                         <div class="section-sub-header">
-                            <label>Itens da Lista Institucional <span class="field-hint">(deixe em branco para usar o fallback)</span></label>
+                            <label>Itens da Lista Institucional <span class="field-hint">(deixe em branco para usar o padrão)</span></label>
                             <button type="button" class="btn-sub-add" (click)="addSobreItem()">
                                 + Adicionar Item
                             </button>
@@ -174,11 +290,21 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Título / Destaque</label>
-                                        <input type="text" formControlName="nome" maxlength="100" [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.nome || 'Título do item')">
+                                        <input
+                                            type="text"
+                                            formControlName="nome"
+                                            maxlength="100"
+                                            [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.nome || 'Título do item')"
+                                            [class.input-error]="item.get('nome')?.invalid && item.get('nome')?.touched">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Descrição / Complemento</label>
-                                        <textarea rows="2" formControlName="descricao" maxlength="300" [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.descricao || 'Descrição do item')"></textarea>
+                                        <textarea
+                                            rows="2"
+                                            formControlName="descricao"
+                                            maxlength="300"
+                                            [placeholder]="'Padrão: ' + (defaultSobreLista[i]?.descricao || 'Descrição do item')"
+                                            [class.input-error]="item.get('descricao')?.invalid && item.get('descricao')?.touched"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -214,7 +340,7 @@
 
                     <div class="field">
                         <div class="section-sub-header">
-                            <label>Métricas & Estatísticas (Estatística : Valor) <span class="field-hint">(deixe em branco para usar o fallback)</span></label>
+                            <label>Métricas & Estatísticas (Estatística : Valor) <span class="field-hint">(deixe em branco para usar o padrão)</span></label>
                             <button type="button" class="btn-sub-add" (click)="addEstatistica()">
                                 + Adicionar Estatística
                             </button>
@@ -231,11 +357,21 @@
                                 <div class="field-row">
                                     <div class="field">
                                         <label class="field-sublabel">Estatística / Rótulo</label>
-                                        <input type="text" formControlName="nome" maxlength="100" [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.nome || 'Rótulo')">
+                                        <input
+                                            type="text"
+                                            formControlName="nome"
+                                            maxlength="100"
+                                            [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.nome || 'Rótulo')"
+                                            [class.input-error]="est.get('nome')?.invalid && est.get('nome')?.touched">
                                     </div>
                                     <div class="field">
                                         <label class="field-sublabel">Valor</label>
-                                        <input type="text" formControlName="valor" maxlength="50" [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.valor || 'Valor')">
+                                        <input
+                                            type="text"
+                                            formControlName="valor"
+                                            maxlength="50"
+                                            [placeholder]="'Padrão: ' + (defaultEstatisticasLista[i]?.valor || 'Valor')"
+                                            [class.input-error]="est.get('valor')?.invalid && est.get('valor')?.touched">
                                     </div>
                                 </div>
                             </div>
@@ -256,16 +392,40 @@
                 </button>
                 <div class="accordion-body" formGroupName="cta">
                     <div class="field">
-                        <label>Selo</label>
-                        <input type="text" formControlName="selo" maxlength="100" [placeholder]="'Padrão: ' + defaultCta.selo">
+                        <label>Selo <span class="field-hint">(4 a 31 caracteres)</span></label>
+                        <input
+                            type="text"
+                            formControlName="selo"
+                            maxlength="31"
+                            [placeholder]="'Padrão: ' + defaultCta.selo"
+                            [class.input-error]="contentForm.get('cta.selo')?.invalid && contentForm.get('cta.selo')?.touched">
+                        <span class="field-error" *ngIf="contentForm.get('cta.selo')?.invalid && contentForm.get('cta.selo')?.touched">
+                            O selo deve ter entre 4 e 31 caracteres.
+                        </span>
                     </div>
                     <div class="field">
-                        <label>Título</label>
-                        <input type="text" formControlName="titulo" maxlength="150" [placeholder]="'Padrão: ' + defaultCta.titulo">
+                        <label>Título <span class="field-hint">(4 a 21 caracteres)</span></label>
+                        <input
+                            type="text"
+                            formControlName="titulo"
+                            maxlength="21"
+                            [placeholder]="'Padrão: ' + defaultCta.titulo"
+                            [class.input-error]="contentForm.get('cta.titulo')?.invalid && contentForm.get('cta.titulo')?.touched">
+                            <span class="field-error" *ngIf="contentForm.get('cta.titulo')?.invalid && contentForm.get('cta.titulo')?.touched">
+                                O título deve ter entre 4 e 21 caracteres.
+                            </span>
                     </div>
                     <div class="field">
-                        <label>Descrição</label>
-                        <textarea rows="2" formControlName="descricao" maxlength="500" [placeholder]="'Padrão: ' + defaultCta.descricao"></textarea>
+                        <label>Descrição <span class="field-hint">(10 a 351 caracteres)</span></label>
+                        <textarea
+                            rows="2"
+                            formControlName="descricao"
+                            maxlength="351"
+                            [placeholder]="'Padrão: ' + defaultCta.descricao"
+                            [class.input-error]="contentForm.get('cta.descricao')?.invalid && contentForm.get('cta.descricao')?.touched"></textarea>
+                        <span class="field-error" *ngIf="contentForm.get('cta.descricao')?.invalid && contentForm.get('cta.descricao')?.touched">
+                            A descrição deve ter entre 10 e 351 caracteres.
+                        </span>
                     </div>
                 </div>
             </div>
@@ -282,12 +442,28 @@
                 </button>
                 <div class="accordion-body" formGroupName="rodape">
                     <div class="field">
-                        <label>Descrição</label>
-                        <textarea rows="2" formControlName="descricao" maxlength="300" [placeholder]="'Padrão: ' + defaultRodape.descricao"></textarea>
+                        <label>Descrição <span class="field-hint">(10 a 351 caracteres)</span></label>
+                        <textarea
+                            rows="2"
+                            formControlName="descricao"
+                            maxlength="351"
+                            [placeholder]="'Padrão: ' + defaultRodape.descricao"
+                            [class.input-error]="contentForm.get('rodape.descricao')?.invalid && contentForm.get('rodape.descricao')?.touched"></textarea>
+                        <span class="field-error" *ngIf="contentForm.get('rodape.descricao')?.invalid && contentForm.get('rodape.descricao')?.touched">
+                            A descrição deve ter entre 10 e 351 caracteres.
+                        </span>
                     </div>
                     <div class="field">
-                        <label>Texto para Contato</label>
-                        <input type="text" formControlName="textoContato" maxlength="150" [placeholder]="'Padrão: ' + defaultRodape.textoContato">
+                        <label>Texto para Contato <span class="field-hint">(4 a 150 caracteres)</span></label>
+                        <input
+                            type="text"
+                            formControlName="textoContato"
+                            maxlength="150"
+                            [placeholder]="'Padrão: ' + defaultRodape.textoContato"
+                            [class.input-error]="contentForm.get('rodape.textoContato')?.invalid && contentForm.get('rodape.textoContato')?.touched">
+                        <span class="field-error" *ngIf="contentForm.get('rodape.textoContato')?.invalid && contentForm.get('rodape.textoContato')?.touched">
+                            O texto deve ter entre 4 e 150 caracteres.
+                        </span>
                     </div>
                 </div>
             </div>
@@ -373,13 +549,29 @@
                 <div class="dados-sub">Informações gerais do estabelecimento (deixe em branco para usar o fallback).</div>
             </div>
             <div class="field">
-                <label>Endereço</label>
-                <input type="text" formControlName="endereco" maxlength="250" [placeholder]="'Padrão: ' + defaultDados.endereco">
+                <label>Endereço <span class="field-hint">(5 a 250 caracteres)</span></label>
+                <input
+                    type="text"
+                    formControlName="endereco"
+                    maxlength="250"
+                    [placeholder]="'Padrão: ' + defaultDados.endereco"
+                    [class.input-error]="contentForm.get('dados.endereco')?.invalid && contentForm.get('dados.endereco')?.touched">
+                <span class="field-error" *ngIf="contentForm.get('dados.endereco')?.invalid && contentForm.get('dados.endereco')?.touched">
+                    O endereço deve ter entre 5 e 250 caracteres.
+                </span>
             </div>
             <div class="field-row">
                 <div class="field">
-                    <label>Dias de Funcionamento</label>
-                    <input type="text" formControlName="diasFuncionamento" maxlength="100" [placeholder]="'Padrão: ' + defaultDados.diasFuncionamento">
+                    <label>Dias de Funcionamento <span class="field-hint">(3 a 100 caracteres)</span></label>
+                    <input
+                        type="text"
+                        formControlName="diasFuncionamento"
+                        maxlength="100"
+                        [placeholder]="'Padrão: ' + defaultDados.diasFuncionamento"
+                        [class.input-error]="contentForm.get('dados.diasFuncionamento')?.invalid && contentForm.get('dados.diasFuncionamento')?.touched">
+                    <span class="field-error" *ngIf="contentForm.get('dados.diasFuncionamento')?.invalid && contentForm.get('dados.diasFuncionamento')?.touched">
+                        Os dias devem ter entre 3 e 100 caracteres.
+                    </span>
                 </div>
                 <div class="field">
                     <label>Horário de Abertura</label>
@@ -437,4 +629,5 @@
     </div>
 
 </section>
+
 

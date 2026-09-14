@@ -146,16 +146,16 @@ public class SiteContentDto {
     }
 
     public static class BannerDto {
-        @Size(max = 100, message = "O selo do banner deve ter no máximo 100 caracteres.")
+        @Size(min = 4, max = 31, message = "O selo do banner deve ter entre 4 e 31 caracteres.")
         private String selo;
 
-        @Size(max = 150, message = "O título do banner deve ter no máximo 150 caracteres.")
+        @Size(min = 4, max = 21, message = "O título do banner deve ter entre 4 e 21 caracteres.")
         private String titulo;
 
-        @Size(max = 150, message = "O subtítulo do banner deve ter no máximo 150 caracteres.")
+        @Size(min = 4, max = 26, message = "O subtítulo do banner deve ter entre 4 e 26 caracteres.")
         private String subtitulo;
 
-        @Size(max = 500, message = "A descrição do banner deve ter no máximo 500 caracteres.")
+        @Size(min = 10, max = 351, message = "A descrição do banner deve ter entre 10 e 351 caracteres.")
         private String descricao;
 
         @Valid
@@ -174,13 +174,13 @@ public class SiteContentDto {
     }
 
     public static class DiferenciaisDto {
-        @Size(max = 100, message = "O selo dos diferenciais deve ter no máximo 100 caracteres.")
+        @Size(min = 4, max = 31, message = "O selo dos diferenciais deve ter entre 4 e 31 caracteres.")
         private String selo;
 
-        @Size(max = 150, message = "O título dos diferenciais deve ter no máximo 150 caracteres.")
+        @Size(min = 4, max = 21, message = "O título dos diferenciais deve ter entre 4 e 21 caracteres.")
         private String titulo;
 
-        @Size(max = 500, message = "A descrição dos diferenciais deve ter no máximo 500 caracteres.")
+        @Size(min = 10, max = 351, message = "A descrição dos diferenciais deve ter entre 10 e 351 caracteres.")
         private String descricao;
 
         @Valid
@@ -197,10 +197,10 @@ public class SiteContentDto {
     }
 
     public static class CatalogoDto {
-        @Size(max = 100, message = "O selo do catálogo deve ter no máximo 100 caracteres.")
+        @Size(min = 4, max = 31, message = "O selo do catálogo deve ter entre 4 e 31 caracteres.")
         private String selo;
 
-        @Size(max = 500, message = "A descrição do catálogo deve ter no máximo 500 caracteres.")
+        @Size(min = 10, max = 351, message = "A descrição do catálogo deve ter entre 10 e 351 caracteres.")
         private String descricao;
 
         public String getSelo() { return selo; }
@@ -210,13 +210,13 @@ public class SiteContentDto {
     }
 
     public static class SobreDto {
-        @Size(max = 100, message = "O selo da seção sobre deve ter no máximo 100 caracteres.")
+        @Size(min = 4, max = 31, message = "O selo da seção sobre deve ter entre 4 e 31 caracteres.")
         private String selo;
 
-        @Size(max = 150, message = "O título da seção sobre deve ter no máximo 150 caracteres.")
+        @Size(min = 4, max = 21, message = "O título da seção sobre deve ter entre 4 e 21 caracteres.")
         private String titulo;
 
-        @Size(max = 1000, message = "A descrição da seção sobre deve ter no máximo 1000 caracteres.")
+        @Size(min = 10, max = 351, message = "A descrição da seção sobre deve ter entre 10 e 351 caracteres.")
         private String descricao;
 
         @Valid
@@ -241,13 +241,13 @@ public class SiteContentDto {
     }
 
     public static class CtaDto {
-        @Size(max = 100, message = "O selo do CTA deve ter no máximo 100 caracteres.")
+        @Size(min = 4, max = 31, message = "O selo do CTA deve ter entre 4 e 31 caracteres.")
         private String selo;
 
-        @Size(max = 150, message = "O título do CTA deve ter no máximo 150 caracteres.")
+        @Size(min = 4, max = 21, message = "O título do CTA deve ter entre 4 e 21 caracteres.")
         private String titulo;
 
-        @Size(max = 500, message = "A descrição do CTA deve ter no máximo 500 caracteres.")
+        @Size(min = 10, max = 351, message = "A descrição do CTA deve ter entre 10 e 351 caracteres.")
         private String descricao;
 
         public String getSelo() { return selo; }
@@ -259,7 +259,7 @@ public class SiteContentDto {
     }
 
     public static class RodapeDto {
-        @Size(max = 300, message = "A descrição do rodapé deve ter no máximo 300 caracteres.")
+        @Size(min = 10, max = 351, message = "A descrição do rodapé deve ter entre 10 e 351 caracteres.")
         private String descricao;
 
         @Size(max = 150, message = "O texto de contato do rodapé deve ter no máximo 150 caracteres.")

@@ -17,6 +17,27 @@ import { ToastService } from '../../../../services/toast.service';
 import { formatCnpj, formatPhone } from '../../../../core/utils/formatters.util';
 import { finalize, Subscription } from 'rxjs';
 
+/** Validador para campos opcionais de texto com limite mínimo e máximo quando preenchidos */
+export function optionalLengthValidator(min: number, max: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (value === null || value === undefined) {
+      return null;
+    }
+    const str = value.toString().trim();
+    if (str.length === 0) {
+      return null;
+    }
+    if (str.length < min) {
+      return { minlength: { requiredLength: min, actualLength: str.length } };
+    }
+    if (str.length > max) {
+      return { maxlength: { requiredLength: max, actualLength: str.length } };
+    }
+    return null;
+  };
+}
+
 /** Validador leve para CNPJ: opcional, mas se preenchido aceita 14 alfanuméricos ou formato padrão XX.XXX.XXX/XXXX-XX */
 export function optionalCnpjValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -79,45 +100,45 @@ export class ContentComponent implements OnInit, OnDestroy {
   private initForm(): void {
     this.contentForm = this.fb.group({
       banner: this.fb.group({
-        selo: ['', [Validators.maxLength(100)]],
-        titulo: ['', [Validators.maxLength(150)]],
-        subtitulo: ['', [Validators.maxLength(150)]],
-        descricao: ['', [Validators.maxLength(500)]],
+        selo: ['', [optionalLengthValidator(4, 31)]],
+        titulo: ['', [optionalLengthValidator(4, 21)]],
+        subtitulo: ['', [optionalLengthValidator(4, 26)]],
+        descricao: ['', [optionalLengthValidator(10, 351)]],
         indicadores: this.fb.array([])
       }),
       diferenciais: this.fb.group({
-        selo: ['', [Validators.maxLength(100)]],
-        titulo: ['', [Validators.maxLength(150)]],
-        descricao: ['', [Validators.maxLength(500)]],
+        selo: ['', [optionalLengthValidator(4, 31)]],
+        titulo: ['', [optionalLengthValidator(4, 21)]],
+        descricao: ['', [optionalLengthValidator(10, 351)]],
         cards: this.fb.array([])
       }),
       catalogo: this.fb.group({
-        selo: ['', [Validators.maxLength(100)]],
-        descricao: ['', [Validators.maxLength(500)]]
+        selo: ['', [optionalLengthValidator(4, 31)]],
+        descricao: ['', [optionalLengthValidator(10, 351)]]
       }),
       sobre: this.fb.group({
-        selo: ['', [Validators.maxLength(100)]],
-        titulo: ['', [Validators.maxLength(150)]],
-        descricao: ['', [Validators.maxLength(1000)]],
+        selo: ['', [optionalLengthValidator(4, 31)]],
+        titulo: ['', [optionalLengthValidator(4, 21)]],
+        descricao: ['', [optionalLengthValidator(10, 351)]],
         lista: this.fb.array([])
       }),
       estatisticas: this.fb.group({
         lista: this.fb.array([])
       }),
       cta: this.fb.group({
-        selo: ['', [Validators.maxLength(100)]],
-        titulo: ['', [Validators.maxLength(150)]],
-        descricao: ['', [Validators.maxLength(500)]]
+        selo: ['', [optionalLengthValidator(4, 31)]],
+        titulo: ['', [optionalLengthValidator(4, 21)]],
+        descricao: ['', [optionalLengthValidator(10, 351)]]
       }),
       rodape: this.fb.group({
-        descricao: ['', [Validators.maxLength(300)]],
-        textoContato: ['', [Validators.maxLength(150)]]
+        descricao: ['', [optionalLengthValidator(10, 351)]],
+        textoContato: ['', [optionalLengthValidator(4, 150)]]
       }),
       dados: this.fb.group({
-        endereco: ['', [Validators.maxLength(250)]],
+        endereco: ['', [optionalLengthValidator(5, 250)]],
         horarioAbertura: [''],
         horarioFechamento: [''],
-        diasFuncionamento: ['', [Validators.maxLength(100)]],
+        diasFuncionamento: ['', [optionalLengthValidator(3, 100)]],
         whatsapp: ['', [Validators.maxLength(30), optionalPhoneValidator()]],
         cnpj: ['', [optionalCnpjValidator()]]
       }),
@@ -327,22 +348,22 @@ export class ContentComponent implements OnInit, OnDestroy {
 
   private createIndicador(item?: any): FormGroup {
     return this.fb.group({
-      nome: [item?.nome || '', [Validators.maxLength(100)]],
-      valor: [item?.valor || '', [Validators.maxLength(50)]]
+      nome: [item?.nome || '', [optionalLengthValidator(2, 100)]],
+      valor: [item?.valor || '', [optionalLengthValidator(1, 50)]]
     });
   }
 
   private createCard(item?: any): FormGroup {
     return this.fb.group({
-      titulo: [item?.titulo || '', [Validators.maxLength(120)]],
-      texto: [item?.texto || '', [Validators.maxLength(300)]]
+      titulo: [item?.titulo || '', [optionalLengthValidator(4, 120)]],
+      texto: [item?.texto || '', [optionalLengthValidator(10, 300)]]
     });
   }
 
   private createDescricaoItem(item?: any): FormGroup {
     return this.fb.group({
-      nome: [item?.nome || '', [Validators.maxLength(100)]],
-      descricao: [item?.descricao || '', [Validators.maxLength(300)]]
+      nome: [item?.nome || '', [optionalLengthValidator(4, 100)]],
+      descricao: [item?.descricao || '', [optionalLengthValidator(10, 300)]]
     });
   }
 
@@ -351,7 +372,7 @@ export class ContentComponent implements OnInit, OnDestroy {
     return this.fb.group({
       id: [item?.id || defaultItem?.id || ''],
       pergunta: [item?.pergunta || defaultItem?.pergunta || ''],
-      resposta: [item?.resposta || defaultItem?.resposta || '', [Validators.maxLength(1000)]]
+      resposta: [item?.resposta || defaultItem?.resposta || '', [optionalLengthValidator(10, 1000)]]
     });
   }
 

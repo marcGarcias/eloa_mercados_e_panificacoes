@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentCta, SiteData } from '../../models/content.model';
+import { formatWhatsappLink } from '../../core/utils/formatters.util';
 
 @Component({
   selector: 'app-cta',
@@ -14,11 +15,6 @@ export class CtaComponent {
   @Input() dados?: SiteData | null;
 
   get whatsappLink(): string {
-    if (!this.dados || !this.dados.whatsapp) {
-      return 'https://wa.me/';
-    }
-    const cleanNumber = this.dados.whatsapp.replace(/\D/g, '');
-    return `https://wa.me/${cleanNumber}`;
+    return formatWhatsappLink(this.dados?.whatsapp);
   }
 }
-

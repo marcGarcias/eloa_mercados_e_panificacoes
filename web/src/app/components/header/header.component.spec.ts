@@ -30,6 +30,6 @@ describe('HeaderComponent', () => {
 
   it('deve limpar caracteres não numéricos do whatsapp e retornar url correta', () => {
     component.dados = { whatsapp: '(11) 98888-7777' } as unknown as SiteData;
-    expect(component.whatsappLink).toBe('https://wa.me/11988887777');
+    expect(component.whatsappLink).toBe('https://wa.me/5511988887777');
   });
 });

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentRodape, SiteData } from '../../models/content.model';
+import { formatCnpj, formatWhatsappLink } from '../../core/utils/formatters.util';
 
 @Component({
   selector: 'app-footer',
@@ -41,7 +42,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     const now = new Date();
     const nextMonthFirstDay = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
     const delay = Math.max(1000, nextMonthFirstDay.getTime() - now.getTime());
-    const maxSafeTimeout = 24 * 60 * 60 * 1000; // 24 horas
+    const maxSafeTimeout = 24 * 60 * 60 * 1000;
 
     this.updateTimer = setTimeout(() => {
       this.updateCurrentYear();
@@ -49,11 +50,12 @@ export class FooterComponent implements OnInit, OnDestroy {
     }, Math.min(delay, maxSafeTimeout));
   }
 
+  get formattedCnpj(): string {
+    const rawCnpj = this.dados?.cnpj?.trim() || '57.068.741/0001-38';
+    return formatCnpj(rawCnpj);
+  }
+
   get whatsappLink(): string {
-    if (!this.dados || !this.dados.whatsapp) {
-      return 'https://wa.me/';
-    }
-    const cleanNumber = this.dados.whatsapp.replace(/\D/g, '');
-    return `https://wa.me/${cleanNumber}`;
+    return formatWhatsappLink(this.dados?.whatsapp);
   }
 }

@@ -85,12 +85,26 @@ describe('FooterComponent', () => {
     expect(component.updateTimer).toBeDefined();
   });
 
-  it('deve gerar whatsappLink corretamente', () => {
+  it('deve gerar whatsappLink corretamente formatado para o wa.me', () => {
     component.dados = null;
     expect(component.whatsappLink).toBe('https://wa.me/');
 
     component.dados = { whatsapp: '11977776666' } as unknown as SiteData;
-    expect(component.whatsappLink).toBe('https://wa.me/11977776666');
+    expect(component.whatsappLink).toBe('https://wa.me/5511977776666');
+
+    component.dados = { whatsapp: '+55 (11) 98888-9999' } as unknown as SiteData;
+    expect(component.whatsappLink).toBe('https://wa.me/5511988889999');
+  });
+
+  it('deve formatar CNPJ para exibição independente da forma escrita pelo admin', () => {
+    component.dados = { cnpj: '57068741000138' } as unknown as SiteData;
+    expect(component.formattedCnpj).toBe('57.068.741/0001-38');
+
+    component.dados = { cnpj: '  57.068.741/0001-38  ' } as unknown as SiteData;
+    expect(component.formattedCnpj).toBe('57.068.741/0001-38');
+
+    component.dados = null;
+    expect(component.formattedCnpj).toBe('57.068.741/0001-38');
   });
 
   it('deve exibir dados do rodapé quando fornecidos', () => {

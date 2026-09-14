@@ -5,6 +5,7 @@ import { ContentService } from '../../../../services/content.service';
 import { SiteContent } from '../../../../models/content.model';
 import { DEFAULT_SITE_CONTENT } from '../../../../core/constants/content-fallbacks';
 import { ToastService } from '../../../../services/toast.service';
+import { formatCnpj, formatPhone } from '../../../../core/utils/formatters.util';
 import { finalize, Subscription } from 'rxjs';
 
 @Component({
@@ -84,7 +85,7 @@ export class ContentComponent implements OnInit, OnDestroy {
         horarioFechamento: [''],
         diasFuncionamento: ['', [Validators.maxLength(100)]],
         whatsapp: ['', [Validators.maxLength(30)]],
-        cnpj: ['', [Validators.pattern(/^[A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}$/)]]
+        cnpj: ['', [Validators.pattern(/^([A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}|[A-Z0-9]{14})$/)]]
       }),
       faq: this.fb.group({
         itens: this.fb.array([])
@@ -338,6 +339,13 @@ export class ContentComponent implements OnInit, OnDestroy {
 
     const rawData = this.contentForm.value;
     const contentData = this.normalizePayload(rawData) || {};
+
+    if (contentData.dados?.cnpj) {
+      contentData.dados.cnpj = formatCnpj(contentData.dados.cnpj);
+    }
+    if (contentData.dados?.whatsapp) {
+      contentData.dados.whatsapp = formatPhone(contentData.dados.whatsapp);
+    }
 
     if (this.faqItens.length > 0) {
       contentData.faq = {

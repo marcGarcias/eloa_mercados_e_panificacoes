@@ -1,7 +1,7 @@
 package garcias.api.identity.authentication.application.services;
 
 import garcias.api.identity.authentication.application.security.RefreshTokenManager;
-import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
+import garcias.api.identity.authentication.domain.repositories.SessionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class LogoutServiceTest {
 
     @Mock
-    private RefreshTokenRepository refreshTokenRepository;
+    private SessionRepository sessionRepository;
 
     @Mock
     private RefreshTokenManager refreshTokenManager;
@@ -25,15 +25,15 @@ class LogoutServiceTest {
 
     @BeforeEach
     void setUp() {
-        logoutService = new LogoutService(refreshTokenRepository, refreshTokenManager);
+        logoutService = new LogoutService(sessionRepository, refreshTokenManager);
     }
 
     @Test
-    @DisplayName("Should delete all refresh tokens associated with userCode on global logout")
+    @DisplayName("Should delete all sessions associated with userCode on global logout")
     void shouldDeleteTokensByUserCode() {
         logoutService.execute("0001");
 
-        verify(refreshTokenRepository).deleteByUserCode("0001");
+        verify(sessionRepository).revokeAllUserSessions("0001");
     }
 
     @Test
@@ -45,12 +45,20 @@ class LogoutServiceTest {
     }
 
     @Test
+    @DisplayName("Should revoke specific session by sessionId")
+    void shouldRevokeSpecificSessionBySessionId() {
+        logoutService.executeBySessionId("sess-123", "0001");
+
+        verify(sessionRepository).revokeSession("sess-123", "0001");
+    }
+
+    @Test
     @DisplayName("Should safely ignore null or blank userCode")
     void shouldSafelyIgnoreBlankUserCode() {
         logoutService.execute(null);
         logoutService.execute("   ");
 
-        verifyNoInteractions(refreshTokenRepository);
+        verifyNoInteractions(sessionRepository);
     }
 
     @Test

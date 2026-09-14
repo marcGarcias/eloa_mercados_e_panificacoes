@@ -5,5 +5,7 @@ public interface LogoutUseCase {
     void execute(String userCode);
 
     void executeByToken(String refreshToken);
+
+    void executeBySessionId(String sessionId, String userCode);
 }
 

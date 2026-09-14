@@ -28,6 +28,12 @@ public class RefreshTokenService implements RefreshTokenUseCase {
     @Override
     public LoginResult execute(String refreshToken) {
 
+        String sessionId = refreshTokenManager
+                .findSessionId(refreshToken)
+                .orElseThrow(
+                        InvalidCredentialsException::new
+                );
+
         String userCode = refreshTokenManager
                 .findUserCode(refreshToken)
                 .orElseThrow(
@@ -49,11 +55,13 @@ public class RefreshTokenService implements RefreshTokenUseCase {
         String accessToken = accessTokenManager.generate(
                 user.userCode(),
                 user.role(),
-                user.status()
+                user.status(),
+                sessionId
         );
 
         String newRefreshToken = refreshTokenManager.generate(
-                user.userCode()
+                user.userCode(),
+                sessionId
         );
 
         return new LoginResult(

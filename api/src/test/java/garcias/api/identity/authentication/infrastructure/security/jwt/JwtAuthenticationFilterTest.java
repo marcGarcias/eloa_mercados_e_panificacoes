@@ -1,6 +1,7 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
 import garcias.api.identity.authentication.application.security.AccessTokenManager;
+import garcias.api.identity.authentication.domain.repositories.SessionRepository;
 import garcias.api.identity.authentication.infrastructure.security.CustomAuthenticationEntryPoint;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,6 +32,9 @@ class JwtAuthenticationFilterTest {
     private AccessTokenManager accessTokenManager;
 
     @Mock
+    private SessionRepository sessionRepository;
+
+    @Mock
     private CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Mock
@@ -41,7 +45,7 @@ class JwtAuthenticationFilterTest {
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(accessTokenManager, authenticationEntryPoint);
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(accessTokenManager, sessionRepository, authenticationEntryPoint);
     }
 
     @AfterEach
@@ -50,14 +54,16 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    @DisplayName("Should authenticate request and populate SecurityContextHolder when valid Bearer token is provided")
-    void shouldAuthenticateValidBearerToken() throws ServletException, IOException {
+    @DisplayName("Should authenticate request and populate SecurityContextHolder when valid Bearer token and active session exist")
+    void shouldAuthenticateValidBearerTokenWithActiveSession() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/admin/products");
         request.addHeader("Authorization", "Bearer valid.access.token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         when(accessTokenManager.isValid("valid.access.token")).thenReturn(true);
         when(accessTokenManager.extractStatus("valid.access.token")).thenReturn("ACTIVE");
+        when(accessTokenManager.extractSessionId("valid.access.token")).thenReturn("sess-active-123");
+        when(sessionRepository.isSessionActive("sess-active-123")).thenReturn(true);
         when(accessTokenManager.extractUserCode("valid.access.token")).thenReturn("0001");
         when(accessTokenManager.extractRole("valid.access.token")).thenReturn("ADMIN");
 
@@ -72,6 +78,25 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
+    @DisplayName("Should reject request when session is revoked or deleted from Redis (Fail-closed)")
+    void shouldRejectWhenSessionIsRevokedInRedis() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/admin/users/1/name");
+        request.addHeader("Authorization", "Bearer valid.jwt.token");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        when(accessTokenManager.isValid("valid.jwt.token")).thenReturn(true);
+        when(accessTokenManager.extractStatus("valid.jwt.token")).thenReturn("ACTIVE");
+        when(accessTokenManager.extractSessionId("valid.jwt.token")).thenReturn("sess-deleted");
+        when(sessionRepository.isSessionActive("sess-deleted")).thenReturn(false);
+
+        jwtAuthenticationFilter.doFilter(request, response, filterChain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(authenticationEntryPoint).commence(eq(request), eq(response), any());
+        verify(filterChain, never()).doFilter(any(), any());
+    }
+
+    @Test
     @DisplayName("Should pass request through without authentication when Authorization header is absent")
     void shouldPassWithoutAuthWhenNoHeader() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/public/products");
@@ -81,7 +106,7 @@ class JwtAuthenticationFilterTest {
 
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(accessTokenManager, authenticationEntryPoint);
+        verifyNoInteractions(accessTokenManager, sessionRepository, authenticationEntryPoint);
     }
 
     @Test

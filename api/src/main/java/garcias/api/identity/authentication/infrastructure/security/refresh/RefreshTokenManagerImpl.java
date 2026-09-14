@@ -1,7 +1,7 @@
 package garcias.api.identity.authentication.infrastructure.security.refresh;
 
 import garcias.api.identity.authentication.application.security.RefreshTokenManager;
-import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
+import garcias.api.identity.authentication.domain.repositories.SessionRepository;
 import garcias.api.identity.authentication.infrastructure.security.exceptions.TokenGenerationException;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties;
 import org.springframework.stereotype.Service;
@@ -16,24 +16,27 @@ import java.util.Optional;
 @Service
 public class RefreshTokenManagerImpl implements RefreshTokenManager {
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final SessionRepository sessionRepository;
     private final JwtProperties jwtProperties;
     private final SecureRandom secureRandom;
 
     public RefreshTokenManagerImpl(
-            RefreshTokenRepository refreshTokenRepository,
+            SessionRepository sessionRepository,
             JwtProperties jwtProperties
     ) {
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.sessionRepository = sessionRepository;
         this.jwtProperties = jwtProperties;
         this.secureRandom = new SecureRandom();
     }
 
     @Override
-    public String generate(String userCode) {
+    public String generate(String userCode, String sessionId) {
+
+        String targetSessionId = (sessionId != null && !sessionId.isBlank())
+                ? sessionId
+                : java.util.UUID.randomUUID().toString();
 
         byte[] tokenBytes = new byte[32];
-
         secureRandom.nextBytes(tokenBytes);
 
         String token = Base64.getUrlEncoder()
@@ -42,30 +45,36 @@ public class RefreshTokenManagerImpl implements RefreshTokenManager {
 
         String tokenHash = hash(token);
 
-        refreshTokenRepository.save(
-                tokenHash,
-                userCode,
-                jwtProperties.getRefreshTokenExpiration()
-        );
+        long expiration = jwtProperties.getRefreshTokenExpiration();
+        sessionRepository.createSession(targetSessionId, userCode, expiration);
+        sessionRepository.linkRefreshToken(tokenHash, targetSessionId, expiration);
 
         return token;
     }
 
     @Override
-    public Optional<String> findUserCode(String refreshToken) {
+    public String generate(String userCode) {
+        return generate(userCode, java.util.UUID.randomUUID().toString());
+    }
 
+    @Override
+    public Optional<String> findSessionId(String refreshToken) {
         String tokenHash = hash(refreshToken);
+        return sessionRepository.findSessionIdByRefreshTokenHash(tokenHash);
+    }
 
-        return refreshTokenRepository
-                .findUserCodeByTokenHash(tokenHash);
+    @Override
+    public Optional<String> findUserCode(String refreshToken) {
+        return findSessionId(refreshToken)
+                .flatMap(sessionRepository::findUserCodeBySessionId);
     }
 
     @Override
     public void revoke(String refreshToken) {
-
         String tokenHash = hash(refreshToken);
-
-        refreshTokenRepository.deleteByTokenHash(tokenHash);
+        Optional<String> sessionIdOpt = sessionRepository.findSessionIdByRefreshTokenHash(tokenHash);
+        sessionRepository.revokeRefreshToken(tokenHash);
+        sessionIdOpt.ifPresent(sessionId -> sessionRepository.revokeSession(sessionId, null));
     }
 
     private String hash(String token) {

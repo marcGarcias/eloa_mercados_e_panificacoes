@@ -1,6 +1,7 @@
 package garcias.api.identity.authentication.infrastructure.security.jwt;
 
 import garcias.api.identity.authentication.application.security.AccessTokenManager;
+import garcias.api.identity.authentication.domain.repositories.SessionRepository;
 import garcias.api.identity.authentication.infrastructure.security.CustomAuthenticationEntryPoint;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import jakarta.servlet.FilterChain;
@@ -20,13 +21,16 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AccessTokenManager accessTokenManager;
+    private final SessionRepository sessionRepository;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     public JwtAuthenticationFilter(
             AccessTokenManager accessTokenManager,
+            SessionRepository sessionRepository,
             CustomAuthenticationEntryPoint authenticationEntryPoint
     ) {
         this.accessTokenManager = accessTokenManager;
+        this.sessionRepository = sessionRepository;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
@@ -64,6 +68,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     request,
                     response,
                     new InsufficientAuthenticationException("User account is not active.")
+            );
+            return;
+        }
+
+        String sessionId = accessTokenManager.extractSessionId(token);
+
+        if (sessionId == null || !sessionRepository.isSessionActive(sessionId)) {
+            SecurityContextHolder.clearContext();
+            authenticationEntryPoint.commence(
+                    request,
+                    response,
+                    new InsufficientAuthenticationException("Session is revoked, invalid or expired.")
             );
             return;
         }

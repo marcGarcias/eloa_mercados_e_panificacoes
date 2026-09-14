@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject, OnDestroy } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap, catchError, of, map, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, UserRole } from '../models/user.model';
@@ -19,8 +20,9 @@ export interface BootstrapUserResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private http = inject(HttpClient);
+  private router = inject(Router);
   private readonly apiUrl = (environment?.apiUrl ?? '') + '/api/auth';
 
   private accessToken: string | null = null;
@@ -31,9 +33,15 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   private authInitialized = false;
+  private pingIntervalId: any = null;
+  private readonly PING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutos
 
   constructor() {
 
+  }
+
+  ngOnDestroy(): void {
+    this.stopPingTimer();
   }
 
   get currentUser(): User | null {
@@ -46,6 +54,7 @@ export class AuthService {
         if (response.accessToken) {
           this.setToken(response.accessToken);
           this.authInitialized = true; // Evita refresh redundante no guard
+          this.startPingTimer();
           return this.loadCurrentUser().pipe(
             map(user => {
               if (!user) {
@@ -66,7 +75,9 @@ export class AuthService {
   }
 
   logout(): void {
-    // Chama o backend para invalidar o cookie
+    this.stopPingTimer();
+
+    // Chama o backend para invalidar a sessão e o cookie no Redis
     this.http.post(`${this.apiUrl}/logout`, {}).pipe(
       catchError(() => of(null)) // Ignora erro de rede no logout
     ).subscribe(() => {
@@ -91,14 +102,13 @@ export class AuthService {
   }
 
   loadCurrentUser(): Observable<User | null> {
-    // Rota que será implementada no backend para ler o token e retornar os dados do usuário
     return this.http.get<User>(`${this.apiUrl}/me`).pipe(
       tap(user => this.currentUserSubject.next(user)),
       catchError(() => {
-        // Se der erro (ex: 401 ou rota não existe ainda), limpamos o user e token local
         this.currentUserSubject.next(null);
         this.accessToken = null;
         this.loggedInSubject.next(false);
+        this.stopPingTimer();
         return of(null);
       })
     );
@@ -119,6 +129,7 @@ export class AuthService {
       switchMap(response => {
         if (response.accessToken) {
           this.setToken(response.accessToken);
+          this.startPingTimer();
           return this.loadCurrentUser().pipe(
             map(() => true),
             catchError(() => of(true))
@@ -130,9 +141,49 @@ export class AuthService {
         this.accessToken = null;
         this.loggedInSubject.next(false);
         this.currentUserSubject.next(null);
+        this.stopPingTimer();
         return of(false);
       })
     );
+  }
+
+  pingSession(): Observable<boolean> {
+    if (!this.isLoggedIn()) {
+      this.stopPingTimer();
+      return of(false);
+    }
+
+    return this.http.get(`${this.apiUrl}/ping`, { observe: 'response' }).pipe(
+      map(res => res.status === 204 || res.status === 200),
+      catchError((error: unknown) => {
+        if (error instanceof HttpErrorResponse) {
+          // Sessão revogada / inválida no servidor
+          if (error.status === 401) {
+            this.logout();
+            this.router.navigate(['/login-cms']);
+            return of(false);
+          }
+          // Erros de infraestrutura temporários (500, timeout) -> mantém usuário logado
+          console.warn('[AuthService] Falha temporária no ping de sessão:', error.message);
+          return of(true);
+        }
+        return of(true);
+      })
+    );
+  }
+
+  startPingTimer(): void {
+    this.stopPingTimer();
+    this.pingIntervalId = setInterval(() => {
+      this.pingSession().subscribe();
+    }, this.PING_INTERVAL_MS);
+  }
+
+  stopPingTimer(): void {
+    if (this.pingIntervalId) {
+      clearInterval(this.pingIntervalId);
+      this.pingIntervalId = null;
+    }
   }
 
   private setToken(token: string): void {

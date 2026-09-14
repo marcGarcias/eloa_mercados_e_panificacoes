@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { Router } from '@angular/router';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { AuthService, LoginResponse } from './auth.service';
 import { createMockUser, createMockLoginResponse } from '../../testing';
 import { UserRole } from '../models/user.model';
@@ -9,13 +10,19 @@ import { UserRole } from '../models/user.model';
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
+  let routerMock: { navigate: any };
 
   beforeEach(() => {
+    routerMock = {
+      navigate: vi.fn()
+    };
+
     TestBed.configureTestingModule({
       providers: [
         AuthService,
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        { provide: Router, useValue: routerMock }
       ]
     });
 
@@ -207,6 +214,63 @@ describe('AuthService', () => {
       reqMe.flush('Erro', { status: 500, statusText: 'Server Error' });
 
       expect(status).toBe(true);
+    });
+  });
+
+  describe('pingSession()', () => {
+    it('deve retornar true e manter sessão ativa em resposta 204 do ping', () => {
+      (service as any).setToken('valid-token');
+
+      let pingResult: boolean | undefined;
+      service.pingSession().subscribe(res => (pingResult = res));
+
+      const req = httpMock.expectOne('/api/auth/ping');
+      expect(req.request.method).toBe('GET');
+      req.flush(null, { status: 204, statusText: 'No Content' });
+
+      expect(pingResult).toBe(true);
+      expect(service.isLoggedIn()).toBe(true);
+    });
+
+    it('deve executar logout e redirecionar para /login-cms quando o ping retornar 401 (sessão revogada)', () => {
+      (service as any).setToken('revoked-token');
+
+      let pingResult: boolean | undefined;
+      service.pingSession().subscribe(res => (pingResult = res));
+
+      const req = httpMock.expectOne('/api/auth/ping');
+      req.flush('Sessão revogada', { status: 401, statusText: 'Unauthorized' });
+
+      // O logout chama /api/auth/logout
+      const reqLogout = httpMock.expectOne('/api/auth/logout');
+      reqLogout.flush(null, { status: 204, statusText: 'No Content' });
+
+      expect(pingResult).toBe(false);
+      expect(service.isLoggedIn()).toBe(false);
+      expect(service.getToken()).toBeNull();
+    });
+
+    it('não deve deslogar quando o ping retornar 500 ou erro de rede (resiliência)', () => {
+      (service as any).setToken('active-token');
+
+      let pingResult: boolean | undefined;
+      service.pingSession().subscribe(res => (pingResult = res));
+
+      const req = httpMock.expectOne('/api/auth/ping');
+      req.flush('Internal Server Error', { status: 500, statusText: 'Server Error' });
+
+      expect(pingResult).toBe(true);
+      expect(service.isLoggedIn()).toBe(true);
+      expect(service.getToken()).toBe('active-token');
+      httpMock.expectNone('/api/auth/logout');
+    });
+
+    it('deve parar o timer e retornar false se pingSession for chamado deslogado', () => {
+      let pingResult: boolean | undefined;
+      service.pingSession().subscribe(res => (pingResult = res));
+
+      expect(pingResult).toBe(false);
+      httpMock.expectNone('/api/auth/ping');
     });
   });
 });

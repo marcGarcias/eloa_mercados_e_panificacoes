@@ -69,7 +69,7 @@ public class LogoutController {
             logoutUseCase.executeByToken(refreshToken);
         }
 
-        ResponseCookie clearCookie = ResponseCookie
+        ResponseCookie clearAuthPathCookie = ResponseCookie
                 .from("refresh_token", "")
                 .httpOnly(true)
                 .secure(cookieSecure)
@@ -78,9 +78,22 @@ public class LogoutController {
                 .maxAge(0)
                 .build();
 
+        ResponseCookie clearRootPathCookie = ResponseCookie
+                .from("refresh_token", "")
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
+                .path("/")
+                .maxAge(0)
+                .build();
+
         response.addHeader(
                 HttpHeaders.SET_COOKIE,
-                clearCookie.toString()
+                clearAuthPathCookie.toString()
+        );
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                clearRootPathCookie.toString()
         );
 
         return ResponseEntity.noContent().build();

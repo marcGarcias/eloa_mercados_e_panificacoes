@@ -24,7 +24,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
     }
 
     @Override
-    public String generate(String userCode, String role, String status) {
+    public String generate(String userCode, String role, String status, String sessionId) {
 
         Date issuedAt = new Date();
 
@@ -32,15 +32,26 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
                 issuedAt.getTime() + jwtProperties.getAccessTokenExpiration()
         );
 
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(userCode)
                 .claim("role", role)
                 .claim("status", status)
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(issuedAt)
-                .expiration(expiration)
+                .expiration(expiration);
+
+        if (sessionId != null && !sessionId.isBlank()) {
+            builder.claim("sessionId", sessionId);
+        }
+
+        return builder
                 .signWith(secretKey)
                 .compact();
+    }
+
+    @Override
+    public String generate(String userCode, String role, String status) {
+        return generate(userCode, role, status, null);
     }
 
     @Override
@@ -89,5 +100,16 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("status", String.class);
+    }
+
+    @Override
+    public String extractSessionId(String token) {
+
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("sessionId", String.class);
     }
 }

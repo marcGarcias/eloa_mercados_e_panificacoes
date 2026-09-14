@@ -69,8 +69,8 @@ class LoginServiceTest {
 
         when(userAuthenticationPort.findByUserCode("0001")).thenReturn(Optional.of(user));
         when(passwordHasher.matches("correctPassword", "hashedPass123")).thenReturn(true);
-        when(accessTokenManager.generate("0001", "SUPER_ADMIN", "ACTIVE")).thenReturn("access.jwt.token");
-        when(refreshTokenManager.generate("0001")).thenReturn("refresh.random.token");
+        when(accessTokenManager.generate(eq("0001"), eq("SUPER_ADMIN"), eq("ACTIVE"), anyString())).thenReturn("access.jwt.token");
+        when(refreshTokenManager.generate(eq("0001"), anyString())).thenReturn("refresh.random.token");
 
         LoginResult result = loginService.execute(request);
 

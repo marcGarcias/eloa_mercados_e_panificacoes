@@ -59,14 +59,18 @@ public class LoginService implements LoginUseCase {
 
         eventPublisher.publishEvent(new UserLoggedInEvent(user.userCode()));
 
+        String sessionId = java.util.UUID.randomUUID().toString();
+
         String accessToken = accessTokenManager.generate(
                 user.userCode(),
                 user.role(),
-                user.status()
+                user.status(),
+                sessionId
         );
 
         String refreshToken = refreshTokenManager.generate(
-                user.userCode()
+                user.userCode(),
+                sessionId
         );
 
         return new LoginResult(

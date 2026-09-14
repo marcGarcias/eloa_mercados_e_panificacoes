@@ -1,6 +1,7 @@
 package garcias.api.identity.authentication.infrastructure.security.refresh;
 
 import garcias.api.identity.authentication.domain.repositories.RefreshTokenRepository;
+import garcias.api.identity.authentication.domain.repositories.SessionRepository;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,9 @@ import static org.mockito.Mockito.*;
 class RefreshTokenManagerAndProviderTest {
 
     @Mock
+    private SessionRepository sessionRepository;
+
+    @Mock
     private RefreshTokenRepository refreshTokenRepository;
 
     private JwtProperties jwtProperties;
@@ -33,36 +37,42 @@ class RefreshTokenManagerAndProviderTest {
         jwtProperties = new JwtProperties();
         jwtProperties.setRefreshTokenExpiration(604800L);
 
-        refreshTokenManager = new RefreshTokenManagerImpl(refreshTokenRepository, jwtProperties);
+        refreshTokenManager = new RefreshTokenManagerImpl(sessionRepository, jwtProperties);
         refreshTokenProvider = new RefreshTokenProviderImpl(refreshTokenRepository, jwtProperties);
     }
 
     @Test
-    @DisplayName("RefreshTokenManagerImpl deve gerar token e salvar o hash no repositório")
+    @DisplayName("RefreshTokenManagerImpl deve gerar token e criar sessão no repositório")
     void managerShouldGenerateAndSaveHash() {
-        String token = refreshTokenManager.generate("1001");
+        String token = refreshTokenManager.generate("1001", "sess-1001");
 
         assertThat(token).isNotBlank();
-        verify(refreshTokenRepository).save(anyString(), eq("1001"), eq(604800L));
+        verify(sessionRepository).createSession(eq("sess-1001"), eq("1001"), eq(604800L));
+        verify(sessionRepository).linkRefreshToken(anyString(), eq("sess-1001"), eq(604800L));
     }
 
     @Test
     @DisplayName("RefreshTokenManagerImpl deve buscar userCode pelo token fornecido")
     void managerShouldFindUserCode() {
-        when(refreshTokenRepository.findUserCodeByTokenHash(anyString())).thenReturn(Optional.of("1001"));
+        when(sessionRepository.findSessionIdByRefreshTokenHash(anyString())).thenReturn(Optional.of("sess-1001"));
+        when(sessionRepository.findUserCodeBySessionId("sess-1001")).thenReturn(Optional.of("1001"));
 
         Optional<String> userCode = refreshTokenManager.findUserCode("some-refresh-token");
 
         assertThat(userCode).contains("1001");
-        verify(refreshTokenRepository).findUserCodeByTokenHash(anyString());
+        verify(sessionRepository).findSessionIdByRefreshTokenHash(anyString());
+        verify(sessionRepository).findUserCodeBySessionId("sess-1001");
     }
 
     @Test
-    @DisplayName("RefreshTokenManagerImpl deve revogar token deletando seu hash")
+    @DisplayName("RefreshTokenManagerImpl deve revogar token deletando seu hash e sessão")
     void managerShouldRevokeToken() {
+        when(sessionRepository.findSessionIdByRefreshTokenHash(anyString())).thenReturn(Optional.of("sess-1001"));
+
         refreshTokenManager.revoke("some-refresh-token");
 
-        verify(refreshTokenRepository).deleteByTokenHash(anyString());
+        verify(sessionRepository).revokeRefreshToken(anyString());
+        verify(sessionRepository).revokeSession("sess-1001", null);
     }
 
     @Test

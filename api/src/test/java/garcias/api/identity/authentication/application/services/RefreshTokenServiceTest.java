@@ -53,10 +53,11 @@ class RefreshTokenServiceTest {
                 "ACTIVE"
         );
 
+        when(refreshTokenManager.findSessionId(oldRefreshToken)).thenReturn(Optional.of("sess-456"));
         when(refreshTokenManager.findUserCode(oldRefreshToken)).thenReturn(Optional.of("0001"));
         when(userAuthenticationPort.findByUserCode("0001")).thenReturn(Optional.of(user));
-        when(accessTokenManager.generate("0001", "ADMIN", "ACTIVE")).thenReturn("new.access.token");
-        when(refreshTokenManager.generate("0001")).thenReturn("new.refresh.token");
+        when(accessTokenManager.generate("0001", "ADMIN", "ACTIVE", "sess-456")).thenReturn("new.access.token");
+        when(refreshTokenManager.generate("0001", "sess-456")).thenReturn("new.refresh.token");
 
         LoginResult result = refreshTokenService.execute(oldRefreshToken);
 
@@ -70,7 +71,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should throw InvalidCredentialsException when refresh token does not exist or expired in Redis")
     void shouldThrowExceptionWhenRefreshTokenNotFound() {
-        when(refreshTokenManager.findUserCode("invalid.token")).thenReturn(Optional.empty());
+        when(refreshTokenManager.findSessionId("invalid.token")).thenReturn(Optional.empty());
 
         assertThrows(InvalidCredentialsException.class, () -> refreshTokenService.execute("invalid.token"));
         verify(refreshTokenManager, never()).revoke(anyString());
@@ -87,6 +88,7 @@ class RefreshTokenServiceTest {
                 "BLOCKED"
         );
 
+        when(refreshTokenManager.findSessionId("valid.token")).thenReturn(Optional.of("sess-1"));
         when(refreshTokenManager.findUserCode("valid.token")).thenReturn(Optional.of("0001"));
         when(userAuthenticationPort.findByUserCode("0001")).thenReturn(Optional.of(user));
 

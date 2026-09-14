@@ -2,6 +2,7 @@ package garcias.api.content.infrastructure.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import garcias.api.content.domain.entities.SiteContent;
 import garcias.api.content.domain.valueobjects.Faq;
@@ -19,11 +20,30 @@ public class SiteContentMapper {
     }
 
     public SiteContent toDomain(SiteContentJpaEntity jpaEntity) {
-        if (jpaEntity == null) return null;
+        if (jpaEntity == null || jpaEntity.getData() == null || jpaEntity.getData().trim().isEmpty()) {
+            return null;
+        }
         try {
-            SiteContent content = objectMapper.readValue(jpaEntity.getData(), SiteContent.class);
-            if (content != null && content.faq() == null) {
+            JsonNode rootNode = objectMapper.readTree(jpaEntity.getData());
+            JsonNode targetNode = rootNode;
 
+            if (rootNode.isArray()) {
+                targetNode = null;
+                for (JsonNode element : rootNode) {
+                    if (element.isObject()) {
+                        targetNode = element;
+                        break;
+                    }
+                }
+                if (targetNode == null) {
+                    return null;
+                }
+            } else if (!rootNode.isObject()) {
+                return null;
+            }
+
+            SiteContent content = objectMapper.treeToValue(targetNode, SiteContent.class);
+            if (content != null && content.faq() == null) {
                 return new SiteContent(
                         content.banner(),
                         content.diferenciais(),
@@ -52,4 +72,3 @@ public class SiteContentMapper {
         }
     }
 }
-

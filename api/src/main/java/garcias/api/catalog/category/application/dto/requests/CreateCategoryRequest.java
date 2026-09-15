@@ -8,8 +8,8 @@ public record CreateCategoryRequest(
         @NotBlank(message = "Category name is required")
         @Size(
                 min = 2,
-                max = 16,
-                message = "Category name must contain between 2 and 16 characters"
+                max = 22,
+                message = "Category name must contain between 2 and 22 characters"
         )
         String name
 

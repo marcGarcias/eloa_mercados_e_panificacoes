@@ -313,7 +313,7 @@ export class ModalProdutoComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     return this.fb.group({
-      name:       ['', [Validators.required, Validators.minLength(2), Validators.maxLength(16)]],
+      name:       ['', [Validators.required, Validators.minLength(2), Validators.maxLength(32)]],
       categoryId: [null, [Validators.required, (ctrl: AbstractControl) => (Number(ctrl.value) > 0 ? null : { required: true })]],
       weight:     ['', [Validators.required, weightValidator]],
       // Campos exclusivos do modo edicao

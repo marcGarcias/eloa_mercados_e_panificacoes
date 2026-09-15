@@ -49,9 +49,9 @@ class ProductNameTest {
     }
 
     @Test
-    @DisplayName("Deve lançar AttributeTooLongException quando valor exceder 16 caracteres")
-    void shouldThrowWhenValueExceeds16Characters() {
-        String longName = "p".repeat(17);
+    @DisplayName("Deve lançar AttributeTooLongException quando valor exceder 32 caracteres")
+    void shouldThrowWhenValueExceeds32Characters() {
+        String longName = "p".repeat(33);
 
         assertThatThrownBy(() -> new ProductName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
@@ -59,11 +59,11 @@ class ProductNameTest {
     }
 
     @Test
-    @DisplayName("Deve aceitar nome com exatamente 16 caracteres")
-    void shouldAcceptNameWithExactly16Characters() {
-        String exactName = "p".repeat(16);
+    @DisplayName("Deve aceitar nome com exatamente 32 caracteres")
+    void shouldAcceptNameWithExactly32Characters() {
+        String exactName = "p".repeat(32);
         ProductName name = new ProductName(exactName);
 
-        assertThat(name.value()).hasSize(16);
+        assertThat(name.value()).hasSize(32);
     }
 }

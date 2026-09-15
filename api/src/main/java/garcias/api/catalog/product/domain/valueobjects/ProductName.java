@@ -21,8 +21,8 @@ public record ProductName(String value) {
             throw new AttributeTooShortException("Product name", "2");
         }
 
-        if (value.length() > 16) {
-            throw new AttributeTooLongException("Product name", "16");
+        if (value.length() > 32) {
+            throw new AttributeTooLongException("Product name", "32");
         }
     }
 

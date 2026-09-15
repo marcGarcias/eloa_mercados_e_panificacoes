@@ -78,6 +78,21 @@ describe('ModalProdutoComponent', () => {
     expect(component.form.get('name')?.value).toBe('Pão de Batata');
   });
 
+  it('deve validar limites de tamanho do nome do produto (2 a 32 caracteres)', () => {
+    const nameControl = component.form.get('name');
+
+    nameControl?.setValue('A');
+    expect(nameControl?.valid).toBeFalsy();
+    expect(component.getFieldError('name')).toContain('Minimo de 2 caracteres');
+
+    nameControl?.setValue('A'.repeat(33));
+    expect(nameControl?.valid).toBeFalsy();
+    expect(component.getFieldError('name')).toContain('Maximo de 32 caracteres');
+
+    nameControl?.setValue('A'.repeat(32));
+    expect(nameControl?.valid).toBeTruthy();
+  });
+
   it('deve validar formato e tamanho de arquivo de foto suportando WebP, PNG e JPEG', async () => {
     // Arquivo não suportado (ex: PDF ou GIF)
     const invalidFile = new File(['conteudo'], 'documento.pdf', { type: 'application/pdf' });

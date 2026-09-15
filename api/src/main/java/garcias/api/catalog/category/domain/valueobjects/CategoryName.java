@@ -20,8 +20,8 @@ public record CategoryName(String value) {
             throw new AttributeTooShortException("Category name", "2");
         }
 
-        if (value.length() > 16) {
-            throw new AttributeTooLongException("Category name", "16");
+        if (value.length() > 22) {
+            throw new AttributeTooLongException("Category name", "22");
         }
     }
 }

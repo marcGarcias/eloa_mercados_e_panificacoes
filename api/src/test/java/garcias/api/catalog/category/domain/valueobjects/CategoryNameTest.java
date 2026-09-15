@@ -47,9 +47,9 @@ class CategoryNameTest {
     }
 
     @Test
-    @DisplayName("Deve lançar AttributeTooLongException quando nome ultrapassar 16 caracteres")
-    void shouldThrowWhenValueExceeds16Characters() {
-        String longName = "a".repeat(17);
+    @DisplayName("Deve lançar AttributeTooLongException quando nome ultrapassar 22 caracteres")
+    void shouldThrowWhenValueExceeds22Characters() {
+        String longName = "a".repeat(23);
 
         assertThatThrownBy(() -> new CategoryName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
@@ -57,11 +57,11 @@ class CategoryNameTest {
     }
 
     @Test
-    @DisplayName("Deve aceitar nome no limite de 16 caracteres")
-    void shouldAcceptNameWithExactly16Characters() {
-        String exactName = "a".repeat(16);
+    @DisplayName("Deve aceitar nome no limite de 22 caracteres")
+    void shouldAcceptNameWithExactly22Characters() {
+        String exactName = "a".repeat(22);
         CategoryName name = new CategoryName(exactName);
 
-        assertThat(name.value()).hasSize(16);
+        assertThat(name.value()).hasSize(22);
     }
 }

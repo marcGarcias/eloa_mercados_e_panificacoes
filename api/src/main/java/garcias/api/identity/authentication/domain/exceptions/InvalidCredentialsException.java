@@ -6,6 +6,6 @@ public class InvalidCredentialsException
         extends UnauthorizedException {
 
     public InvalidCredentialsException() {
-        super("Invalid credentials");
+        super("Credenciais inválidas. Verifique seu código de usuário e senha.");
     }
 }

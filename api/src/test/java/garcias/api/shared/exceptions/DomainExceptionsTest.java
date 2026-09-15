@@ -12,63 +12,63 @@ class DomainExceptionsTest {
     @DisplayName("Deve instanciar AttributeCannotBeEmptyException")
     void shouldInstantiateAttributeCannotBeEmptyException() {
         AttributeCannotBeEmptyException ex = new AttributeCannotBeEmptyException("Name");
-        assertThat(ex.getMessage()).isEqualTo("Name cannot be empty");
+        assertThat(ex.getMessage()).isEqualTo("Name não pode ficar em branco.");
     }
 
     @Test
     @DisplayName("Deve instanciar AttributeMustBeGreaterThanZeroException")
     void shouldInstantiateAttributeMustBeGreaterThanZeroException() {
         AttributeMustBeGreaterThanZeroException ex = new AttributeMustBeGreaterThanZeroException("Weight", -5);
-        assertThat(ex.getMessage()).isEqualTo("Weight must be greater than zero. Received: -5");
+        assertThat(ex.getMessage()).isEqualTo("Weight deve ser maior que zero.");
     }
 
     @Test
     @DisplayName("Deve instanciar AttributeTooLongException")
     void shouldInstantiateAttributeTooLongException() {
         AttributeTooLongException ex = new AttributeTooLongException("Description", "50");
-        assertThat(ex.getMessage()).isEqualTo("Description cannot exceed 50 characters.");
+        assertThat(ex.getMessage()).isEqualTo("Description não pode exceder 50 caracteres.");
     }
 
     @Test
     @DisplayName("Deve instanciar ValueObjectCannotBeNullException")
     void shouldInstantiateValueObjectCannotBeNullException() {
         ValueObjectCannotBeNullException ex = new ValueObjectCannotBeNullException("ProductVO");
-        assertThat(ex.getMessage()).isEqualTo("ProductVO cannot be null.");
+        assertThat(ex.getMessage()).isEqualTo("ProductVO não pode ser nulo.");
     }
 
     @Test
     @DisplayName("Deve instanciar SuperAdminAlreadyExistsException")
     void shouldInstantiateSuperAdminAlreadyExistsException() {
         SuperAdminAlreadyExistsException ex = new SuperAdminAlreadyExistsException();
-        assertThat(ex.getMessage()).contains("SUPER_ADMIN user");
+        assertThat(ex.getMessage()).contains("Proprietário");
     }
 
     @Test
     @DisplayName("Deve instanciar SuperAdminCreationNotAllowedException")
     void shouldInstantiateSuperAdminCreationNotAllowedException() {
         SuperAdminCreationNotAllowedException ex = new SuperAdminCreationNotAllowedException();
-        assertThat(ex.getMessage()).contains("Creating a SUPER_ADMIN user is not allowed");
+        assertThat(ex.getMessage()).contains("Proprietário");
     }
 
     @Test
     @DisplayName("Deve instanciar SuperAdminModificationNotAllowedException")
     void shouldInstantiateSuperAdminModificationNotAllowedException() {
         SuperAdminModificationNotAllowedException ex = new SuperAdminModificationNotAllowedException();
-        assertThat(ex.getMessage()).contains("Modifying the role to/from SUPER_ADMIN is not allowed");
+        assertThat(ex.getMessage()).contains("Proprietário");
     }
 
     @Test
     @DisplayName("Deve instanciar ObjectAlreadyExistsException com chave e valor")
     void shouldInstantiateObjectAlreadyExistsException() {
         ObjectAlreadyExistsException ex = new ObjectAlreadyExistsException("Category", "Padaria");
-        assertThat(ex.getMessage()).isEqualTo("Category already exists: Padaria");
+        assertThat(ex.getMessage()).isEqualTo("Já existe um registro cadastrado com o valor informado.");
     }
 
     @Test
     @DisplayName("Deve instanciar ObjectNotFoundException")
     void shouldInstantiateObjectNotFoundException() {
         ObjectNotFoundException ex = new ObjectNotFoundException(42L);
-        assertThat(ex.getMessage()).isEqualTo("Object with id 42 not found.");
+        assertThat(ex.getMessage()).isEqualTo("Registro não encontrado.");
     }
 
     @Test

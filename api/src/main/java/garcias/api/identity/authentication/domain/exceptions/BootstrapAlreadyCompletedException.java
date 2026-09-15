@@ -6,6 +6,6 @@ public class BootstrapAlreadyCompletedException
         extends ConflictException {
 
     public BootstrapAlreadyCompletedException() {
-        super("Initial user has already been created.");
+        super("O usuário proprietário inicial já foi cadastrado.");
     }
 }

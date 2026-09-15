@@ -12,7 +12,7 @@ class AuthenticationExceptionsTest {
     @DisplayName("Deve instanciar InvalidCredentialsException com mensagem padrão")
     void shouldInstantiateInvalidCredentialsException() {
         InvalidCredentialsException ex = new InvalidCredentialsException();
-        assertThat(ex.getMessage()).isEqualTo("Invalid credentials");
+        assertThat(ex.getMessage()).contains("Credenciais inválidas");
     }
 
     @Test
@@ -33,6 +33,6 @@ class AuthenticationExceptionsTest {
     @DisplayName("Deve instanciar MissingRefreshTokenException com mensagem padrão")
     void shouldInstantiateMissingRefreshTokenException() {
         MissingRefreshTokenException ex = new MissingRefreshTokenException();
-        assertThat(ex.getMessage()).isEqualTo("Refresh token is missing.");
+        assertThat(ex.getMessage()).isEqualTo("Token de atualização não informado.");
     }
 }

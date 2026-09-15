@@ -5,5 +5,10 @@ import garcias.api.shared.exceptions.ConflictException;
 
 public class CategoryHasProductsException extends ConflictException {
     public CategoryHasProductsException(CategoryId id) {
-        super("Cannot delete category with id " + id.value() + " because it contains products.");}
+        super("Não é possível excluir esta categoria porque existem produtos vinculados a ela. Exclua ou mova os produtos antes de remover a categoria.");
+    }
+
+    public CategoryHasProductsException() {
+        super("Não é possível excluir esta categoria porque existem produtos vinculados a ela. Exclua ou mova os produtos antes de remover a categoria.");
+    }
 }

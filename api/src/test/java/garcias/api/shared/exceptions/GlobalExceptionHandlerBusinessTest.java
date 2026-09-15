@@ -34,7 +34,7 @@ class GlobalExceptionHandlerBusinessTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().status()).isEqualTo(404);
-        assertThat(response.getBody().message()).contains("Object with id 1 not found");
+        assertThat(response.getBody().message()).contains("Registro não encontrado.");
         assertThat(response.getBody().path()).isEqualTo("/api/test");
     }
 
@@ -47,7 +47,7 @@ class GlobalExceptionHandlerBusinessTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().status()).isEqualTo(409);
-        assertThat(response.getBody().message()).contains("Category already exists: Padaria");
+        assertThat(response.getBody().message()).contains("Já existe um registro cadastrado");
     }
 
     @Test
@@ -59,7 +59,7 @@ class GlobalExceptionHandlerBusinessTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().status()).isEqualTo(400);
-        assertThat(response.getBody().message()).isEqualTo("Product name cannot be empty");
+        assertThat(response.getBody().message()).isEqualTo("Product name não pode ficar em branco.");
     }
 
     @Test

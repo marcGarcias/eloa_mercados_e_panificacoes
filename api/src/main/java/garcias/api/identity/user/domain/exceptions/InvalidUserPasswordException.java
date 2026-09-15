@@ -4,7 +4,7 @@ import garcias.api.shared.exceptions.DomainException;
 
 public class InvalidUserPasswordException extends DomainException {
     public InvalidUserPasswordException() {
-        super("New password cannot be the same as current password");
+        super("A nova senha não pode ser igual à senha atual.");
     }
 }
 

@@ -4,7 +4,7 @@ import garcias.api.shared.exceptions.UnauthorizedException;
 
 public class MissingRefreshTokenException extends UnauthorizedException {
     public MissingRefreshTokenException() {
-        super("Refresh token is missing.");
+        super("Token de atualização não informado.");
     }
 }
 

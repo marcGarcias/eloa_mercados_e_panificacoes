@@ -4,7 +4,7 @@ import garcias.api.shared.exceptions.NotFoundException;
 
 public class UserNotFoundException extends NotFoundException {
     public UserNotFoundException() {
-        super("User not found");
+        super("Usuário não encontrado.");
     }
 }
 

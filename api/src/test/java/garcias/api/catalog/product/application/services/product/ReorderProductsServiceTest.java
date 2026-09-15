@@ -83,7 +83,7 @@ class ReorderProductsServiceTest {
 
         assertThatThrownBy(() -> reorderProductsService.execute(request))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessageContaining("999");
+                .hasMessageContaining("Registro não encontrado.");
 
         verify(productRepository, never()).reorderAll(any());
     }

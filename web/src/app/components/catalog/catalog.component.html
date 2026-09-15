@@ -110,7 +110,14 @@
       <div class="grid">
         <div class="card" *ngFor="let produto of products; let i = index" [id]="'catalog-' + getProductSlug(produto, i)">
           <div class="photo">
-            <img *ngIf="produto.imagem" [src]="produto.imagem" [alt]="produto.nome" loading="lazy">
+            <img
+              *ngIf="produto.imagem"
+              [src]="produto.imagem"
+              [attr.srcset]="produto.imagemSrcSet || null"
+              sizes="(max-width: 640px) 200px, (max-width: 1024px) 500px, 1080px"
+              [alt]="produto.nome"
+              loading="lazy"
+            >
             <span class="no-image" *ngIf="!produto.imagem">
               <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" class="no-image-icon">
             </span>

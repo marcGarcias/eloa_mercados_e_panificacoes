@@ -4,6 +4,7 @@ import garcias.api.catalog.product.application.storage.ImageStorage;
 import garcias.api.catalog.product.domain.exceptions.ImageNotFoundException;
 import garcias.api.catalog.product.infrastructure.exceptions.ImageStorageException;
 import garcias.api.shared.exceptions.InvalidImageException;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,13 @@ import java.util.UUID;
 @Component
 public class ImageStorageImpl implements ImageStorage {
 
-    private static final long MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+    private static final long MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
     private static final int MAX_WIDTH = 3840;
     private static final int MAX_HEIGHT = 2160;
+
+    private static final int LARGE_DIMENSION = 1080;
+    private static final int MEDIUM_DIMENSION = 500;
+    private static final int SMALL_DIMENSION = 200;
 
     private final Path root;
 
@@ -46,7 +51,7 @@ public class ImageStorageImpl implements ImageStorage {
         }
 
         if (file.getSize() > MAX_FILE_SIZE_BYTES) {
-            throw new InvalidImageException("O tamanho da imagem excede o limite máximo de 5MB.");
+            throw new InvalidImageException("A imagem não pode ultrapassar o limite máximo de 10MB.");
         }
 
         try {
@@ -54,19 +59,51 @@ public class ImageStorageImpl implements ImageStorage {
 
             BufferedImage bufferedImage = decodeAndValidateImage(file);
 
-            String filename = UUID.randomUUID() + ".webp";
-            Path destination = root.resolve(filename).normalize().toAbsolutePath();
+            String uuid = UUID.randomUUID().toString();
+            String baseFilename = uuid + ".webp";
+            String lgFilename = uuid + "-lg.webp";
+            String mdFilename = uuid + "-md.webp";
+            String smFilename = uuid + "-sm.webp";
 
-            if (!destination.startsWith(root)) {
+            Path baseDestination = root.resolve(baseFilename).normalize().toAbsolutePath();
+            Path lgDestination = root.resolve(lgFilename).normalize().toAbsolutePath();
+            Path mdDestination = root.resolve(mdFilename).normalize().toAbsolutePath();
+            Path smDestination = root.resolve(smFilename).normalize().toAbsolutePath();
+
+            if (!baseDestination.startsWith(root) || !lgDestination.startsWith(root)
+                    || !mdDestination.startsWith(root) || !smDestination.startsWith(root)) {
                 throw new ImageStorageException("Caminho de destino inválido.", null);
             }
 
-            boolean written = ImageIO.write(bufferedImage, "webp", destination.toFile());
-            if (!written) {
-                throw new ImageStorageException("Falha ao codificar a imagem para o formato WebP.", null);
-            }
+            // Geração de Variante Large (máx 1080x1080, qualidade 0.82)
+            Thumbnails.of(bufferedImage)
+                    .size(LARGE_DIMENSION, LARGE_DIMENSION)
+                    .outputFormat("webp")
+                    .outputQuality(0.82f)
+                    .toFile(lgDestination.toFile());
 
-            return "/uploads/products/" + filename;
+            // Geração de Variante Medium (máx 500x500, qualidade 0.80)
+            Thumbnails.of(bufferedImage)
+                    .size(MEDIUM_DIMENSION, MEDIUM_DIMENSION)
+                    .outputFormat("webp")
+                    .outputQuality(0.80f)
+                    .toFile(mdDestination.toFile());
+
+            // Geração de Variante Small (máx 200x200, qualidade 0.78)
+            Thumbnails.of(bufferedImage)
+                    .size(SMALL_DIMENSION, SMALL_DIMENSION)
+                    .outputFormat("webp")
+                    .outputQuality(0.78f)
+                    .toFile(smDestination.toFile());
+
+            // Salva também o nome base para consistência canônica
+            Thumbnails.of(bufferedImage)
+                    .size(LARGE_DIMENSION, LARGE_DIMENSION)
+                    .outputFormat("webp")
+                    .outputQuality(0.82f)
+                    .toFile(baseDestination.toFile());
+
+            return "/uploads/products/" + baseFilename;
 
         } catch (InvalidImageException exception) {
             throw exception;
@@ -126,21 +163,30 @@ public class ImageStorageImpl implements ImageStorage {
         }
 
         try {
-            String cleanPath = path.startsWith("/") ? path.substring(1) : path;
-            Path file = Paths.get(cleanPath).normalize().toAbsolutePath();
-
-            Path normalizedRoot = root.normalize().toAbsolutePath();
-            if (!file.startsWith(normalizedRoot)) {
+            String filename = path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
+            if (filename.contains("\\")) {
+                filename = filename.substring(filename.lastIndexOf('\\') + 1);
+            }
+            if (filename.isBlank() || filename.contains("..")) {
                 return;
             }
 
-            if (Files.exists(file)) {
-                Path realFile = file.toRealPath();
-                Path realRoot = normalizedRoot.toRealPath();
-                if (!realFile.startsWith(realRoot)) {
-                    return;
+            Path normalizedRoot = root.normalize().toAbsolutePath();
+            String rawName = filename.replaceFirst("-(lg|md|sm)\\.webp$", "").replaceFirst("\\.webp$", "");
+
+            // Remove o arquivo base e todas as variantes correspondentes
+            String[] variants = new String[] {
+                    rawName + ".webp",
+                    rawName + "-lg.webp",
+                    rawName + "-md.webp",
+                    rawName + "-sm.webp"
+            };
+
+            for (String variant : variants) {
+                Path variantFile = normalizedRoot.resolve(variant).normalize().toAbsolutePath();
+                if (variantFile.startsWith(normalizedRoot) && Files.exists(variantFile)) {
+                    Files.deleteIfExists(variantFile.toRealPath());
                 }
-                Files.deleteIfExists(realFile);
             }
         } catch (IOException exception) {
             throw new ImageStorageException("Could not delete image", exception);
@@ -161,8 +207,19 @@ public class ImageStorageImpl implements ImageStorage {
                 throw new ImageNotFoundException();
             }
 
+            // Fallback gracioso: se a variante específica solicitada não existir, tenta o arquivo base ou variante lg
             if (!Files.exists(file)) {
-                throw new ImageNotFoundException();
+                String rawName = filename.replaceFirst("-(lg|md|sm)\\.webp$", "").replaceFirst("\\.webp$", "");
+                Path fallbackBase = root.resolve(rawName + ".webp").normalize().toAbsolutePath();
+                Path fallbackLg = root.resolve(rawName + "-lg.webp").normalize().toAbsolutePath();
+
+                if (fallbackBase.startsWith(normalizedRoot) && Files.exists(fallbackBase)) {
+                    file = fallbackBase;
+                } else if (fallbackLg.startsWith(normalizedRoot) && Files.exists(fallbackLg)) {
+                    file = fallbackLg;
+                } else {
+                    throw new ImageNotFoundException();
+                }
             }
 
             Path realFile = file.toRealPath();

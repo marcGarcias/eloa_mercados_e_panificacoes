@@ -5,6 +5,7 @@ export interface Product {
   peso: string;
   status?: 'ativo' | 'inativo';
   imagem: string | null;
+  imagemSrcSet?: string | null;
   order?: number;
 }
 

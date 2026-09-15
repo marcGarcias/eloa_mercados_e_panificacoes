@@ -22,6 +22,11 @@ import {
 import { ProductService } from '../../services/product.service';
 import { CategoryAdminService } from '../../services/category-admin.service';
 import { ToastService } from '../../services/toast.service';
+import {
+  validateProductImage,
+  compressAndConvertToWebp,
+  formatBytes,
+} from '../../core/utils/image-compressor.util';
 import { finalize, Subscription } from 'rxjs';
 
 @Component({
@@ -50,6 +55,8 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
   photoPreviewUrl: string | null = null;
 
   photoError: string | null = null;
+
+  isCompressing: boolean = false;
 
   isSubmitting: boolean = false;
 
@@ -99,7 +106,7 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     this.subs.unsubscribe();
   }
 
-  onPhotoChange(event: Event): void {
+  async onPhotoChange(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     this.photoError = null;
@@ -108,37 +115,40 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
 
     if (!file) return;
 
-    const isWebp =
-      file.type === 'image/webp' ||
-      file.name.toLowerCase().endsWith('.webp');
-
-    if (!isWebp) {
-      this.photoError = 'A imagem deve estar no formato WebP.';
+    const validation = validateProductImage(file);
+    if (!validation.valid) {
+      this.photoError = validation.error || 'Arquivo de imagem inválido.';
       this.cdr.markForCheck();
       return;
     }
 
-    const MAX_SIZE_MB = 10;
-    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
-    if (file.size > MAX_SIZE_BYTES) {
-      this.photoError = `A imagem não pode ultrapassar ${MAX_SIZE_MB}MB. Tamanho selecionado: ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
-      this.cdr.markForCheck();
-      return;
-    }
+    this.isCompressing = true;
+    this.cdr.markForCheck();
 
-    this.selectedPhoto = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.photoPreviewUrl = e.target?.result as string;
+    try {
+      const result = await compressAndConvertToWebp(file, 1080, 1080, 0.82);
+      this.selectedPhoto = result.file;
+      this.photoPreviewUrl = result.previewUrl;
+    } catch (err: unknown) {
+      console.warn('[ModalProduto] Erro ao comprimir imagem no navegador, utilizando original validado:', err);
+      this.selectedPhoto = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.photoPreviewUrl = e.target?.result as string;
+        this.cdr.markForCheck();
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      this.isCompressing = false;
       this.cdr.markForCheck();
-    };
-    reader.readAsDataURL(file);
+    }
   }
 
   clearPhoto(): void {
     this.selectedPhoto = null;
     this.photoPreviewUrl = this.isEditMode ? (this.product?.photo ?? null) : null;
     this.photoError = null;
+    this.isCompressing = false;
     this.cdr.markForCheck();
   }
 
@@ -276,10 +286,11 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
   }
 
   private resetModal(): void {
-    this.selectedPhoto   = null;
-    this.photoPreviewUrl = null;
-    this.photoError      = null;
-    this.isSubmitting    = false;
+    this.selectedPhoto    = null;
+    this.photoPreviewUrl  = null;
+    this.photoError       = null;
+    this.isCompressing    = false;
+    this.isSubmitting     = false;
 
     if (this.isEditMode && this.product) {
       this.form.patchValue({

@@ -40,6 +40,7 @@ describe('CatalogComponent (Admin)', () => {
     mockProductService = {
       searchAdmin: vi.fn().mockReturnValue(of(mockProductResponse)),
       getProductImageUrl: vi.fn().mockImplementation((url: string | null) => url || '/placeholder.webp'),
+      getProductImageSrcSet: vi.fn().mockImplementation((url: string | null) => url ? 'srcset' : null),
       deleteProducts: vi.fn().mockReturnValue(of(null)),
       updateOrder: vi.fn().mockReturnValue(of(null))
     };

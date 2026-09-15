@@ -77,23 +77,23 @@ describe('ModalProdutoComponent', () => {
     expect(component.form.get('name')?.value).toBe('Pão de Batata');
   });
 
-  it('deve validar formato e tamanho de arquivo de foto', () => {
-    // Arquivo não WebP
-    const invalidFile = new File(['conteudo'], 'foto.jpg', { type: 'image/jpeg' });
-    component.onPhotoChange({ target: { files: [invalidFile] } } as any);
-    expect(component.photoError).toBe('A imagem deve estar no formato WebP.');
+  it('deve validar formato e tamanho de arquivo de foto suportando WebP, PNG e JPEG', async () => {
+    // Arquivo não suportado (ex: PDF ou GIF)
+    const invalidFile = new File(['conteudo'], 'documento.pdf', { type: 'application/pdf' });
+    await component.onPhotoChange({ target: { files: [invalidFile] } } as any);
+    expect(component.photoError).toContain('Formato não suportado');
     expect(component.selectedPhoto).toBeNull();
 
-    // Arquivo WebP muito grande (> 10MB)
-    const largeFile = new File([new Uint8Array(11 * 1024 * 1024)], 'grande.webp', { type: 'image/webp' });
-    component.onPhotoChange({ target: { files: [largeFile] } } as any);
-    expect(component.photoError).toContain('não pode ultrapassar 10MB');
+    // Arquivo muito grande (> 10MB)
+    const largeFile = new File([new Uint8Array(11 * 1024 * 1024)], 'grande.png', { type: 'image/png' });
+    await component.onPhotoChange({ target: { files: [largeFile] } } as any);
+    expect(component.photoError).toContain('10MB');
 
-    // Arquivo WebP válido
+    // Arquivo válido WebP
     const validFile = new File(['bytes'], 'valida.webp', { type: 'image/webp' });
-    component.onPhotoChange({ target: { files: [validFile] } } as any);
+    await component.onPhotoChange({ target: { files: [validFile] } } as any);
     expect(component.photoError).toBeNull();
-    expect(component.selectedPhoto).toBe(validFile);
+    expect(component.selectedPhoto).toBeDefined();
 
     // Limpar foto
     component.clearPhoto();

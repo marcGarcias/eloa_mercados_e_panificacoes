@@ -114,7 +114,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
           nome: p.name,
           categoria: p.categoryName,
           peso: p.weight ? `${p.weight.toString().replace('.', ',')} kg` : '',
-          imagem: this.productService.getProductImageUrl(p.photoUrl),
+          imagem: this.productService.getProductImageUrl(p.photoUrl, 'md') || this.productService.getProductImageUrl(p.photoUrl),
+          imagemSrcSet: this.productService.getProductImageSrcSet(p.photoUrl),
           order: Number(p.position)
         }));
         this.seoService.updateCatalogStructuredData(this.products, this.categories);

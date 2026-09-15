@@ -34,6 +34,7 @@ describe('CatalogComponent (Public)', () => {
     productServiceMock = {
       getPublicCategories: vi.fn().mockReturnValue(of(['Padaria', 'Confeitaria'])),
       getProductImageUrl: vi.fn().mockImplementation((url: string | null) => url || '/placeholder.webp'),
+      getProductImageSrcSet: vi.fn().mockImplementation((url: string | null) => url ? `${url} 500w` : null),
       searchPublic: vi.fn().mockReturnValue(of({
         content: [
           { name: 'Pão Francês', categoryName: 'Padaria', weight: 0.5, photoUrl: 'pao.webp', position: 1 },

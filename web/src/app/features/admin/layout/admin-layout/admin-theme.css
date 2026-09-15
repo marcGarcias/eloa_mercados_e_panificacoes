@@ -456,6 +456,16 @@ body.admin-layout {
             font-size: 12px;
             color: var(--gray);
             font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-weight .weight-icon {
+            width: 13px;
+            height: 13px;
+            color: var(--tan, #BF9B79);
+            flex-shrink: 0;
         }
 
         .card-actions {

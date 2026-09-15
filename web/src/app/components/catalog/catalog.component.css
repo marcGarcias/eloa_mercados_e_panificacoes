@@ -508,12 +508,28 @@
   font-size: 12px;
   font-weight: 600;
   color: #55483D;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.weight-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--primary, #A2422C);
+  flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
   .weight {
     margin-bottom: 16px;
     font-size: 14px;
+    gap: 6px;
+  }
+
+  .weight-icon {
+    width: 16px;
+    height: 16px;
   }
 }
 

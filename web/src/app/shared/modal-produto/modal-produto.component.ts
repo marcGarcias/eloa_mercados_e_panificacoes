@@ -58,12 +58,6 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
 
   isCompressing: boolean = false;
 
-  compressionStats: {
-    originalSize: string;
-    compressedSize: string;
-    savedPercentage: number;
-  } | null = null;
-
   isSubmitting: boolean = false;
 
   readonly ProductStatus = ProductStatus;
@@ -118,7 +112,6 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     this.photoError = null;
     this.selectedPhoto = null;
     this.photoPreviewUrl = null;
-    this.compressionStats = null;
 
     if (!file) return;
 
@@ -136,11 +129,6 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
       const result = await compressAndConvertToWebp(file, 1080, 1080, 0.82);
       this.selectedPhoto = result.file;
       this.photoPreviewUrl = result.previewUrl;
-      this.compressionStats = {
-        originalSize: formatBytes(result.originalSizeBytes),
-        compressedSize: formatBytes(result.compressedSizeBytes),
-        savedPercentage: result.savedPercentage,
-      };
     } catch (err: unknown) {
       console.warn('[ModalProduto] Erro ao comprimir imagem no navegador, utilizando original validado:', err);
       this.selectedPhoto = file;
@@ -160,7 +148,6 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     this.selectedPhoto = null;
     this.photoPreviewUrl = this.isEditMode ? (this.product?.photo ?? null) : null;
     this.photoError = null;
-    this.compressionStats = null;
     this.isCompressing = false;
     this.cdr.markForCheck();
   }
@@ -302,7 +289,6 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     this.selectedPhoto    = null;
     this.photoPreviewUrl  = null;
     this.photoError       = null;
-    this.compressionStats = null;
     this.isCompressing    = false;
     this.isSubmitting     = false;
 

@@ -122,7 +122,7 @@
             />
 
             <span *ngIf="isCompressing" class="compressing-text">
-              <span class="inline-spinner"></span> Otimizando imagem...
+              <span class="inline-spinner"></span> Carregando imagem...
             </span>
             <span *ngIf="!isCompressing && selectedPhoto" class="photo-filename">{{ selectedPhoto.name }}</span>
             <span *ngIf="!isCompressing && !selectedPhoto && !photoPreviewUrl" class="photo-filename">Nenhum arquivo selecionado</span>
@@ -140,17 +140,6 @@
               </svg>
             </button>
           </div>
-        </div>
-
-        <div class="compression-success-badge" *ngIf="compressionStats && !isCompressing">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-          <span>
-            Imagem otimizada: <strong>{{ compressionStats.originalSize }}</strong> &rarr; <strong>{{ compressionStats.compressedSize }}</strong>
-            <span *ngIf="compressionStats.savedPercentage > 0" class="badge-saving">(-{{ compressionStats.savedPercentage }}%)</span>
-          </span>
         </div>
 
         <span class="field-error" *ngIf="photoError">{{ photoError }}</span>

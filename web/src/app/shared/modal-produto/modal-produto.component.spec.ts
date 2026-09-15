@@ -99,7 +99,6 @@ describe('ModalProdutoComponent', () => {
     component.clearPhoto();
     expect(component.selectedPhoto).toBeNull();
     expect(component.photoPreviewUrl).toBeNull();
-    expect(component.compressionStats).toBeNull();
   });
 
   it('não deve submeter criação se foto não for fornecida', () => {

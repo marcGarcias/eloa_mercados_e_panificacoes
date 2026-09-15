@@ -207,8 +207,19 @@ public class ImageStorageImpl implements ImageStorage {
                 throw new ImageNotFoundException();
             }
 
+            // Fallback gracioso: se a variante específica solicitada não existir, tenta o arquivo base ou variante lg
             if (!Files.exists(file)) {
-                throw new ImageNotFoundException();
+                String rawName = filename.replaceFirst("-(lg|md|sm)\\.webp$", "").replaceFirst("\\.webp$", "");
+                Path fallbackBase = root.resolve(rawName + ".webp").normalize().toAbsolutePath();
+                Path fallbackLg = root.resolve(rawName + "-lg.webp").normalize().toAbsolutePath();
+
+                if (fallbackBase.startsWith(normalizedRoot) && Files.exists(fallbackBase)) {
+                    file = fallbackBase;
+                } else if (fallbackLg.startsWith(normalizedRoot) && Files.exists(fallbackLg)) {
+                    file = fallbackLg;
+                } else {
+                    throw new ImageNotFoundException();
+                }
             }
 
             Path realFile = file.toRealPath();

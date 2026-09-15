@@ -113,7 +113,7 @@
             <img
               *ngIf="produto.imagem"
               [src]="produto.imagem"
-              [srcset]="produto.imagemSrcSet || null"
+              [attr.srcset]="produto.imagemSrcSet || null"
               sizes="(max-width: 640px) 200px, (max-width: 1024px) 500px, 1080px"
               [alt]="produto.nome"
               loading="lazy"

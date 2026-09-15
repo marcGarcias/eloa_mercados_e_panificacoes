@@ -31,9 +31,14 @@ export class UserService {
     });
   }
 
-  changePassword(id: string, newPassword: string): Observable<void> {
+  changePassword(id: string, newPassword: string, accessKey?: string, cpf?: string): Observable<void> {
     // PUT endpoint for password update
-    return this.http.put<void>(`${this.apiUrl}/${id}/password`, { newPassword });
+    const body: { newPassword: string; accessKey?: string; cpf?: string } = {
+      newPassword,
+      ...(accessKey ? { accessKey } : {}),
+      ...(cpf ? { cpf } : {})
+    };
+    return this.http.put<void>(`${this.apiUrl}/${id}/password`, body);
   }
 
   delete(id: string): Observable<void> {

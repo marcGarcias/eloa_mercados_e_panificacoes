@@ -176,6 +176,18 @@
     </button>
   </div>
 
+  <ng-container *ngIf="!isCreateMode && editingUser.role === 'SUPER_ADMIN' && editingUser.password">
+    <div class="field">
+      <label>CPF do Proprietário</label>
+      <input type="text" [(ngModel)]="ownerCpf" placeholder="000.000.000-00" autocomplete="off" maxlength="18">
+    </div>
+
+    <div class="field">
+      <label>Código de Acesso</label>
+      <input type="text" [(ngModel)]="ownerAccessKey" placeholder="Ex: AAA-111-BBB-!" autocomplete="off">
+    </div>
+  </ng-container>
+
   <div class="field" *ngIf="isOwner && editingUser.id !== currentUser?.id && editingUser.role !== 'SUPER_ADMIN'">
     <label>Função</label>
     <select [(ngModel)]="editingUser.role">

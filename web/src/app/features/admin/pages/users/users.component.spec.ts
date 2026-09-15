@@ -186,14 +186,47 @@ describe('UsersComponent (Admin)', () => {
     component.editingUser.password = 'NovaSenhaSegura123';
     component.saveUser();
 
-    expect(mockUserService.changePassword).toHaveBeenCalledWith('u-editor', 'NovaSenhaSegura123');
+    expect(mockUserService.changePassword).toHaveBeenCalledWith('u-editor', 'NovaSenhaSegura123', undefined, undefined);
     expect(mockUserService.updateData).toHaveBeenCalledWith('u-editor', expect.any(Object));
     expect(mockToastService.success).toHaveBeenCalledWith(expect.any(String), 'Usuário Atualizado');
+  });
+
+  it('deve exigir CPF e código de acesso ao alterar a senha de usuário SUPER_ADMIN', () => {
+    component.openEditModal(mockOwnerUser);
+    expect(component.isModalOpen).toBeTruthy();
+
+    component.editingUser.password = 'NovaSenhaOwner123!';
+    component.ownerCpf = '';
+    component.ownerAccessKey = '';
+
+    expect(component.validateLocalData()).toBeFalsy();
+    expect(component.errorMessage).toBe('O CPF do Proprietário é obrigatório para alterar a senha.');
+
+    component.ownerCpf = '123.456.789-09';
+    expect(component.validateLocalData()).toBeFalsy();
+    expect(component.errorMessage).toBe('O Código de Acesso é obrigatório para alterar a senha.');
+
+    component.ownerAccessKey = 'AAA-111-BBB-!';
+    expect(component.validateLocalData()).toBeTruthy();
+
+    component.saveUser();
+    expect(mockUserService.changePassword).toHaveBeenCalledWith(
+      'u-admin',
+      'NovaSenhaOwner123!',
+      'AAA-111-BBB-!',
+      '123.456.789-09'
+    );
   });
 
   it('deve traduzir mensagens de erro conhecidas da API', () => {
     expect(component.translateErrorMessage({ error: { message: 'New password cannot be the same as current password' } }))
       .toBe('A nova senha não pode ser igual à senha atual.');
+
+    expect(component.translateErrorMessage({ error: { message: 'CPF de setup inválido.' } }))
+      .toBe('CPF do Proprietário inválido.');
+
+    expect(component.translateErrorMessage({ error: { message: 'Código de acesso incorreto.' } }))
+      .toBe('Código de acesso incorreto.');
 
     expect(component.translateErrorMessage({ error: { message: 'SUPER_ADMIN user. Only one owner is allowed' } }))
       .toBe('Já existe um Proprietário cadastrado no sistema.');

@@ -37,6 +37,8 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   editingUser: Partial<User> = {};
   showPassword = false;
+  ownerCpf = '';
+  ownerAccessKey = '';
   isLoading = false;
   errorMessage: string | null = null;
   firstName = '';
@@ -214,6 +216,8 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.errorMessage = null;
     this.firstName = '';
     this.lastName = '';
+    this.ownerCpf = '';
+    this.ownerAccessKey = '';
     this.isCreateMode = true;
     this.editingUser = {
       name: '',
@@ -229,6 +233,8 @@ export class UsersComponent implements OnInit, OnDestroy {
   openEditModal(user: User): void {
     if (!this.canEditUser(user)) return;
     this.errorMessage = null;
+    this.ownerCpf = '';
+    this.ownerAccessKey = '';
     this.isCreateMode = false;
     this.editingUser = { ...user, password: '' };
     this.showPassword = false;
@@ -278,6 +284,18 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.errorMessage = 'O nome do usuário não pode exceder 150 caracteres.';
         return false;
       }
+
+      const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
+      if (hasNewPassword && this.editingUser.role === 'SUPER_ADMIN') {
+        if (!this.ownerCpf?.trim()) {
+          this.errorMessage = 'O CPF do Proprietário é obrigatório para alterar a senha.';
+          return false;
+        }
+        if (!this.ownerAccessKey?.trim()) {
+          this.errorMessage = 'O Código de Acesso é obrigatório para alterar a senha.';
+          return false;
+        }
+      }
     }
 
     return true;
@@ -291,6 +309,12 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     if (rawMessage.includes('New password cannot be the same as current password')) {
       return 'A nova senha não pode ser igual à senha atual.';
+    }
+    if (rawMessage.includes('CPF de setup inválido') || rawMessage.includes('Invalid setup CPF')) {
+      return 'CPF do Proprietário inválido.';
+    }
+    if (rawMessage.includes('Código de acesso incorreto') || rawMessage.includes('Chave de acesso incorreta') || rawMessage.includes('Invalid setup access key')) {
+      return 'Código de acesso incorreto.';
     }
     if (rawMessage.includes('User name cannot be empty')) {
       return 'O nome do usuário não pode ficar em branco.';
@@ -350,8 +374,12 @@ export class UsersComponent implements OnInit, OnDestroy {
       const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
 
       if (hasNewPassword) {
+        const isSuperAdmin = this.editingUser.role === 'SUPER_ADMIN';
+        const accessKeyToSend = isSuperAdmin ? this.ownerAccessKey.trim() : undefined;
+        const cpfToSend = isSuperAdmin ? this.ownerCpf.trim() : undefined;
+
         this.subs.add(
-          this.userService.changePassword(id, this.editingUser.password!).subscribe({
+          this.userService.changePassword(id, this.editingUser.password!, accessKeyToSend, cpfToSend).subscribe({
             next: () => {
               this.updateUserDataOnly(id);
             },

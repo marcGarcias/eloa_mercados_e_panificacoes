@@ -111,6 +111,19 @@ describe('UserService', () => {
       expect(req.request.body).toEqual({ newPassword: 'NovaSenha123!' });
       req.flush(null, { status: 200, statusText: 'OK' });
     });
+
+    it('deve realizar PUT enviando accessKey e cpf quando informados', () => {
+      service.changePassword('usr-100', 'NovaSenha123!', 'AAA-111-BBB-!', '12345678909').subscribe();
+
+      const req = httpMock.expectOne('/api/admin/users/usr-100/password');
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({
+        newPassword: 'NovaSenha123!',
+        accessKey: 'AAA-111-BBB-!',
+        cpf: '12345678909'
+      });
+      req.flush(null, { status: 200, statusText: 'OK' });
+    });
   });
 
   describe('delete()', () => {

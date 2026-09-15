@@ -449,8 +449,8 @@
 
   <div class="modal-actions">
     <button class="btn btn-ghost" type="button" (click)="cancelDeleteCategory()">Cancelar</button>
-    <button class="btn btn-solid btn-danger-action" type="button" (click)="confirmDeleteCategory()" [disabled]="isCategoryLoading">
-      {{ isCategoryLoading ? 'Excluindo...' : 'Sim, Excluir Categoria' }}
+    <button class="btn btn-solid btn-danger-action" type="button" (click)="confirmDeleteCategory()" [disabled]="isDeletingCategory">
+      {{ isDeletingCategory ? 'Excluindo...' : 'Sim, Excluir Categoria' }}
     </button>
   </div>
 </app-modal>

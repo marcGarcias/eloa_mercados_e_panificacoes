@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, HostListener, ChangeDetectorRef, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,10 +9,16 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./modal.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ModalComponent {
+export class ModalComponent implements OnChanges {
   @Input() title: string = '';
   @Input() isOpen: boolean = false;
   @Output() close = new EventEmitter<void>();
+
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  ngOnChanges(): void {
+    this.cdr.markForCheck();
+  }
 
   @HostListener('keydown.escape')
   onEscape() {

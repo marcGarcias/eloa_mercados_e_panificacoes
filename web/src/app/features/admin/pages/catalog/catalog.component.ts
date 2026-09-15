@@ -75,6 +75,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   categoryTotalPages: number = 0;
   categoryTotalElements: number = 0;
   isCategoryLoading: boolean = false;
+  isDeletingCategory: boolean = false;
 
   private readonly categorySubject = new Subject<string>();
 
@@ -418,35 +419,33 @@ export class CatalogComponent implements OnInit, OnDestroy {
     if (!this.categoryToDelete) return;
 
     const cat = this.categoryToDelete;
-    this.isCategoryLoading = true;
-    this.cdr.markForCheck();
+    this.isDeletingCategory = true;
+    this.cdr.detectChanges();
 
     this.subs.add(
       this.categoryAdminService.delete(cat.id).pipe(
         finalize(() => {
-          this.isCategoryLoading = false;
-          this.cdr.markForCheck();
+          this.isDeletingCategory = false;
+          this.isDeleteCategoryModalOpen = false;
+          this.categoryToDelete = null;
+          this.cdr.detectChanges();
         })
       ).subscribe({
         next: () => {
           this.toastService.success(`Categoria "${cat.name}" removida com sucesso.`, 'Categoria Excluída');
-          this.isDeleteCategoryModalOpen = false;
-          this.categoryToDelete = null;
           if (this.activeFilter === cat.name) {
             this.activeFilter = 'Todos';
           }
           this.loadAdminCategories();
           this.loadPagedCategories();
           this.loadProducts();
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         },
         error: (err) => {
           const rawMsg = err?.error?.message;
           const msg = rawMsg || `Não foi possível excluir a categoria "${cat.name}". Verifique se há produtos vinculados a ela.`;
           this.toastService.error(msg, 'Erro ao Excluir');
-          this.isDeleteCategoryModalOpen = false;
-          this.categoryToDelete = null;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       })
     );

@@ -628,3 +628,71 @@
   cursor: not-allowed;
 }
 
+/* Modal Confirmation Boxes */
+.alert-danger-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(220, 53, 69, 0.08);
+  border-left: 4px solid #dc3545;
+  padding: 16px 18px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.alert-danger-box .alert-icon {
+  color: #dc3545;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.alert-warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(255, 193, 7, 0.12);
+  border-left: 4px solid #d39e00;
+  padding: 16px 18px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.alert-warning-box .alert-icon {
+  color: #b58100;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-content .alert-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark, #2E241C);
+  line-height: 1.4;
+}
+
+.alert-content .alert-desc {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  color: var(--gray, #8A7F74);
+  line-height: 1.45;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line, #E7DACB);
+}
+
+

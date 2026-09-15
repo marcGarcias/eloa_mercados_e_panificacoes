@@ -55,7 +55,9 @@ describe('CatalogComponent (Admin)', () => {
 
     mockToastService = {
       success: vi.fn(),
-      error: vi.fn()
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn()
     };
 
     await TestBed.configureTestingModule({
@@ -214,24 +216,31 @@ describe('CatalogComponent (Admin)', () => {
     expect(component.editingCategory).toBeNull();
   });
 
-  it('deve excluir categoria diretamente com confirmação positiva', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('deve abrir modal de confirmação de exclusão de categoria e excluir ao confirmar', () => {
+    component.openDeleteCategoryModal(mockAdminCats[0]);
+    expect(component.isDeleteCategoryModalOpen).toBeTruthy();
+    expect(component.categoryToDelete).toEqual(mockAdminCats[0]);
 
-    component.deleteCategoryDirectly(mockAdminCats[0]);
+    component.confirmDeleteCategory();
 
     expect(mockCategoryAdminService.delete).toHaveBeenCalledWith(1);
     expect(mockToastService.success).toHaveBeenCalledWith(expect.stringContaining('Pães'), 'Categoria Excluída');
+    expect(component.isDeleteCategoryModalOpen).toBeFalsy();
+    expect(component.categoryToDelete).toBeNull();
   });
 
-  it('não deve excluir categoria se o usuário cancelar o confirm', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
+  it('não deve excluir categoria se o usuário cancelar o modal de exclusão', () => {
+    component.openDeleteCategoryModal(mockAdminCats[0]);
+    expect(component.isDeleteCategoryModalOpen).toBeTruthy();
 
-    component.deleteCategoryDirectly(mockAdminCats[0]);
+    component.cancelDeleteCategory();
 
     expect(mockCategoryAdminService.delete).not.toHaveBeenCalled();
+    expect(component.isDeleteCategoryModalOpen).toBeFalsy();
+    expect(component.categoryToDelete).toBeNull();
   });
 
-  it('deve alternar o modo de edição e gerenciar alterações em lote', () => {
+  it('deve alternar o modo de edição e gerenciar descarte de alterações via modal próprio', () => {
     fixture.detectChanges();
     expect(component.isEditMode).toBeFalsy();
 
@@ -242,11 +251,38 @@ describe('CatalogComponent (Admin)', () => {
     expect(component.deletedProductIds.has(10)).toBeTruthy();
     expect(component.hasChanges).toBeTruthy();
 
+    // Tentar sair do modo de edição com alterações abre modal de descarte
+    component.toggleEditMode();
+    expect(component.isDiscardChangesModalOpen).toBeTruthy();
+    expect(component.isEditMode).toBeTruthy();
+
+    // Cancelar descarte mantém modo de edição
+    component.cancelDiscardChanges();
+    expect(component.isDiscardChangesModalOpen).toBeFalsy();
+    expect(component.isEditMode).toBeTruthy();
+
+    // Confirmar descarte limpa alterações e desativa modo de edição
+    component.confirmDiscardChanges();
+    expect(component.isDiscardChangesModalOpen).toBeFalsy();
+    expect(component.isEditMode).toBeFalsy();
+    expect(component.hasChanges).toBeFalsy();
+  });
+
+  it('deve gerenciar alterações em lote no modo de edição', () => {
+    fixture.detectChanges();
+    component.toggleEditMode();
+
+    component.markProductForDeletion(10);
+    expect(component.deletedProductIds.has(10)).toBeTruthy();
+
     // Tentar excluir categoria que possui produto vinculado (Bolo de Rolo na categoria 'Doces')
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
     const stopPropagationMock = { stopPropagation: vi.fn() } as any;
     component.markCategoryForDeletion('Doces', stopPropagationMock);
     expect(component.deletedCategoryNames.has('Doces')).toBeFalsy();
+    expect(mockToastService.warning).toHaveBeenCalledWith(
+      expect.stringContaining('Doces'),
+      'Categoria com Produtos'
+    );
 
     // Excluir categoria sem produtos vinculados
     component.markCategoryForDeletion('Vazia', stopPropagationMock);
@@ -293,13 +329,14 @@ describe('CatalogComponent (Admin)', () => {
     expect(mockToastService.error).toHaveBeenCalledWith('Erro ao deletar', 'Erro ao Salvar');
   });
 
-  it('deve tratar erro na exclusão direta de categoria', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('deve tratar erro na confirmação de exclusão de categoria', () => {
     mockCategoryAdminService.delete.mockReturnValue(throwError(() => ({ error: { message: 'Categoria vinculada' } })));
 
-    component.deleteCategoryDirectly(mockAdminCats[0]);
+    component.openDeleteCategoryModal(mockAdminCats[0]);
+    component.confirmDeleteCategory();
 
     expect(mockToastService.error).toHaveBeenCalledWith('Categoria vinculada', 'Erro ao Excluir');
+    expect(component.isDeleteCategoryModalOpen).toBeFalsy();
   });
 
   it('deve reagir ao redimensionamento de tela para mobile', () => {

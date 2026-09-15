@@ -350,7 +350,7 @@
                 <button
                   type="button"
                   class="btn-action-cat delete"
-                  (click)="deleteCategoryDirectly(cat)"
+                  (click)="openDeleteCategoryModal(cat)"
                   title="Excluir categoria"
                   aria-label="Excluir categoria"
                 >
@@ -426,4 +426,58 @@
   (closed)="onCategoryModalClosed()"
 >
 </app-modal-categoria>
+
+<!-- Modal de Confirmação de Exclusão de Categoria -->
+<app-modal
+  [title]="'Confirmar Exclusão de Categoria'"
+  [isOpen]="isDeleteCategoryModalOpen"
+  (close)="cancelDeleteCategory()"
+>
+  <div class="alert-danger-box">
+    <div class="alert-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+    </div>
+    <div class="alert-content">
+      <p class="alert-title">Deseja realmente excluir a categoria <strong>"{{ categoryToDelete?.name }}"</strong>?</p>
+      <p class="alert-desc">Esta ação não poderá ser desfeita. Certifique-se de que não há produtos vinculados a esta categoria.</p>
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <button class="btn btn-ghost" type="button" (click)="cancelDeleteCategory()">Cancelar</button>
+    <button class="btn btn-solid btn-danger-action" type="button" (click)="confirmDeleteCategory()" [disabled]="isCategoryLoading">
+      {{ isCategoryLoading ? 'Excluindo...' : 'Sim, Excluir Categoria' }}
+    </button>
+  </div>
+</app-modal>
+
+<!-- Modal de Confirmação de Descarte de Alterações -->
+<app-modal
+  [title]="'Descartar Alterações'"
+  [isOpen]="isDiscardChangesModalOpen"
+  (close)="cancelDiscardChanges()"
+>
+  <div class="alert-warning-box">
+    <div class="alert-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+    </div>
+    <div class="alert-content">
+      <p class="alert-title">Existem alterações não salvas no catálogo.</p>
+      <p class="alert-desc">Ao sair do modo de edição, todas as exclusões e reordenações pendentes serão descartadas.</p>
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <button class="btn btn-ghost" type="button" (click)="cancelDiscardChanges()">Continuar Editando</button>
+    <button class="btn btn-solid btn-danger-action" type="button" (click)="confirmDiscardChanges()">Descartar Alterações</button>
+  </div>
+</app-modal>
 

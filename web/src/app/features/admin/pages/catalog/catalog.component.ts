@@ -7,6 +7,7 @@ import { ToastService } from '../../../../services/toast.service';
 import { Product, ProductAdminResponse, CategoryAdminResponse, ProductStatus } from '../../../../models/product.model';
 import { ModalProdutoComponent } from '../../../../shared/modal-produto/modal-produto.component';
 import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { forkJoin, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
@@ -15,7 +16,7 @@ import { formatProductWeight, parseProductWeightInput } from '../../../../core/u
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalProdutoComponent, ModalCategoriaComponent, DragDropModule],
+  imports: [CommonModule, FormsModule, ModalProdutoComponent, ModalCategoriaComponent, DragDropModule, ModalComponent],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,6 +80,9 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
   isProductModalOpen: boolean = false;
   isCategoryModalOpen: boolean = false;
+  isDeleteCategoryModalOpen: boolean = false;
+  categoryToDelete: CategoryAdminResponse | null = null;
+  isDiscardChangesModalOpen: boolean = false;
   editingProduct: ProductAdminResponse | null = null;
   editingCategory: CategoryAdminResponse | null = null;
   adminCategories: CategoryAdminResponse[] = [];
@@ -398,10 +402,22 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  deleteCategoryDirectly(cat: CategoryAdminResponse): void {
-    const confirmDelete = window.confirm(`Deseja realmente excluir a categoria "${cat.name}"?`);
-    if (!confirmDelete) return;
+  openDeleteCategoryModal(cat: CategoryAdminResponse): void {
+    this.categoryToDelete = cat;
+    this.isDeleteCategoryModalOpen = true;
+    this.cdr.markForCheck();
+  }
 
+  cancelDeleteCategory(): void {
+    this.isDeleteCategoryModalOpen = false;
+    this.categoryToDelete = null;
+    this.cdr.markForCheck();
+  }
+
+  confirmDeleteCategory(): void {
+    if (!this.categoryToDelete) return;
+
+    const cat = this.categoryToDelete;
     this.isCategoryLoading = true;
     this.cdr.markForCheck();
 
@@ -414,6 +430,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
       ).subscribe({
         next: () => {
           this.toastService.success(`Categoria "${cat.name}" removida com sucesso.`, 'Categoria Excluída');
+          this.isDeleteCategoryModalOpen = false;
+          this.categoryToDelete = null;
           if (this.activeFilter === cat.name) {
             this.activeFilter = 'Todos';
           }
@@ -426,6 +444,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
           const rawMsg = err?.error?.message;
           const msg = rawMsg || `Não foi possível excluir a categoria "${cat.name}". Verifique se há produtos vinculados a ela.`;
           this.toastService.error(msg, 'Erro ao Excluir');
+          this.isDeleteCategoryModalOpen = false;
+          this.categoryToDelete = null;
           this.cdr.markForCheck();
         }
       })
@@ -434,19 +454,34 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
   toggleEditMode(): void {
     if (this.isEditMode && this.hasChanges) {
-      const discard = typeof window !== 'undefined' && window.confirm('Existem alterações não salvas. Deseja descartá-las?');
-      if (!discard) {
-        return;
-      }
+      this.isDiscardChangesModalOpen = true;
+      this.cdr.markForCheck();
+      return;
     }
     this.isEditMode = !this.isEditMode;
     if (!this.isEditMode) {
-      this.deletedProductIds.clear();
-      this.deletedCategoryNames.clear();
-      this.hasOrderChanges = false;
-      this.loadProducts();
+      this.resetEditModeState();
     }
     this.cdr.markForCheck();
+  }
+
+  confirmDiscardChanges(): void {
+    this.isDiscardChangesModalOpen = false;
+    this.isEditMode = false;
+    this.resetEditModeState();
+    this.cdr.markForCheck();
+  }
+
+  cancelDiscardChanges(): void {
+    this.isDiscardChangesModalOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  private resetEditModeState(): void {
+    this.deletedProductIds.clear();
+    this.deletedCategoryNames.clear();
+    this.hasOrderChanges = false;
+    this.loadProducts();
   }
 
   markProductForDeletion(id: number): void {
@@ -462,7 +497,10 @@ export class CatalogComponent implements OnInit, OnDestroy {
     );
 
     if (hasLinkedProducts) {
-      alert(`Não é possível excluir a categoria "${name}" pois ela possui produtos vinculados. Exclua ou mova os produtos antes de remover a categoria.`);
+      this.toastService.warning(
+        `Não é possível excluir a categoria "${name}" pois ela possui produtos vinculados. Exclua ou mova os produtos antes de remover a categoria.`,
+        'Categoria com Produtos'
+      );
       return;
     }
 

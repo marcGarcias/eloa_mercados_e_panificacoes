@@ -84,7 +84,7 @@ describe('CatalogComponent (Admin)', () => {
     expect(component.products.length).toBe(2);
     expect(component.products[0].nome).toBe('Pão Francês');
     expect(component.products[0].peso).toBe('50g');
-    expect(component.products[1].peso).toBe('1.2kg');
+    expect(component.products[1].peso).toBe('1.200kg');
   });
 
   it('deve alternar entre abas de produtos e categorias', () => {

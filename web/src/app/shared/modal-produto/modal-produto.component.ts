@@ -27,6 +27,7 @@ import {
   compressAndConvertToWebp,
   formatBytes,
 } from '../../core/utils/image-compressor.util';
+import { parseProductWeightInput, formatProductWeight } from '../../core/utils/formatters.util';
 import { finalize, Subscription } from 'rxjs';
 
 @Component({
@@ -196,8 +197,10 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
 
           if (this.isEditMode && this.product) {
             const payload: UpdateProductPayload = {};
-            if (formValue.name)       payload.name       = formValue.name;
-            if (formValue.weight)     payload.weight     = Number(formValue.weight);
+            if (formValue.name)       payload.name       = formValue.name.trim();
+            if (formValue.weight != null && formValue.weight !== '') {
+              payload.weight = parseProductWeightInput(formValue.weight);
+            }
             if (formValue.categoryId) payload.categoryId = targetCategoryId;
             if (formValue.status)     payload.status     = formValue.status;
             if (this.selectedPhoto)   payload.photo      = this.selectedPhoto;
@@ -223,8 +226,8 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
 
           } else {
             const payload: CreateProductPayload = {
-              name:       formValue.name,
-              weight:     Number(formValue.weight),
+              name:       formValue.name.trim(),
+              weight:     parseProductWeightInput(formValue.weight),
               categoryId: targetCategoryId,
               photo:      this.selectedPhoto!,
             };
@@ -269,17 +272,23 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     if (!ctrl || !ctrl.errors) return '';
     if (ctrl.errors['required'])  return 'Campo obrigatorio.';
     if (ctrl.errors['notFound'])  return 'Categoria inexistente. Selecione uma da lista.';
-    if (ctrl.errors['min'])       return `Valor minimo: ${ctrl.errors['min'].min}.`;
+    if (ctrl.errors['minWeight'] || ctrl.errors['min']) return 'O peso deve ser maior que zero (ex: 0120, 1 ou 3.250).';
     if (ctrl.errors['minlength']) return `Minimo de ${ctrl.errors['minlength'].requiredLength} caracteres.`;
     if (ctrl.errors['maxlength']) return `Maximo de ${ctrl.errors['maxlength'].requiredLength} caracteres.`;
     return 'Valor invalido.';
   }
 
   private buildForm(): FormGroup {
+    const weightValidator = (ctrl: AbstractControl) => {
+      if (ctrl.value === '' || ctrl.value == null) return null;
+      const parsed = parseProductWeightInput(ctrl.value);
+      return parsed > 0 ? null : { minWeight: true };
+    };
+
     return this.fb.group({
       name:       ['', [Validators.required, Validators.minLength(2), Validators.maxLength(16)]],
       categoryId: [null, [Validators.required, (ctrl: AbstractControl) => (Number(ctrl.value) > 0 ? null : { required: true })]],
-      weight:     ['', [Validators.required, Validators.min(0.001)]],
+      weight:     ['', [Validators.required, weightValidator]],
       // Campos exclusivos do modo edicao
       status:   [ProductStatus.ACTIVE],
     });
@@ -296,7 +305,7 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
       this.form.patchValue({
         name:       this.product.name,
         categoryId: this.findCategoryId(this.product.categoryName),
-        weight:     this.product.weight,
+        weight:     this.product.weight != null ? this.product.weight : '',
         status:     this.product.status,
       });
       this.photoPreviewUrl = this.product.photo || null;

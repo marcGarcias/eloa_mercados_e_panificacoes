@@ -11,6 +11,7 @@ import {
   SpringPage,
 } from '../models/product.model';
 import { environment } from '../../environments/environment';
+import { formatProductWeight } from '../core/utils/formatters.util';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -23,7 +24,7 @@ export class ProductService {
       map(page => page.content.map(p => ({
         nome: p.name,
         categoria: p.categoryName,
-        peso: p.weight ? `${p.weight.toString().replace('.', ',')} kg` : '',
+        peso: formatProductWeight(p.weight),
         imagem: this.getProductImageUrl(p.photoUrl, 'md'),
         imagemSrcSet: this.getProductImageSrcSet(p.photoUrl),
         order: Number(p.position)

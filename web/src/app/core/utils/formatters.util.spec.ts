@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { formatCnpj, formatPhone, formatWhatsappLink } from './formatters.util';
+import {
+  formatCnpj,
+  formatPhone,
+  formatWhatsappLink,
+  formatProductWeight,
+  parseProductWeightInput,
+} from './formatters.util';
 
 describe('formatters.util', () => {
   describe('formatCnpj', () => {
@@ -88,6 +94,83 @@ describe('formatters.util', () => {
       expect(formatWhatsappLink(null)).toBe('https://wa.me/');
       expect(formatWhatsappLink(undefined)).toBe('https://wa.me/');
       expect(formatWhatsappLink('')).toBe('https://wa.me/');
+    });
+  });
+
+  describe('formatProductWeight', () => {
+    it('deve formatar pesos menores que 1kg em gramas', () => {
+      expect(formatProductWeight(0.12)).toBe('120g');
+      expect(formatProductWeight('0.120')).toBe('120g');
+      expect(formatProductWeight('0,120')).toBe('120g');
+      expect(formatProductWeight(0.05)).toBe('50g');
+      expect(formatProductWeight(0.5)).toBe('500g');
+      expect(formatProductWeight(0.005)).toBe('5g');
+    });
+
+    it('deve formatar 1kg e inteiros exatamente com kg sem decimais', () => {
+      expect(formatProductWeight(1)).toBe('1kg');
+      expect(formatProductWeight(1.0)).toBe('1kg');
+      expect(formatProductWeight('1')).toBe('1kg');
+      expect(formatProductWeight(2)).toBe('2kg');
+      expect(formatProductWeight(5)).toBe('5kg');
+    });
+
+    it('deve formatar pesos fracionados >= 1kg com 3 casas decimais', () => {
+      expect(formatProductWeight(3.25)).toBe('3.250kg');
+      expect(formatProductWeight('3.250')).toBe('3.250kg');
+      expect(formatProductWeight('3,250')).toBe('3.250kg');
+      expect(formatProductWeight(1.5)).toBe('1.500kg');
+      expect(formatProductWeight(1.234)).toBe('1.234kg');
+    });
+
+    it('deve retornar string vazia para valores nulos, vazios ou inválidos', () => {
+      expect(formatProductWeight(null)).toBe('');
+      expect(formatProductWeight(undefined)).toBe('');
+      expect(formatProductWeight('')).toBe('');
+      expect(formatProductWeight(0)).toBe('');
+      expect(formatProductWeight(-1)).toBe('');
+    });
+  });
+
+  describe('parseProductWeightInput', () => {
+    it('deve converter entradas que começam com 0 sem ponto como gramas', () => {
+      expect(parseProductWeightInput('0120')).toBe(0.12);
+      expect(parseProductWeightInput('0500')).toBe(0.5);
+      expect(parseProductWeightInput('050')).toBe(0.05);
+      expect(parseProductWeightInput('05')).toBe(0.005);
+    });
+
+    it('deve converter entradas com 0 e ponto ou vírgula', () => {
+      expect(parseProductWeightInput('0.120')).toBe(0.12);
+      expect(parseProductWeightInput('0,120')).toBe(0.12);
+      expect(parseProductWeightInput('0.5')).toBe(0.5);
+      expect(parseProductWeightInput('0,5')).toBe(0.5);
+      expect(parseProductWeightInput('0.05')).toBe(0.05);
+      expect(parseProductWeightInput('0,050')).toBe(0.05);
+    });
+
+    it('deve converter números inteiros e decimais >= 1', () => {
+      expect(parseProductWeightInput('1')).toBe(1);
+      expect(parseProductWeightInput('1.0')).toBe(1);
+      expect(parseProductWeightInput('3.250')).toBe(3.25);
+      expect(parseProductWeightInput('3,250')).toBe(3.25);
+      expect(parseProductWeightInput(3.25)).toBe(3.25);
+      expect(parseProductWeightInput(1)).toBe(1);
+    });
+
+    it('deve aceitar entradas com sufixos g e kg', () => {
+      expect(parseProductWeightInput('120g')).toBe(0.12);
+      expect(parseProductWeightInput('500g')).toBe(0.5);
+      expect(parseProductWeightInput('1kg')).toBe(1);
+      expect(parseProductWeightInput('3.250kg')).toBe(3.25);
+      expect(parseProductWeightInput('3,250kg')).toBe(3.25);
+    });
+
+    it('deve retornar 0 para valores inválidos ou vazios', () => {
+      expect(parseProductWeightInput(null)).toBe(0);
+      expect(parseProductWeightInput(undefined)).toBe(0);
+      expect(parseProductWeightInput('')).toBe(0);
+      expect(parseProductWeightInput('abc')).toBe(0);
     });
   });
 });

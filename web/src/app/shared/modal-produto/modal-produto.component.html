@@ -48,14 +48,13 @@
         </div>
 
         <div class="field" [class.has-error]="isFieldInvalid('weight')">
-          <label for="mp-weight">Peso (kg)</label>
+          <label for="mp-weight">Peso</label>
           <input
             id="mp-weight"
-            type="number"
+            type="text"
+            inputmode="decimal"
             formControlName="weight"
-            placeholder="Ex: 0.5"
-            step="0.001"
-            min="0.001"
+            placeholder="Ex: 0120 (120g), 1 (1kg) ou 3.250"
           />
           <span class="field-error" *ngIf="isFieldInvalid('weight')">
             {{ getFieldError('weight') }}

@@ -10,6 +10,7 @@ import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/moda
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { forkJoin, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
+import { formatProductWeight, parseProductWeightInput } from '../../../../core/utils/formatters.util';
 
 @Component({
   selector: 'app-catalog',
@@ -210,7 +211,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
             id: p.id,
             nome: p.name,
             categoria: p.categoryName,
-            peso: this.formatWeight(p.weight),
+            peso: formatProductWeight(p.weight),
             status: p.status === ProductStatus.ACTIVE ? 'ativo' : 'inativo',
             imagem: this.productService.getProductImageUrl(p.photo, 'sm'),
             imagemSrcSet: this.productService.getProductImageSrcSet(p.photo),
@@ -283,15 +284,6 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  private formatWeight(weight: number): string {
-    if (!weight) return '0g';
-    if (weight >= 1) {
-      return `${weight}kg`;
-    } else {
-      return `${Math.round(weight * 1000)}g`;
-    }
-  }
-
   setFilter(cat: string): void {
     this.activeFilter = cat;
     this.page = 0;
@@ -334,10 +326,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
   openEditModal(product: Product): void {
     this.loadAdminCategories();
-    let weightNum = parseFloat(product.peso) || 0;
-    if (product.peso.toLowerCase().endsWith('g') && !product.peso.toLowerCase().endsWith('kg')) {
-      weightNum = weightNum / 1000;
-    }
+    const weightNum = parseProductWeightInput(product.peso);
 
     this.editingProduct = {
       id: product.id ?? 0,

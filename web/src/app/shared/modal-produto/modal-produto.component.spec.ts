@@ -124,16 +124,40 @@ describe('ModalProdutoComponent', () => {
 
   it('deve criar produto com sucesso no modo criação', () => {
     const savedSpy = vi.spyOn(component.saved, 'emit');
-    component.form.patchValue({ name: 'Pão de Batata', weight: 150, categoryId: 1 });
+    component.form.patchValue({ name: 'Pão de Batata', weight: '0120', categoryId: 1 });
     component.selectedPhoto = new File(['bytes'], 'pao.webp', { type: 'image/webp' });
 
     productServiceMock.create.mockReturnValue(of(sampleProduct));
 
     component.onSubmit();
 
-    expect(productServiceMock.create).toHaveBeenCalled();
+    expect(productServiceMock.create).toHaveBeenCalledWith(expect.objectContaining({
+      name: 'Pão de Batata',
+      weight: 0.12,
+      categoryId: 1
+    }));
     expect(savedSpy).toHaveBeenCalledWith(sampleProduct);
     expect(component.isSubmitting).toBeFalsy();
+  });
+
+  it('deve aceitar peso com 0 na frente com ponto (0.120), inteiro (1) e decimal (3.250)', () => {
+    component.selectedPhoto = new File(['bytes'], 'pao.webp', { type: 'image/webp' });
+    productServiceMock.create.mockReturnValue(of(sampleProduct));
+
+    // Teste 0.120
+    component.form.patchValue({ name: 'Pão', weight: '0.120', categoryId: 1 });
+    component.onSubmit();
+    expect(productServiceMock.create).toHaveBeenCalledWith(expect.objectContaining({ weight: 0.12 }));
+
+    // Teste 1
+    component.form.patchValue({ name: 'Bolo', weight: '1', categoryId: 1 });
+    component.onSubmit();
+    expect(productServiceMock.create).toHaveBeenCalledWith(expect.objectContaining({ weight: 1 }));
+
+    // Teste 3.250
+    component.form.patchValue({ name: 'Torta', weight: '3.250', categoryId: 1 });
+    component.onSubmit();
+    expect(productServiceMock.create).toHaveBeenCalledWith(expect.objectContaining({ weight: 3.25 }));
   });
 
   it('deve atualizar produto com sucesso no modo edição', () => {

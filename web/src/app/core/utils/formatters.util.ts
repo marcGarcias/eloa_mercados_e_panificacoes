@@ -62,3 +62,66 @@ export function formatWhatsappLink(value?: string | null): string {
 
   return `https://wa.me/${digits}`;
 }
+
+/**
+ * Formata peso do produto para exibição padronizada no Admin e na Home:
+ * - Menor que 1kg: exibe em gramas sem decimais (ex: 0.12 -> 120g, 0.05 -> 50g, 0.5 -> 500g)
+ * - 1kg ou número inteiro: exibe como inteiro com unidade kg (ex: 1 -> 1kg, 2 -> 2kg)
+ * - Decimais >= 1kg: exibe com 3 casas decimais (ex: 3.25 -> 3.250kg, 1.5 -> 1.500kg)
+ */
+export function formatProductWeight(weight?: number | string | null): string {
+  if (weight == null || weight === '') return '';
+  const num = typeof weight === 'number' ? weight : parseFloat(String(weight).replace(',', '.'));
+  if (isNaN(num) || num <= 0) return '';
+
+  if (num < 1) {
+    const grams = Math.round(num * 1000);
+    return `${grams}g`;
+  }
+
+  if (Number.isInteger(num)) {
+    return `${num}kg`;
+  }
+
+  return `${num.toFixed(3)}kg`;
+}
+
+/**
+ * Converte a entrada de peso digitada pelo usuário em quilogramas (kg) numérico.
+ * Regras:
+ * - Se houver um 0 à frente sem ponto (ex: '0120', '0500', '050', '05'): o resto são gramas ('0120' -> 120g = 0.12kg).
+ * - Se houver ponto/vírgula com 0 à frente (ex: '0.120', '0,120', '0.5'): 0.12kg, 0.5kg.
+ * - Se for valor >= 1 (ex: '1', '1.0', '3.250', '3,250'): 1kg, 3.25kg.
+ * - Suporta também digitação explícita com 'g' ou 'kg' (ex: '120g' -> 0.12, '3.250kg' -> 3.25).
+ */
+export function parseProductWeightInput(input?: string | number | null): number {
+  if (input == null || input === '') return 0;
+  if (typeof input === 'number') {
+    return isNaN(input) || input < 0 ? 0 : input;
+  }
+
+  let raw = String(input).trim().toLowerCase().replace(',', '.');
+  if (!raw) return 0;
+
+  if (raw.endsWith('kg')) {
+    raw = raw.replace('kg', '').trim();
+    const val = parseFloat(raw);
+    return isNaN(val) || val < 0 ? 0 : val;
+  }
+
+  if (raw.endsWith('g')) {
+    raw = raw.replace('g', '').trim();
+    const grams = parseFloat(raw);
+    return isNaN(grams) || grams < 0 ? 0 : grams / 1000;
+  }
+
+  // Se começa com '0' e NÃO possui ponto decimal (ex: '0120', '0500', '050', '05')
+  if (raw.startsWith('0') && !raw.includes('.')) {
+    const rest = raw.slice(1);
+    const grams = parseFloat(rest);
+    return isNaN(grams) || grams <= 0 ? 0 : grams / 1000;
+  }
+
+  const val = parseFloat(raw);
+  return isNaN(val) || val < 0 ? 0 : val;
+}

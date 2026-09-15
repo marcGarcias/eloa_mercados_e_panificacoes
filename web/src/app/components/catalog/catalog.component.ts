@@ -7,6 +7,7 @@ import { ProductService } from '../../services/product.service';
 import { SeoService } from '../../services/seo.service';
 import { Product } from '../../models/product.model';
 import { ContentCatalogo } from '../../models/content.model';
+import { formatProductWeight } from '../../core/utils/formatters.util';
 
 @Component({
   selector: 'app-catalog',
@@ -113,7 +114,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
         this.products = (pageData.content || []).map(p => ({
           nome: p.name,
           categoria: p.categoryName,
-          peso: p.weight ? `${p.weight.toString().replace('.', ',')} kg` : '',
+          peso: formatProductWeight(p.weight),
           imagem: this.productService.getProductImageUrl(p.photoUrl, 'md') || this.productService.getProductImageUrl(p.photoUrl),
           imagemSrcSet: this.productService.getProductImageSrcSet(p.photoUrl),
           order: Number(p.position)

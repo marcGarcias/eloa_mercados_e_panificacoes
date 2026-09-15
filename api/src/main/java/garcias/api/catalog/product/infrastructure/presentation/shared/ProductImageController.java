@@ -67,6 +67,7 @@ public class ProductImageController {
                 .ok()
                 .contentType(MediaType.parseMediaType("image/webp"))
                 .header("X-Content-Type-Options", "nosniff")
+                .header("Content-Security-Policy", "default-src 'none'; sandbox")
                 .cacheControl(
                         CacheControl.maxAge(30, TimeUnit.DAYS)
                 )

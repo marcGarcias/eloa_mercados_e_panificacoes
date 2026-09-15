@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("ImageStorageImpl Security Unit Tests")
+@DisplayName("ImageStorageImpl Security and Responsive Variants Unit Tests")
 class ImageStorageImplTest {
 
     @TempDir
@@ -40,9 +40,9 @@ class ImageStorageImplTest {
     }
 
     @Test
-    @DisplayName("Should successfully save valid image re-encoding to WebP")
-    void shouldSaveValidImageSuccessfully() throws IOException {
-        byte[] validPng = createSampleImageBytes(200, 200, "png");
+    @DisplayName("Should successfully save valid PNG image generating all responsive WebP variants")
+    void shouldSaveValidImageSuccessfullyAndGenerateVariants() throws IOException {
+        byte[] validPng = createSampleImageBytes(300, 300, "png");
         MockMultipartFile file = new MockMultipartFile("image", "photo.png", "image/png", validPng);
 
         String path = imageStorage.save(file);
@@ -50,6 +50,53 @@ class ImageStorageImplTest {
         assertNotNull(path);
         assertTrue(path.endsWith(".webp"));
         assertTrue(path.startsWith("/uploads/products/"));
+
+        String filename = path.substring(path.lastIndexOf('/') + 1);
+        String uuid = filename.replace(".webp", "");
+
+        assertTrue(Files.exists(tempDir.resolve(uuid + ".webp")));
+        assertTrue(Files.exists(tempDir.resolve(uuid + "-lg.webp")));
+        assertTrue(Files.exists(tempDir.resolve(uuid + "-md.webp")));
+        assertTrue(Files.exists(tempDir.resolve(uuid + "-sm.webp")));
+    }
+
+    @Test
+    @DisplayName("Should successfully save valid JPEG and WebP images")
+    void shouldSaveJpegAndWebpImagesSuccessfully() throws IOException {
+        byte[] validJpg = createSampleImageBytes(200, 200, "jpeg");
+        MockMultipartFile jpgFile = new MockMultipartFile("image", "photo.jpg", "image/jpeg", validJpg);
+
+        String pathJpg = imageStorage.save(jpgFile);
+        assertNotNull(pathJpg);
+
+        byte[] validWebp = createSampleImageBytes(200, 200, "png"); // encode as png, decode and convert to webp
+        MockMultipartFile webpFile = new MockMultipartFile("image", "photo.webp", "image/webp", validWebp);
+
+        String pathWebp = imageStorage.save(webpFile);
+        assertNotNull(pathWebp);
+    }
+
+    @Test
+    @DisplayName("Should delete all responsive variants when delete is called")
+    void shouldDeleteAllVariantsOnDelete() throws IOException {
+        byte[] validPng = createSampleImageBytes(200, 200, "png");
+        MockMultipartFile file = new MockMultipartFile("image", "photo.png", "image/png", validPng);
+
+        String path = imageStorage.save(file);
+        String filename = path.substring(path.lastIndexOf('/') + 1);
+        String uuid = filename.replace(".webp", "");
+
+        assertTrue(Files.exists(tempDir.resolve(uuid + ".webp")));
+        assertTrue(Files.exists(tempDir.resolve(uuid + "-lg.webp")));
+        assertTrue(Files.exists(tempDir.resolve(uuid + "-md.webp")));
+        assertTrue(Files.exists(tempDir.resolve(uuid + "-sm.webp")));
+
+        imageStorage.delete(path);
+
+        assertFalse(Files.exists(tempDir.resolve(uuid + ".webp")));
+        assertFalse(Files.exists(tempDir.resolve(uuid + "-lg.webp")));
+        assertFalse(Files.exists(tempDir.resolve(uuid + "-md.webp")));
+        assertFalse(Files.exists(tempDir.resolve(uuid + "-sm.webp")));
     }
 
     @Test
@@ -62,13 +109,13 @@ class ImageStorageImplTest {
     }
 
     @Test
-    @DisplayName("Should throw InvalidImageException when file exceeds 5MB limit")
+    @DisplayName("Should throw InvalidImageException when file exceeds 10MB limit")
     void shouldRejectFileExceedingSizeLimit() {
-        byte[] oversizedBytes = new byte[6 * 1024 * 1024];
+        byte[] oversizedBytes = new byte[11 * 1024 * 1024];
         MockMultipartFile file = new MockMultipartFile("image", "large.png", "image/png", oversizedBytes);
 
         InvalidImageException ex = assertThrows(InvalidImageException.class, () -> imageStorage.save(file));
-        assertTrue(ex.getMessage().contains("5MB"));
+        assertTrue(ex.getMessage().contains("10MB"));
     }
 
     @Test

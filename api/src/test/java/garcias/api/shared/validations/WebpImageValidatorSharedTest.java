@@ -26,11 +26,39 @@ class WebpImageValidatorSharedTest {
         return bytes;
     }
 
+    private byte[] createPngBytes() {
+        return new byte[]{(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0};
+    }
+
+    private byte[] createJpegBytes() {
+        return new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0, 0, 0, 0, 0, 0, 0, 0};
+    }
+
     @Test
     @DisplayName("Deve validar imagem WebP autêntica sem lançar exceção")
     void shouldValidateValidWebpImage() {
         MockMultipartFile file = new MockMultipartFile(
                 "image", "foto.webp", "image/webp", createWebpBytes()
+        );
+
+        assertThatCode(() -> WebpImageValidator.validate(file)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("Deve validar imagem PNG autêntica sem lançar exceção")
+    void shouldValidateValidPngImage() {
+        MockMultipartFile file = new MockMultipartFile(
+                "image", "foto.png", "image/png", createPngBytes()
+        );
+
+        assertThatCode(() -> WebpImageValidator.validate(file)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("Deve validar imagem JPEG autêntica sem lançar exceção")
+    void shouldValidateValidJpegImage() {
+        MockMultipartFile file = new MockMultipartFile(
+                "image", "foto.jpg", "image/jpeg", createJpegBytes()
         );
 
         assertThatCode(() -> WebpImageValidator.validate(file)).doesNotThrowAnyException();
@@ -57,16 +85,29 @@ class WebpImageValidatorSharedTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidImageException quando cabeçalho não for WebP")
-    void shouldThrowWhenHeaderIsNotWebp() {
-        byte[] notWebp = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    @DisplayName("Deve lançar InvalidImageException quando arquivo ultrapassar 10MB")
+    void shouldThrowWhenFileExceeds10MB() {
+        byte[] oversizedBytes = new byte[11 * 1024 * 1024];
+        MockMultipartFile oversizedFile = new MockMultipartFile(
+                "image", "grande.webp", "image/webp", oversizedBytes
+        );
+
+        assertThatThrownBy(() -> WebpImageValidator.validate(oversizedFile))
+                .isInstanceOf(InvalidImageException.class)
+                .hasMessageContaining("10MB");
+    }
+
+    @Test
+    @DisplayName("Deve lançar InvalidImageException quando cabeçalho não for imagem suportada")
+    void shouldThrowWhenHeaderIsNotSupported() {
+        byte[] notImage = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         MockMultipartFile file = new MockMultipartFile(
-                "image", "foto.png", "image/png", notWebp
+                "image", "foto.exe", "application/octet-stream", notImage
         );
 
         assertThatThrownBy(() -> WebpImageValidator.validate(file))
                 .isInstanceOf(InvalidImageException.class)
-                .hasMessageContaining("A imagem deve estar no formato WebP");
+                .hasMessageContaining("Formato de imagem não suportado");
     }
 
     @Test
@@ -81,6 +122,6 @@ class WebpImageValidatorSharedTest {
 
         assertThatThrownBy(() -> WebpImageValidator.validate(mockFile))
                 .isInstanceOf(InvalidImageException.class)
-                .hasMessageContaining("A imagem deve estar no formato WebP");
+                .hasMessageContaining("Formato de imagem não suportado");
     }
 }

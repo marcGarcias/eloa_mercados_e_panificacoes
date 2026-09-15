@@ -110,4 +110,20 @@ class CreateUserServiceTest {
         assertThat(result.getRole()).isEqualTo(UserRole.SUPER_ADMIN);
         verify(userRepository).save(any(User.class));
     }
+
+    @Test
+    @DisplayName("Deve lançar InvalidPasswordStrengthException quando a senha for fraca na criação")
+    void shouldThrowWhenPasswordIsWeakOnCreate() {
+        CreateUserRequest request = new CreateUserRequest(
+                "Lucas Ferreira",
+                "fraca",
+                UserRole.ADMIN,
+                UserStatus.ACTIVE
+        );
+
+        assertThatThrownBy(() -> createUserService.execute(request))
+                .isInstanceOf(garcias.api.identity.user.domain.exceptions.InvalidPasswordStrengthException.class);
+
+        verify(userRepository, never()).save(any());
+    }
 }

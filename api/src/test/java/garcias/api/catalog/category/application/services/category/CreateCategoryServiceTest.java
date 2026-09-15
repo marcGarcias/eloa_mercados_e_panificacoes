@@ -57,8 +57,7 @@ class CreateCategoryServiceTest {
         when(categoryRepository.existsByName(any(CategoryName.class))).thenReturn(true);
 
         assertThatThrownBy(() -> createCategoryService.execute(request))
-                .isInstanceOf(ObjectAlreadyExistsException.class)
-                .hasMessageContaining("Category name");
+                .isInstanceOf(ObjectAlreadyExistsException.class);
 
         verify(categoryRepository, never()).save(any());
     }

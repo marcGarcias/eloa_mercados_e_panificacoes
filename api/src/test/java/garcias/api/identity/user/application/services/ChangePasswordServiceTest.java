@@ -168,4 +168,23 @@ class ChangePasswordServiceTest {
         verify(userRepository).save(user);
         verify(eventPublisher).publishEvent(any(UserPasswordChangedEvent.class));
     }
+
+    @Test
+    @DisplayName("Deve lançar InvalidPasswordStrengthException quando a nova senha for fraca na alteração")
+    void shouldThrowWhenNewPasswordIsWeakOnChange() {
+        UUID id = UUID.randomUUID();
+        User user = User.create(
+                new UserName("User"), new UserCode("0001"),
+                Password.fromHash("current_hash"), UserRole.ADMIN, UserStatus.ACTIVE
+        );
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        ChangePasswordRequest request = new ChangePasswordRequest("fraca");
+
+        assertThatThrownBy(() -> changePasswordService.execute(id, request))
+                .isInstanceOf(garcias.api.identity.user.domain.exceptions.InvalidPasswordStrengthException.class);
+
+        verify(userRepository, never()).save(any());
+        verify(eventPublisher, never()).publishEvent(any());
+    }
 }

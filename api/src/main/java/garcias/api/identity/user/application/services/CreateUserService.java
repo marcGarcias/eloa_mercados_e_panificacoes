@@ -43,6 +43,8 @@ public class CreateUserService
             throw new garcias.api.shared.exceptions.SuperAdminAlreadyExistsException();
         }
 
+        garcias.api.identity.user.domain.services.PasswordPolicy.validate(request.password());
+
         UserCode code;
 
         do {

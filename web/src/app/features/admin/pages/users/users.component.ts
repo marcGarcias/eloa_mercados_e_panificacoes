@@ -8,6 +8,7 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
 import { User, UserRole, UserStatus, RoleTranslations, StatusTranslations, CreateUserPayload, UpdateUserPayload } from '../../../../models/user.model';
 import { catchError, of, finalize, Subscription } from 'rxjs';
 import { SpringPage } from '../../../../models/page.model';
+import { checkPasswordStrength, PasswordRulesState } from '../../../../shared/validators/password-validator';
 
 @Component({
   selector: 'app-users',
@@ -242,6 +243,10 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  get passwordRules(): PasswordRulesState {
+    return checkPasswordStrength(this.editingUser.password);
+  }
+
   togglePassword(): void {
     this.showPassword = !this.showPassword;
     this.cdr.markForCheck();
@@ -274,6 +279,10 @@ export class UsersComponent implements OnInit, OnDestroy {
         this.errorMessage = 'A senha é obrigatória para novos usuários.';
         return false;
       }
+      if (!this.passwordRules.isValid) {
+        this.errorMessage = 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos 1 letra maiúscula, 1 letra minúscula e 1 caractere especial.';
+        return false;
+      }
     } else {
       const name = this.editingUser.name?.trim();
       if (!name) {
@@ -286,14 +295,21 @@ export class UsersComponent implements OnInit, OnDestroy {
       }
 
       const hasNewPassword = this.editingUser.password && this.editingUser.password.trim() !== '';
-      if (hasNewPassword && this.editingUser.role === 'SUPER_ADMIN') {
-        if (!this.ownerCpf?.trim()) {
-          this.errorMessage = 'O CPF do Proprietário é obrigatório para alterar a senha.';
+      if (hasNewPassword) {
+        if (!this.passwordRules.isValid) {
+          this.errorMessage = 'A nova senha deve conter no mínimo 8 caracteres, incluindo pelo menos 1 letra maiúscula, 1 letra minúscula e 1 caractere especial.';
           return false;
         }
-        if (!this.ownerAccessKey?.trim()) {
-          this.errorMessage = 'O Código de Acesso é obrigatório para alterar a senha.';
-          return false;
+
+        if (this.editingUser.role === 'SUPER_ADMIN') {
+          if (!this.ownerCpf?.trim()) {
+            this.errorMessage = 'O CPF do Proprietário é obrigatório para alterar a senha.';
+            return false;
+          }
+          if (!this.ownerAccessKey?.trim()) {
+            this.errorMessage = 'O Código de Acesso é obrigatório para alterar a senha.';
+            return false;
+          }
         }
       }
     }
@@ -307,6 +323,9 @@ export class UsersComponent implements OnInit, OnDestroy {
       return 'Ocorreu um erro inesperado. Por favor, tente novamente.';
     }
 
+    if (rawMessage.includes('A senha deve conter no mínimo 8 caracteres') || rawMessage.includes('Invalid password strength')) {
+      return 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos 1 letra maiúscula, 1 letra minúscula e 1 caractere especial.';
+    }
     if (rawMessage.includes('New password cannot be the same as current password')) {
       return 'A nova senha não pode ser igual à senha atual.';
     }

@@ -64,6 +64,8 @@ public class ChangePasswordService
             }
         }
 
+        garcias.api.identity.user.domain.services.PasswordPolicy.validate(request.newPassword());
+
         boolean samePassword =
                 passwordHasher.matches(
                         request.newPassword(),

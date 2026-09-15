@@ -367,3 +367,69 @@ th.sort-active {
   font-weight: 600;
 }
 
+.password-requirements {
+  background: #FAF7F2;
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.req-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-premium, #4C2D19);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.req-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.req-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  transition: color 0.2s ease;
+}
+
+.req-list li.req-valid {
+  color: #1b6833;
+  font-weight: 500;
+}
+
+.req-list li.req-invalid {
+  color: var(--gray, #8A7F74);
+}
+
+.req-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.req-icon svg {
+  width: 14px;
+  height: 14px;
+  color: #1b6833;
+}
+
+.req-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C8BDB2;
+}
+

@@ -92,14 +92,14 @@ describe('Setup Component', () => {
       name: 'Administrador Inicial',
       cpf: validCpf,
       accessKey: 'MASTER_KEY_123',
-      password: 'StrongPassword123'
+      password: 'StrongPassword123!'
     });
 
     component.onSubmit();
 
     expect(mockAuthService.bootstrapSystem).toHaveBeenCalledWith(
       'Administrador Inicial',
-      'StrongPassword123',
+      'StrongPassword123!',
       'MASTER_KEY_123',
       expect.stringContaining('529')
     );
@@ -115,7 +115,7 @@ describe('Setup Component', () => {
       name: 'Administrador',
       cpf: validCpf,
       accessKey: 'KEY',
-      password: 'Password123'
+      password: 'Password123!'
     });
 
     component.onSubmit();
@@ -130,7 +130,7 @@ describe('Setup Component', () => {
       name: 'Administrador',
       cpf: validCpf,
       accessKey: 'KEY',
-      password: 'Password123'
+      password: 'Password123!'
     });
 
     component.onSubmit();
@@ -148,7 +148,7 @@ describe('Setup Component', () => {
       name: 'Administrador',
       cpf: validCpf,
       accessKey: 'WRONG_KEY',
-      password: 'Password123'
+      password: 'Password123!'
     });
 
     component.onSubmit();

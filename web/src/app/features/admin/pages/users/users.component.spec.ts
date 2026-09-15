@@ -154,8 +154,22 @@ describe('UsersComponent (Admin)', () => {
     expect(component.errorMessage).toBe('A senha é obrigatória para novos usuários.');
 
     // Válido
-    component.editingUser.password = 'StrongPass123';
+    component.editingUser.password = 'StrongPass123!';
     expect(component.validateLocalData()).toBeTruthy();
+  });
+
+  it('deve rejeitar senha fraca ao validar formulário', () => {
+    component.openCreateModal();
+    component.firstName = 'Maria';
+    component.lastName = 'Souza';
+    component.editingUser = {
+      password: 'fraca',
+      role: 'EDITOR',
+      status: 'ACTIVE'
+    };
+
+    expect(component.validateLocalData()).toBeFalsy();
+    expect(component.errorMessage).toContain('A senha deve conter no mínimo 8 caracteres');
   });
 
   it('deve salvar novo usuário com sucesso', () => {
@@ -163,7 +177,7 @@ describe('UsersComponent (Admin)', () => {
     component.firstName = 'Maria';
     component.lastName = 'Souza';
     component.editingUser = {
-      password: 'PassWord123',
+      password: 'PassWord123!',
       role: 'EDITOR',
       status: 'ACTIVE'
     };
@@ -183,10 +197,10 @@ describe('UsersComponent (Admin)', () => {
     expect(component.isModalOpen).toBeTruthy();
     expect(component.isCreateMode).toBeFalsy();
 
-    component.editingUser.password = 'NovaSenhaSegura123';
+    component.editingUser.password = 'NovaSenhaSegura123!';
     component.saveUser();
 
-    expect(mockUserService.changePassword).toHaveBeenCalledWith('u-editor', 'NovaSenhaSegura123', undefined, undefined);
+    expect(mockUserService.changePassword).toHaveBeenCalledWith('u-editor', 'NovaSenhaSegura123!', undefined, undefined);
     expect(mockUserService.updateData).toHaveBeenCalledWith('u-editor', expect.any(Object));
     expect(mockToastService.success).toHaveBeenCalledWith(expect.any(String), 'Usuário Atualizado');
   });

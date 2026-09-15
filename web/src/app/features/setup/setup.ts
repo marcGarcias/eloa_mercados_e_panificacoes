@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { finalize, Subscription } from 'rxjs';
+import { passwordStrengthValidator, checkPasswordStrength, PasswordRulesState } from '../../shared/validators/password-validator';
 
 function cpfValidator(control: AbstractControl): ValidationErrors | null {
   const cpf = control.value?.replace(/\D/g, '');
@@ -26,10 +27,12 @@ function cpfValidator(control: AbstractControl): ValidationErrors | null {
   return null;
 }
 
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-setup',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './setup.html',
   styleUrls: ['./setup.css', '../../components/login-cms/login-cms.css']
 })
@@ -46,12 +49,21 @@ export class Setup implements OnDestroy {
   showPassword = false;
   userCodeGenerated = '';
 
+  get passwordRules(): PasswordRulesState {
+    return checkPasswordStrength(this.setupForm.get('password')?.value);
+  }
+
+  get passwordTouchedOrDirty(): boolean {
+    const ctrl = this.setupForm.get('password');
+    return !!(ctrl?.dirty || ctrl?.touched);
+  }
+
   constructor() {
     this.setupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       cpf: ['', [Validators.required, cpfValidator]],
       accessKey: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
+      password: ['', [Validators.required, passwordStrengthValidator()]]
     });
 
     this.subs.add(

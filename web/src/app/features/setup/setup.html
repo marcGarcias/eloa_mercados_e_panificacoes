@@ -61,9 +61,47 @@
                             }
                         </button>
                     </div>
-                    @if (setupForm.get('password')?.invalid && (setupForm.get('password')?.dirty || setupForm.get('password')?.touched)) {
-                        <span class="field-error">Senha deve ter no mínimo 8 caracteres.</span>
-                    }
+                    <div class="password-requirements" *ngIf="passwordTouchedOrDirty || (setupForm.get('password')?.value && setupForm.get('password')?.value.length > 0)">
+                        <div class="req-title">Requisitos da senha:</div>
+                        <ul class="req-list">
+                            <li [class.req-valid]="passwordRules.minLength" [class.req-invalid]="!passwordRules.minLength">
+                                <span class="req-icon">
+                                    <svg *ngIf="passwordRules.minLength" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span *ngIf="!passwordRules.minLength" class="req-dot"></span>
+                                </span>
+                                <span class="req-text">No mínimo 8 caracteres</span>
+                            </li>
+                            <li [class.req-valid]="passwordRules.hasUpperCase" [class.req-invalid]="!passwordRules.hasUpperCase">
+                                <span class="req-icon">
+                                    <svg *ngIf="passwordRules.hasUpperCase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span *ngIf="!passwordRules.hasUpperCase" class="req-dot"></span>
+                                </span>
+                                <span class="req-text">Pelo menos 1 letra maiúscula</span>
+                            </li>
+                            <li [class.req-valid]="passwordRules.hasLowerCase" [class.req-invalid]="!passwordRules.hasLowerCase">
+                                <span class="req-icon">
+                                    <svg *ngIf="passwordRules.hasLowerCase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span *ngIf="!passwordRules.hasLowerCase" class="req-dot"></span>
+                                </span>
+                                <span class="req-text">Pelo menos 1 letra minúscula</span>
+                            </li>
+                            <li [class.req-valid]="passwordRules.hasSpecialChar" [class.req-invalid]="!passwordRules.hasSpecialChar">
+                                <span class="req-icon">
+                                    <svg *ngIf="passwordRules.hasSpecialChar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span *ngIf="!passwordRules.hasSpecialChar" class="req-dot"></span>
+                                </span>
+                                <span class="req-text">Pelo menos 1 caractere especial</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-solid login-submit" [disabled]="setupForm.invalid || isLoading">
                     @if (isLoading) {

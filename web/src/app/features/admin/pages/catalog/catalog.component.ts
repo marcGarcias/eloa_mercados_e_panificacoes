@@ -80,6 +80,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   isProductModalOpen: boolean = false;
   isCategoryModalOpen: boolean = false;
   editingProduct: ProductAdminResponse | null = null;
+  editingCategory: CategoryAdminResponse | null = null;
   adminCategories: CategoryAdminResponse[] = [];
 
   isEditMode: boolean = false;
@@ -102,6 +103,13 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.loadProducts();
     this.loadAdminCategories();
     this.loadPagedCategories();
+
+    this.subs.add(
+      this.categoryAdminService.categoriesUpdated$.subscribe(() => {
+        this.loadAdminCategories();
+        this.loadPagedCategories();
+      })
+    );
 
     this.subs.add(
       this.searchSubject.pipe(
@@ -356,24 +364,37 @@ export class CatalogComponent implements OnInit, OnDestroy {
   }
 
   openCreateCategoryModal(): void {
+    this.editingCategory = null;
+    this.isCategoryModalOpen = true;
+    this.cdr.markForCheck();
+  }
+
+  openEditCategoryModal(cat: CategoryAdminResponse): void {
+    this.editingCategory = cat;
     this.isCategoryModalOpen = true;
     this.cdr.markForCheck();
   }
 
   onCategorySaved(category: CategoryAdminResponse): void {
-    this.toastService.success(`A categoria "${category.name}" foi criada com sucesso.`, 'Categoria Criada');
+    const isEdit = !!this.editingCategory;
+    const actionTitle = isEdit ? 'Categoria Atualizada' : 'Categoria Criada';
+    const actionMsg = isEdit
+      ? `A categoria "${category.name}" foi atualizada com sucesso.`
+      : `A categoria "${category.name}" foi criada com sucesso.`;
+
+    this.toastService.success(actionMsg, actionTitle);
     this.isCategoryModalOpen = false;
-    if (!this.adminCategories.some(c => c.id === category.id)) {
-      this.adminCategories = [...this.adminCategories, category];
-      this.updateFilterCategories();
-    }
+    this.editingCategory = null;
+
     this.loadAdminCategories();
+    this.loadPagedCategories();
     this.loadProducts();
     this.cdr.markForCheck();
   }
 
   onCategoryModalClosed(): void {
     this.isCategoryModalOpen = false;
+    this.editingCategory = null;
     this.cdr.markForCheck();
   }
 

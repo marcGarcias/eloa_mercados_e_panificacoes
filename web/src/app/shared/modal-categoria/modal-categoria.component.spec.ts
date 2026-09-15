@@ -12,7 +12,8 @@ describe('ModalCategoriaComponent', () => {
 
   beforeEach(async () => {
     categoryAdminServiceMock = {
-      create: vi.fn()
+      create: vi.fn(),
+      update: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -93,6 +94,29 @@ describe('ModalCategoriaComponent', () => {
     expect(component.isSubmitting).toBeFalsy();
   });
 
+  it('deve atualizar categoria com sucesso no modo de edição', () => {
+    const savedSpy = vi.spyOn(component.saved, 'emit');
+    const existingCategory = { id: 15, name: 'Salgados' };
+    const updatedCategory = { id: 15, name: 'Salgados Finos' };
+    categoryAdminServiceMock.update.mockReturnValue(of(updatedCategory));
+
+    component.category = existingCategory;
+    component.isOpen = true;
+    component.ngOnChanges({
+      isOpen: new SimpleChange(false, true, true),
+      category: new SimpleChange(null, existingCategory, true)
+    });
+
+    expect(component.form.get('name')?.value).toBe('Salgados');
+    expect(component.isEditMode).toBeTruthy();
+
+    component.form.get('name')?.setValue('Salgados Finos');
+    component.onSubmit();
+
+    expect(categoryAdminServiceMock.update).toHaveBeenCalledWith(15, 'Salgados Finos');
+    expect(savedSpy).toHaveBeenCalledWith(updatedCategory);
+  });
+
   it('deve tratar erro na criação de categoria mantendo o formulário', () => {
     categoryAdminServiceMock.create.mockReturnValue(throwError(() => new Error('Falha de rede')));
 
@@ -103,8 +127,9 @@ describe('ModalCategoriaComponent', () => {
     expect(component.isSubmitting).toBeFalsy();
   });
 
-  it('deve resetar o formulário quando isOpen mudar para true', () => {
+  it('deve resetar o formulário quando isOpen mudar para true sem categoria', () => {
     component.form.get('name')?.setValue('Texto Antigo');
+    component.category = null;
     component.isOpen = true;
     component.ngOnChanges({
       isOpen: new SimpleChange(false, true, true)

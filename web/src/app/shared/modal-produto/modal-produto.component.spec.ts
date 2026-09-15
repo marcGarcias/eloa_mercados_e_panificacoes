@@ -36,7 +36,8 @@ describe('ModalProdutoComponent', () => {
       update: vi.fn()
     };
     categoryAdminServiceMock = {
-      getAll: vi.fn().mockReturnValue(of(sampleCategories))
+      getAll: vi.fn().mockReturnValue(of(sampleCategories)),
+      categoriesUpdated$: of(void 0)
     };
     toastServiceMock = {
       success: vi.fn(),
@@ -198,5 +199,22 @@ describe('ModalProdutoComponent', () => {
     const overlayEvent = { target: { classList: { contains: (cls: string) => cls === 'modal-overlay' } } } as any;
     component.onOverlayClick(overlayEvent);
     expect(closedSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('deve recarregar categorias quando o modal é aberto via ngOnChanges', () => {
+    const newCats = [
+      { id: 1, name: 'Padaria' },
+      { id: 2, name: 'Confeitaria' },
+      { id: 3, name: 'Salgados' }
+    ];
+    categoryAdminServiceMock.getAll.mockReturnValue(of(newCats));
+
+    component.isOpen = true;
+    component.ngOnChanges({
+      isOpen: new SimpleChange(false, true, true)
+    });
+
+    expect(categoryAdminServiceMock.getAll).toHaveBeenCalled();
+    expect(component.categories).toEqual(newCats);
   });
 });

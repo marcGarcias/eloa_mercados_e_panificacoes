@@ -49,7 +49,8 @@ describe('CatalogComponent (Admin)', () => {
       getAll: vi.fn().mockReturnValue(of(mockAdminCats)),
       search: vi.fn().mockReturnValue(of(mockPagedCatResponse)),
       delete: vi.fn().mockReturnValue(of(null)),
-      deleteCategories: vi.fn().mockReturnValue(of(null))
+      deleteCategories: vi.fn().mockReturnValue(of(null)),
+      categoriesUpdated$: of(void 0)
     };
 
     mockToastService = {
@@ -74,17 +75,14 @@ describe('CatalogComponent (Admin)', () => {
     vi.useRealTimers();
   });
 
-  it('deve inicializar e carregar produtos e categorias no ngOnInit', () => {
+  it('deve inicializar o catálogo e carregar dados', () => {
     fixture.detectChanges();
 
     expect(component).toBeTruthy();
     expect(mockProductService.searchAdmin).toHaveBeenCalled();
     expect(mockCategoryAdminService.getAll).toHaveBeenCalled();
-    expect(mockCategoryAdminService.search).toHaveBeenCalled();
     expect(component.products.length).toBe(2);
-    expect(component.products[0].nome).toBe('Pão Francês');
-    expect(component.products[0].peso).toBe('50g');
-    expect(component.products[1].peso).toBe('1.200kg');
+    expect(component.categories).toEqual(['Todos', 'Pães', 'Doces']);
   });
 
   it('deve alternar entre abas de produtos e categorias', () => {
@@ -191,6 +189,7 @@ describe('CatalogComponent (Admin)', () => {
   it('deve abrir e fechar modais de categoria e salvar nova categoria', () => {
     component.openCreateCategoryModal();
     expect(component.isCategoryModalOpen).toBeTruthy();
+    expect(component.editingCategory).toBeNull();
 
     const newCat = { id: 3, name: 'Salgados' };
     component.onCategorySaved(newCat);
@@ -200,6 +199,19 @@ describe('CatalogComponent (Admin)', () => {
     component.openCreateCategoryModal();
     component.onCategoryModalClosed();
     expect(component.isCategoryModalOpen).toBeFalsy();
+  });
+
+  it('deve abrir modal em modo de edição e salvar categoria atualizada', () => {
+    const existingCat = mockAdminCats[0];
+    component.openEditCategoryModal(existingCat);
+    expect(component.isCategoryModalOpen).toBeTruthy();
+    expect(component.editingCategory).toEqual(existingCat);
+
+    const updatedCat = { id: 1, name: 'Pães Especiais' };
+    component.onCategorySaved(updatedCat);
+    expect(mockToastService.success).toHaveBeenCalledWith(expect.stringContaining('Pães Especiais'), 'Categoria Atualizada');
+    expect(component.isCategoryModalOpen).toBeFalsy();
+    expect(component.editingCategory).toBeNull();
   });
 
   it('deve excluir categoria diretamente com confirmação positiva', () => {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CategoryAdminResponse, SpringPage } from '../models/product.model';
 
@@ -8,7 +8,14 @@ import { CategoryAdminResponse, SpringPage } from '../models/product.model';
 export class CategoryAdminService {
   private readonly apiUrl = (environment?.apiUrl ?? '') + '/api/admin/categories';
 
+  private readonly _categoriesUpdated$ = new Subject<void>();
+  readonly categoriesUpdated$ = this._categoriesUpdated$.asObservable();
+
   constructor(private readonly http: HttpClient) {}
+
+  notifyCategoriesUpdated(): void {
+    this._categoriesUpdated$.next();
+  }
 
   getAll(): Observable<CategoryAdminResponse[]> {
     return this.http.get<CategoryAdminResponse[]>(this.apiUrl);
@@ -25,11 +32,15 @@ export class CategoryAdminService {
   }
 
   create(name: string): Observable<CategoryAdminResponse> {
-    return this.http.post<CategoryAdminResponse>(this.apiUrl, { name });
+    return this.http.post<CategoryAdminResponse>(this.apiUrl, { name }).pipe(
+      tap(() => this.notifyCategoriesUpdated())
+    );
   }
 
   update(id: number, name: string): Observable<CategoryAdminResponse> {
-    return this.http.put<CategoryAdminResponse>(`${this.apiUrl}/${id}`, { name });
+    return this.http.put<CategoryAdminResponse>(`${this.apiUrl}/${id}`, { name }).pipe(
+      tap(() => this.notifyCategoriesUpdated())
+    );
   }
 
   /**
@@ -37,7 +48,9 @@ export class CategoryAdminService {
    * Endpoint: DELETE /api/admin/categories/{id}
    */
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.notifyCategoriesUpdated())
+    );
   }
 
   /**
@@ -45,7 +58,9 @@ export class CategoryAdminService {
    * Endpoint: POST /api/admin/categories/batch-delete
    */
   deleteCategories(ids: number[]): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids });
+    return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids }).pipe(
+      tap(() => this.notifyCategoriesUpdated())
+    );
   }
 }
 

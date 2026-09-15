@@ -3,6 +3,7 @@ import {
   Input,
   Output,
   EventEmitter,
+  OnInit,
   OnChanges,
   OnDestroy,
   SimpleChanges,
@@ -38,7 +39,7 @@ import { finalize, Subscription } from 'rxjs';
   styleUrls: ['./modal-produto.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalProdutoComponent implements OnChanges, OnDestroy {
+export class ModalProdutoComponent implements OnInit, OnChanges, OnDestroy {
   private readonly subs = new Subscription();
 
   @Input() product: ProductAdminResponse | null = null;
@@ -94,8 +95,34 @@ export class ModalProdutoComponent implements OnChanges, OnDestroy {
     }
   }
 
+  ngOnInit(): void {
+    this.subs.add(
+      this.categoryAdminService.categoriesUpdated$.subscribe(() => {
+        this.loadCategories();
+      })
+    );
+    if (!this.categories || this.categories.length === 0) {
+      this.loadCategories();
+    }
+  }
+
+  loadCategories(): void {
+    this.subs.add(
+      this.categoryAdminService.getAll().subscribe({
+        next: (cats) => {
+          this.categories = cats;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('[ModalProduto] Erro ao carregar categorias:', err);
+        }
+      })
+    );
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && this.isOpen) {
+      this.loadCategories();
       this.resetModal();
     }
     if (changes['product'] && this.isOpen) {

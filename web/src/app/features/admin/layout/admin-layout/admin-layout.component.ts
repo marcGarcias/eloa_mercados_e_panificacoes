@@ -2,16 +2,14 @@ import { Component, ChangeDetectionStrategy, inject, OnInit, OnDestroy, ViewEnca
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
-import { ModalCategoriaComponent } from '../../../../shared/modal-categoria/modal-categoria.component';
 import { RoleTranslations } from '../../../../models/user.model';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, ModalCategoriaComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css', './admin-theme.css'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {

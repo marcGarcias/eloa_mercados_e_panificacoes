@@ -29,6 +29,8 @@ export class ModalCategoriaComponent implements OnChanges, OnDestroy {
 
   @Input() isOpen: boolean = false;
 
+  @Input() category: CategoryAdminResponse | null = null;
+
   @Output() saved = new EventEmitter<CategoryAdminResponse>();
 
   @Output() closed = new EventEmitter<void>();
@@ -47,8 +49,14 @@ export class ModalCategoriaComponent implements OnChanges, OnDestroy {
     });
   }
 
+  get isEditMode(): boolean {
+    return this.category !== null;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && this.isOpen) {
+      this.reset();
+    } else if (changes['category'] && this.isOpen) {
       this.reset();
     }
   }
@@ -85,19 +93,23 @@ export class ModalCategoriaComponent implements OnChanges, OnDestroy {
     this.isSubmitting = true;
     this.cdr.markForCheck();
 
+    const request$ = this.isEditMode && this.category
+      ? this.categoryAdminService.update(this.category.id, name)
+      : this.categoryAdminService.create(name);
+
     this.subs.add(
-      this.categoryAdminService.create(name).pipe(
+      request$.pipe(
         finalize(() => {
           this.isSubmitting = false;
           this.cdr.markForCheck();
         })
       ).subscribe({
-        next: (created) => {
-          this.saved.emit(created);
+        next: (savedCat) => {
+          this.saved.emit(savedCat);
           this.cdr.markForCheck();
         },
         error: (err) => {
-          console.error('[ModalCategoriaComponent] Erro ao criar categoria:', err);
+          console.error('[ModalCategoriaComponent] Erro ao salvar categoria:', err);
           this.cdr.markForCheck();
         }
       })
@@ -120,7 +132,7 @@ export class ModalCategoriaComponent implements OnChanges, OnDestroy {
 
   private reset(): void {
     this.isSubmitting = false;
-    this.form.reset({ name: '' });
+    this.form.reset({ name: this.category?.name ?? '' });
     this.form.markAsUntouched();
     this.cdr.markForCheck();
   }

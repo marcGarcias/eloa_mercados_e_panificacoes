@@ -126,5 +126,32 @@ describe('CategoryAdminService', () => {
       expect(caughtError.status).toBe(409);
     });
   });
+
+  describe('categoriesUpdated$ stream', () => {
+    it('deve emitir notificação quando create, update ou delete forem executados', () => {
+      let emissionCount = 0;
+      service.categoriesUpdated$.subscribe(() => {
+        emissionCount++;
+      });
+
+      service.create('Nova').subscribe();
+      const req1 = httpMock.expectOne('/api/admin/categories');
+      req1.flush(createMockCategory({ id: 1, name: 'Nova' }));
+      expect(emissionCount).toBe(1);
+
+      service.update(1, 'Atualizada').subscribe();
+      const req2 = httpMock.expectOne('/api/admin/categories/1');
+      req2.flush(createMockCategory({ id: 1, name: 'Atualizada' }));
+      expect(emissionCount).toBe(2);
+
+      service.delete(1).subscribe();
+      const req3 = httpMock.expectOne('/api/admin/categories/1');
+      req3.flush(null, { status: 204, statusText: 'No Content' });
+      expect(emissionCount).toBe(3);
+
+      service.notifyCategoriesUpdated();
+      expect(emissionCount).toBe(4);
+    });
+  });
 });
 

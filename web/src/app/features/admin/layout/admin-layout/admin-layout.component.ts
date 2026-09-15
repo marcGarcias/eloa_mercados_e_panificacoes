@@ -10,6 +10,7 @@ import { RoleTranslations } from '../../../../models/user.model';
   imports: [CommonModule, RouterModule],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css', './admin-theme.css'],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {

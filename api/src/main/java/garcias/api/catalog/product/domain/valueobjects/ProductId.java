@@ -9,7 +9,7 @@ public record ProductId(Long value) {
         if (value != null && value <= 0) {
 
             throw new AttributeMustBeGreaterThanZeroException(
-                    "ProductId",
+                    "Identificador do produto",
                     value
             );
 

@@ -28,7 +28,7 @@ class ProductNameTest {
     void shouldThrowWhenValueIsNull() {
         assertThatThrownBy(() -> new ProductName(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("Product name");
+                .hasMessageContaining("Nome do produto");
     }
 
     @ParameterizedTest
@@ -37,7 +37,7 @@ class ProductNameTest {
     void shouldThrowWhenValueIsBlank(String blankValue) {
         assertThatThrownBy(() -> new ProductName(blankValue))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("Product name");
+                .hasMessageContaining("Nome do produto");
     }
 
     @Test
@@ -45,7 +45,7 @@ class ProductNameTest {
     void shouldThrowWhenValueIsShorterThan2Characters() {
         assertThatThrownBy(() -> new ProductName("P"))
                 .isInstanceOf(AttributeTooShortException.class)
-                .hasMessageContaining("Product name");
+                .hasMessageContaining("Nome do produto");
     }
 
     @Test
@@ -55,7 +55,7 @@ class ProductNameTest {
 
         assertThatThrownBy(() -> new ProductName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
-                .hasMessageContaining("Product name");
+                .hasMessageContaining("Nome do produto");
     }
 
     @Test

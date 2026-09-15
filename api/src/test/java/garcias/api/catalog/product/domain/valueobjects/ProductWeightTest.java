@@ -28,7 +28,7 @@ class ProductWeightTest {
     void shouldThrowWhenValueIsNull() {
         assertThatThrownBy(() -> new ProductWeight(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("Product weight");
+                .hasMessageContaining("Peso do produto");
     }
 
     @ParameterizedTest
@@ -38,6 +38,6 @@ class ProductWeightTest {
         BigDecimal val = new BigDecimal(invalidValue);
         assertThatThrownBy(() -> new ProductWeight(val))
                 .isInstanceOf(AttributeMustBeGreaterThanZeroException.class)
-                .hasMessageContaining("Product weight");
+                .hasMessageContaining("Peso do produto");
     }
 }

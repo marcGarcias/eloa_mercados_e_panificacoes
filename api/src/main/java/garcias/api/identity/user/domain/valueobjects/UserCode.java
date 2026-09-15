@@ -8,15 +8,15 @@ public record UserCode(String value) {
     public UserCode {
 
         if (value == null || value.isBlank()) {
-            throw new AttributeCannotBeEmptyException("User code");
+            throw new AttributeCannotBeEmptyException("Código de usuário");
         }
 
         if (!value.matches("\\d+")) {
-            throw new DomainException("User code must contain only numbers") {};
+            throw new DomainException("O código de usuário deve conter apenas números.") {};
         }
 
         if (value.length() < 4) {
-            throw new DomainException("User code must have at least 4 digits") {};
+            throw new DomainException("O código de usuário deve conter pelo menos 4 dígitos.") {};
         }
     }
 

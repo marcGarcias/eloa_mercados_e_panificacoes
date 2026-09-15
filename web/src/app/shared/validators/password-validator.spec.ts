@@ -58,6 +58,22 @@ describe('Password Validator Unit Tests', () => {
       expect(result.hasLowerCase).toBe(true);
       expect(result.hasSpecialChar).toBe(true);
       expect(result.isValid).toBe(true);
+      expect(result.length).toBe(15);
+      expect(result.remainingChars).toBe(0);
+      expect(result.missingUpperCase).toBe(false);
+      expect(result.missingLowerCase).toBe(false);
+      expect(result.missingSpecialChar).toBe(false);
+    });
+
+    it('deve calcular corretamente a contagem de caracteres e regras faltantes', () => {
+      const result = checkPasswordStrength('Abc1');
+      expect(result.length).toBe(4);
+      expect(result.remainingChars).toBe(4);
+      expect(result.minLength).toBe(false);
+      expect(result.hasUpperCase).toBe(true);
+      expect(result.hasLowerCase).toBe(true);
+      expect(result.hasSpecialChar).toBe(false);
+      expect(result.missingSpecialChar).toBe(true);
     });
   });
 

@@ -60,7 +60,7 @@ public class User {
 
         if (name == null) {
             throw new ValueObjectCannotBeNullException(
-                    "User name"
+                    "Nome de usuário"
             );
         }
 
@@ -72,7 +72,7 @@ public class User {
 
         if (newPassword == null) {
             throw new ValueObjectCannotBeNullException(
-                    "User password"
+                    "Senha do usuário"
             );
         }
 
@@ -84,7 +84,7 @@ public class User {
 
         if (role == null) {
             throw new ValueObjectCannotBeNullException(
-                    "User role"
+                    "Função do usuário"
             );
         }
 
@@ -96,7 +96,7 @@ public class User {
 
         if (status == null) {
             throw new ValueObjectCannotBeNullException(
-                    "User status"
+                    "Status do usuário"
             );
         }
 

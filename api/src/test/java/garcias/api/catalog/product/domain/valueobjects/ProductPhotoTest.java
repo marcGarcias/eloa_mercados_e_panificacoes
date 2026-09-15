@@ -26,7 +26,7 @@ class ProductPhotoTest {
     void shouldThrowWhenValueIsNull() {
         assertThatThrownBy(() -> new ProductPhoto(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("ProductPhoto");
+                .hasMessageContaining("Foto do produto");
     }
 
     @ParameterizedTest
@@ -35,6 +35,6 @@ class ProductPhotoTest {
     void shouldThrowWhenValueIsBlank(String blankValue) {
         assertThatThrownBy(() -> new ProductPhoto(blankValue))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("ProductPhoto");
+                .hasMessageContaining("Foto do produto");
     }
 }

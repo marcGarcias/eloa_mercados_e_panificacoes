@@ -402,6 +402,38 @@ th.sort-active {
   transition: color 0.2s ease;
 }
 
+.req-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.req-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(138, 127, 116, 0.12);
+  color: var(--gray, #8A7F74);
+  transition: all 0.2s ease;
+}
+
+.req-badge.badge-ok {
+  background: rgba(27, 104, 51, 0.12);
+  color: #1b6833;
+}
+
+.req-missing-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b91c1c;
+  background: rgba(185, 28, 28, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
 .req-list li.req-valid {
   color: #1b6833;
   font-weight: 500;

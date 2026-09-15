@@ -27,7 +27,7 @@ class UserNameTest {
     void shouldThrowWhenBlank(String blank) {
         assertThatThrownBy(() -> new UserName(blank))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("User name");
+                .hasMessageContaining("Nome de usuário");
     }
 
     @Test
@@ -35,7 +35,7 @@ class UserNameTest {
     void shouldThrowWhenNull() {
         assertThatThrownBy(() -> new UserName(null))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("User name");
+                .hasMessageContaining("Nome de usuário");
     }
 
     @Test
@@ -45,7 +45,7 @@ class UserNameTest {
 
         assertThatThrownBy(() -> new UserName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
-                .hasMessageContaining("User name");
+                .hasMessageContaining("Nome de usuário");
     }
 
     @Test

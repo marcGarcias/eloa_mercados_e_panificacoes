@@ -7,11 +7,11 @@ public record CatalogPosition(Long value) {
 
     public CatalogPosition {
         if (value == null) {
-            throw new ValueObjectCannotBeNullException("Catalog position");
+            throw new ValueObjectCannotBeNullException("Posição no catálogo");
         }
 
         if (value < 0) {
-            throw new AttributeMustBeGreaterThanZeroException("Catalog position", value);
+            throw new AttributeMustBeGreaterThanZeroException("Posição no catálogo", value);
         }
     }
 

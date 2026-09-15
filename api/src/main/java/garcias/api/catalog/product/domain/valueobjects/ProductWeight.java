@@ -10,11 +10,11 @@ public record ProductWeight(BigDecimal value) {
     public ProductWeight {
 
         if (value == null) {
-            throw new ValueObjectCannotBeNullException("Product weight");
+            throw new ValueObjectCannotBeNullException("Peso do produto");
         }
 
         if (value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new AttributeMustBeGreaterThanZeroException("Product weight", value);
+            throw new AttributeMustBeGreaterThanZeroException("Peso do produto", value);
         }
     }
 

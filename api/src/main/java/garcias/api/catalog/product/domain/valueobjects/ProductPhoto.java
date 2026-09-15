@@ -8,11 +8,11 @@ public record ProductPhoto(String value) {
     public ProductPhoto {
 
         if (value == null) {
-            throw new ValueObjectCannotBeNullException("ProductPhoto");
+            throw new ValueObjectCannotBeNullException("Foto do produto");
         }
 
         if (value.isBlank()) {
-            throw new AttributeCannotBeEmptyException("ProductPhoto");
+            throw new AttributeCannotBeEmptyException("Foto do produto");
         }
     }
 

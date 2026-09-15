@@ -46,6 +46,6 @@ public class BootstrapUserService implements BootstrapUserUseCase {
 
         String userCode = userAuthenticationPort.createInitialUser(request.name(), request.password());
 
-        return new BootstrapUserResponse("Bootstrap process initiated successfully.", userCode);
+        return new BootstrapUserResponse("Configuração inicial realizada com sucesso.", userCode);
     }
 }

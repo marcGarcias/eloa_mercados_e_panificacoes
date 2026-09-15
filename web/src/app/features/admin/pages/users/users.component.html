@@ -187,7 +187,12 @@
           </svg>
           <span *ngIf="!passwordRules.minLength" class="req-dot"></span>
         </span>
-        <span class="req-text">No mínimo 8 caracteres</span>
+        <span class="req-text">
+          <span>No mínimo 8 caracteres</span>
+          <span class="req-badge" [class.badge-ok]="passwordRules.minLength">
+            {{ passwordRules.length }}/8{{ !passwordRules.minLength ? ' (faltam ' + passwordRules.remainingChars + ')' : '' }}
+          </span>
+        </span>
       </li>
       <li [class.req-valid]="passwordRules.hasUpperCase" [class.req-invalid]="!passwordRules.hasUpperCase">
         <span class="req-icon">
@@ -196,7 +201,10 @@
           </svg>
           <span *ngIf="!passwordRules.hasUpperCase" class="req-dot"></span>
         </span>
-        <span class="req-text">Pelo menos 1 letra maiúscula</span>
+        <span class="req-text">
+          <span>Pelo menos 1 letra maiúscula</span>
+          <span *ngIf="passwordRules.missingUpperCase" class="req-missing-label">(falta)</span>
+        </span>
       </li>
       <li [class.req-valid]="passwordRules.hasLowerCase" [class.req-invalid]="!passwordRules.hasLowerCase">
         <span class="req-icon">
@@ -205,7 +213,10 @@
           </svg>
           <span *ngIf="!passwordRules.hasLowerCase" class="req-dot"></span>
         </span>
-        <span class="req-text">Pelo menos 1 letra minúscula</span>
+        <span class="req-text">
+          <span>Pelo menos 1 letra minúscula</span>
+          <span *ngIf="passwordRules.missingLowerCase" class="req-missing-label">(falta)</span>
+        </span>
       </li>
       <li [class.req-valid]="passwordRules.hasSpecialChar" [class.req-invalid]="!passwordRules.hasSpecialChar">
         <span class="req-icon">
@@ -214,7 +225,10 @@
           </svg>
           <span *ngIf="!passwordRules.hasSpecialChar" class="req-dot"></span>
         </span>
-        <span class="req-text">Pelo menos 1 caractere especial</span>
+        <span class="req-text">
+          <span>Pelo menos 1 caractere especial (!@#$...)</span>
+          <span *ngIf="passwordRules.missingSpecialChar" class="req-missing-label">(falta)</span>
+        </span>
       </li>
     </ul>
   </div>

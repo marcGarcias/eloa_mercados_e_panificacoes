@@ -35,7 +35,7 @@ class CategoryNameTest {
     void shouldThrowWhenValueIsBlank(String blankName) {
         assertThatThrownBy(() -> new CategoryName(blankName))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("Category name");
+                .hasMessageContaining("Nome da categoria");
     }
 
     @Test
@@ -43,7 +43,7 @@ class CategoryNameTest {
     void shouldThrowWhenValueIsShorterThan2Characters() {
         assertThatThrownBy(() -> new CategoryName("A"))
                 .isInstanceOf(AttributeTooShortException.class)
-                .hasMessageContaining("Category name");
+                .hasMessageContaining("Nome da categoria");
     }
 
     @Test
@@ -53,7 +53,7 @@ class CategoryNameTest {
 
         assertThatThrownBy(() -> new CategoryName(longName))
                 .isInstanceOf(AttributeTooLongException.class)
-                .hasMessageContaining("Category name");
+                .hasMessageContaining("Nome da categoria");
     }
 
     @Test

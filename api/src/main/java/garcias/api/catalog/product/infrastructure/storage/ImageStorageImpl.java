@@ -108,7 +108,7 @@ public class ImageStorageImpl implements ImageStorage {
         } catch (InvalidImageException exception) {
             throw exception;
         } catch (Exception exception) {
-            throw new ImageStorageException("Could not save image", exception);
+            throw new ImageStorageException("Não foi possível salvar a imagem.", exception);
         }
     }
 
@@ -189,7 +189,7 @@ public class ImageStorageImpl implements ImageStorage {
                 }
             }
         } catch (IOException exception) {
-            throw new ImageStorageException("Could not delete image", exception);
+            throw new ImageStorageException("Não foi possível excluir a imagem.", exception);
         }
     }
 
@@ -237,7 +237,7 @@ public class ImageStorageImpl implements ImageStorage {
         } catch (NoSuchFileException exception) {
             throw new ImageNotFoundException();
         } catch (IOException exception) {
-            throw new ImageStorageException("Could not load image", exception);
+            throw new ImageStorageException("Não foi possível carregar a imagem.", exception);
         }
     }
 }

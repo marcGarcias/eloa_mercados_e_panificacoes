@@ -24,7 +24,7 @@ class CategoryIdTest {
     void shouldThrowWhenValueIsNull() {
         assertThatThrownBy(() -> new CategoryId(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("CategoryId");
+                .hasMessageContaining("Identificador da categoria");
     }
 
     @Test

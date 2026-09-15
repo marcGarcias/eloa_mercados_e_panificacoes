@@ -7,7 +7,7 @@ public record Password(String value) {
     public Password(String value) {
 
         if (value == null || value.isBlank()) {
-            throw new AttributeCannotBeEmptyException("Password");
+            throw new AttributeCannotBeEmptyException("Senha");
         }
 
         this.value = value;

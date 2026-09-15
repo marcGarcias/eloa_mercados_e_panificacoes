@@ -10,19 +10,19 @@ public record ProductName(String value) {
     public ProductName {
 
         if (value == null) {
-            throw new ValueObjectCannotBeNullException("Product name");
+            throw new ValueObjectCannotBeNullException("Nome do produto");
         }
 
         if (value.isBlank()) {
-            throw new AttributeCannotBeEmptyException("Product name");
+            throw new AttributeCannotBeEmptyException("Nome do produto");
         }
 
         if (value.length() < 2) {
-            throw new AttributeTooShortException("Product name", "2");
+            throw new AttributeTooShortException("Nome do produto", "2");
         }
 
         if (value.length() > 32) {
-            throw new AttributeTooLongException("Product name", "32");
+            throw new AttributeTooLongException("Nome do produto", "32");
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.UUID;
 public record UserId(UUID value) {
 
     public UserId {
-        Objects.requireNonNull(value, "User id cannot be null");
+        Objects.requireNonNull(value, "O identificador do usuário não pode ser nulo");
     }
 
     public static UserId generate() {

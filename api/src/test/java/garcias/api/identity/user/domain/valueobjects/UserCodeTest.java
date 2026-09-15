@@ -37,7 +37,7 @@ class UserCodeTest {
     void shouldThrowWhenBlank(String blank) {
         assertThatThrownBy(() -> new UserCode(blank))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("User code");
+                .hasMessageContaining("Código de usuário");
     }
 
     @Test
@@ -45,7 +45,7 @@ class UserCodeTest {
     void shouldThrowWhenNull() {
         assertThatThrownBy(() -> new UserCode(null))
                 .isInstanceOf(AttributeCannotBeEmptyException.class)
-                .hasMessageContaining("User code");
+                .hasMessageContaining("Código de usuário");
     }
 
     @ParameterizedTest
@@ -54,7 +54,7 @@ class UserCodeTest {
     void shouldThrowWhenNonNumeric(String nonNumeric) {
         assertThatThrownBy(() -> new UserCode(nonNumeric))
                 .isInstanceOf(DomainException.class)
-                .hasMessage("User code must contain only numbers");
+                .hasMessage("O código de usuário deve conter apenas números.");
     }
 
     @ParameterizedTest
@@ -63,6 +63,6 @@ class UserCodeTest {
     void shouldThrowWhenLessThan4Digits(String shortCode) {
         assertThatThrownBy(() -> new UserCode(shortCode))
                 .isInstanceOf(DomainException.class)
-                .hasMessage("User code must have at least 4 digits");
+                .hasMessage("O código de usuário deve conter pelo menos 4 dígitos.");
     }
 }

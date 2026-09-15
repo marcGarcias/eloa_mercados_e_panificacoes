@@ -13,15 +13,15 @@ public record CategoryName(String value) {
         Objects.requireNonNull(value);
 
         if (value.isBlank()) {
-            throw new AttributeCannotBeEmptyException("Category name");
+            throw new AttributeCannotBeEmptyException("Nome da categoria");
         }
 
         if (value.length() < 2) {
-            throw new AttributeTooShortException("Category name", "2");
+            throw new AttributeTooShortException("Nome da categoria", "2");
         }
 
         if (value.length() > 22) {
-            throw new AttributeTooLongException("Category name", "22");
+            throw new AttributeTooLongException("Nome da categoria", "22");
         }
     }
 }

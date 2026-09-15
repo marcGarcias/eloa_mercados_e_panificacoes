@@ -34,6 +34,6 @@ class UserIdTest {
     void shouldThrowWhenUUIDIsNull() {
         assertThatThrownBy(() -> new UserId(null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("User id cannot be null");
+                .hasMessageContaining("O identificador do usuário não pode ser nulo");
     }
 }

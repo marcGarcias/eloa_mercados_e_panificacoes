@@ -84,7 +84,7 @@ class UserTest {
 
         assertThatThrownBy(() -> user.changeName(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("User name");
+                .hasMessageContaining("Nome de usuário");
     }
 
     @Test
@@ -98,7 +98,7 @@ class UserTest {
 
         assertThatThrownBy(() -> user.changePassword(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("User password");
+                .hasMessageContaining("Senha do usuário");
     }
 
     @Test
@@ -111,7 +111,7 @@ class UserTest {
 
         assertThatThrownBy(() -> user.changeRole(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("User role");
+                .hasMessageContaining("Função do usuário");
     }
 
     @Test
@@ -133,7 +133,7 @@ class UserTest {
 
         assertThatThrownBy(() -> user.changeStatus(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("User status");
+                .hasMessageContaining("Status do usuário");
     }
 
     @Test

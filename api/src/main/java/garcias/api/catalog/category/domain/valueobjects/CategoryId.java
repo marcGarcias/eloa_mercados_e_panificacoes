@@ -7,7 +7,7 @@ public record CategoryId(Long value) {
     public CategoryId {
 
         if (value == null) {
-            throw new ValueObjectCannotBeNullException("CategoryId");
+            throw new ValueObjectCannotBeNullException("Identificador da categoria");
         }
     }
 

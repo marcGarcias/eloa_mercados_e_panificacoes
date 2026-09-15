@@ -22,14 +22,14 @@ class PasswordValueObjectTest {
     @DisplayName("Should throw AttributeCannotBeEmptyException when password is null")
     void shouldThrowWhenPasswordIsNull() {
         AttributeCannotBeEmptyException ex = assertThrows(AttributeCannotBeEmptyException.class, () -> new Password(null));
-        assertTrue(ex.getMessage().contains("Password"));
+        assertTrue(ex.getMessage().contains("Senha"));
     }
 
     @Test
     @DisplayName("Should throw AttributeCannotBeEmptyException when password is blank or whitespace")
     void shouldThrowWhenPasswordIsBlank() {
         AttributeCannotBeEmptyException ex = assertThrows(AttributeCannotBeEmptyException.class, () -> new Password("   "));
-        assertTrue(ex.getMessage().contains("Password"));
+        assertTrue(ex.getMessage().contains("Senha"));
     }
 
     @Test

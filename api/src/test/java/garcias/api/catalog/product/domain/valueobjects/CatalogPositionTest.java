@@ -24,7 +24,7 @@ class CatalogPositionTest {
     void shouldThrowWhenValueIsNull() {
         assertThatThrownBy(() -> new CatalogPosition(null))
                 .isInstanceOf(ValueObjectCannotBeNullException.class)
-                .hasMessageContaining("Catalog position");
+                .hasMessageContaining("Posição no catálogo");
     }
 
     @Test
@@ -32,7 +32,7 @@ class CatalogPositionTest {
     void shouldThrowWhenValueIsNegative() {
         assertThatThrownBy(() -> new CatalogPosition(-1L))
                 .isInstanceOf(AttributeMustBeGreaterThanZeroException.class)
-                .hasMessageContaining("Catalog position");
+                .hasMessageContaining("Posição no catálogo");
     }
 
     @Test

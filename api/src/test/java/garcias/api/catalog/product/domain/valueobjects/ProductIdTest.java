@@ -36,6 +36,6 @@ class ProductIdTest {
     void shouldThrowWhenValueIsZeroOrNegative(Long invalidValue) {
         assertThatThrownBy(() -> new ProductId(invalidValue))
                 .isInstanceOf(AttributeMustBeGreaterThanZeroException.class)
-                .hasMessageContaining("ProductId");
+                .hasMessageContaining("Identificador do produto");
     }
 }

@@ -205,7 +205,14 @@
             <img src="/assets/icons/placeholder-product.svg" alt="Sem imagem" />
             <span>Sem imagem</span>
           </div>
-          <img *ngIf="p.imagem" [src]="p.imagem" [alt]="p.nome" loading="lazy" />
+          <img
+            *ngIf="p.imagem"
+            [src]="p.imagem"
+            [srcset]="p.imagemSrcSet || null"
+            sizes="(max-width: 640px) 200px, 400px"
+            [alt]="p.nome"
+            loading="lazy"
+          />
           <span
             class="card-status"
             [ngClass]="p.status === 'ativo' ? 'status-ativo' : 'status-inativo'"

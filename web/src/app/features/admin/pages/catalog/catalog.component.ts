@@ -212,7 +212,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
             categoria: p.categoryName,
             peso: this.formatWeight(p.weight),
             status: p.status === ProductStatus.ACTIVE ? 'ativo' : 'inativo',
-            imagem: this.productService.getProductImageUrl(p.photo),
+            imagem: this.productService.getProductImageUrl(p.photo, 'sm'),
+            imagemSrcSet: this.productService.getProductImageSrcSet(p.photo),
             order: p.position
           }));
 

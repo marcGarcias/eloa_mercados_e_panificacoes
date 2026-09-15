@@ -138,6 +138,36 @@
   gap: 14px;
 }
 
+.photo-guidelines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--line, #E7DACB);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+}
+
+.guideline-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--gray, #8A7F74);
+}
+
+.guideline-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--primary, #A2422C);
+  flex-shrink: 0;
+}
+
+.guideline-item strong {
+  color: var(--text, #2C241E);
+}
+
 .photo-upload-area {
   display: flex;
   gap: 14px;
@@ -237,6 +267,55 @@
 .photo-clear-btn:hover {
   background: #FBEAE7;
   color: #A5402F;
+}
+
+.btn-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.compressing-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--primary, #A2422C);
+  font-weight: 500;
+}
+
+.inline-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(162, 66, 44, 0.2);
+  border-top-color: var(--primary, #A2422C);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.compression-success-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EAF8EE;
+  border: 1px solid #B8E4C3;
+  color: #1E7E34;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  margin-top: 4px;
+}
+
+.compression-success-badge svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  stroke: #1E7E34;
+}
+
+.badge-saving {
+  color: #155724;
+  font-weight: 700;
 }
 
 .btn {

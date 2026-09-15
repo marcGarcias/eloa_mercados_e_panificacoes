@@ -24,7 +24,8 @@ export class ProductService {
         nome: p.name,
         categoria: p.categoryName,
         peso: p.weight ? `${p.weight.toString().replace('.', ',')} kg` : '',
-        imagem: this.getProductImageUrl(p.photoUrl),
+        imagem: this.getProductImageUrl(p.photoUrl, 'md'),
+        imagemSrcSet: this.getProductImageSrcSet(p.photoUrl),
         order: Number(p.position)
       })))
     );
@@ -141,12 +142,32 @@ export class ProductService {
 
   /**
    * Converte o caminho da foto (/uploads/products/filename) para a URL de visualizacao.
+   * Suporta variantes responsivas: 'sm' (200px), 'md' (500px), 'lg' (1080px).
    */
-  getProductImageUrl(photoPath: string | null | undefined): string | null {
+  getProductImageUrl(photoPath: string | null | undefined, size?: 'sm' | 'md' | 'lg'): string | null {
     if (!photoPath) return null;
-    const filename = photoPath.substring(photoPath.lastIndexOf('/') + 1);
+    let filename = photoPath.substring(photoPath.lastIndexOf('/') + 1);
+
+    if (size) {
+      const rawName = filename.replace(/-(lg|md|sm)\.webp$/, '').replace(/\.webp$/, '');
+      filename = `${rawName}-${size}.webp`;
+    }
+
     const apiBase = environment?.apiUrl ?? '';
     return `${apiBase}/api/storage/images/${filename}`;
+  }
+
+  /**
+   * Gera a string srcset com as 3 variantes responsivas do produto.
+   */
+  getProductImageSrcSet(photoPath: string | null | undefined): string | null {
+    if (!photoPath) return null;
+    const smUrl = this.getProductImageUrl(photoPath, 'sm');
+    const mdUrl = this.getProductImageUrl(photoPath, 'md');
+    const lgUrl = this.getProductImageUrl(photoPath, 'lg');
+
+    if (!smUrl || !mdUrl || !lgUrl) return null;
+    return `${smUrl} 200w, ${mdUrl} 500w, ${lgUrl} 1080w`;
   }
 
   /**

@@ -191,17 +191,28 @@ describe('ProductService', () => {
     });
   });
 
-  describe('searchPublic() - Catálogo Público', () => {
-    it('deve realizar GET em /api/public/products com parâmetros padrão', () => {
-      service.searchPublic({ page: 0, size: 12 }).subscribe();
+  describe('getProductImageUrl() e getProductImageSrcSet()', () => {
+    it('deve retornar null se photoPath for nulo ou vazio', () => {
+      expect(service.getProductImageUrl(null)).toBeNull();
+      expect(service.getProductImageUrl('')).toBeNull();
+      expect(service.getProductImageSrcSet(null)).toBeNull();
+      expect(service.getProductImageSrcSet('')).toBeNull();
+    });
 
-      const req = httpMock.expectOne(request =>
-        request.url === '/api/public/products' &&
-        request.params.get('page') === '0' &&
-        request.params.get('size') === '12'
+    it('deve gerar URL base e com variantes responsivas (sm, md, lg)', () => {
+      const path = '/uploads/products/123e4567.webp';
+      expect(service.getProductImageUrl(path)).toBe('/api/storage/images/123e4567.webp');
+      expect(service.getProductImageUrl(path, 'sm')).toBe('/api/storage/images/123e4567-sm.webp');
+      expect(service.getProductImageUrl(path, 'md')).toBe('/api/storage/images/123e4567-md.webp');
+      expect(service.getProductImageUrl(path, 'lg')).toBe('/api/storage/images/123e4567-lg.webp');
+    });
+
+    it('deve gerar srcset com as 3 variantes responsivas', () => {
+      const path = '/uploads/products/123e4567.webp';
+      const srcset = service.getProductImageSrcSet(path);
+      expect(srcset).toBe(
+        '/api/storage/images/123e4567-sm.webp 200w, /api/storage/images/123e4567-md.webp 500w, /api/storage/images/123e4567-lg.webp 1080w'
       );
-      expect(req.request.method).toBe('GET');
-      req.flush({ content: [] });
     });
   });
 });

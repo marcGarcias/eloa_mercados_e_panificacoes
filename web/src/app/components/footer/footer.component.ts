@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentRodape, SiteData } from '../../models/content.model';
 import { formatCnpj, formatWhatsappLink } from '../../core/utils/formatters.util';
+import { smoothScrollToSection } from '../../core/utils/navigation.util';
 
 @Component({
   selector: 'app-footer',
@@ -16,6 +17,10 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   currentYear: number = new Date().getFullYear();
   updateTimer?: ReturnType<typeof setTimeout>;
+
+  onNavClick(event: Event, targetId: string): void {
+    smoothScrollToSection(event, targetId);
+  }
 
   ngOnInit(): void {
     this.updateCurrentYear();

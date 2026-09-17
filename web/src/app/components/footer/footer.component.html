@@ -21,11 +21,12 @@
                 <h3 class="footer-heading">Navegação</h3>
                 <nav aria-label="Navegação do rodapé">
                     <ul class="footer-links">
-                        <li><a href="#home">Início</a></li>
-                        <li><a href="#features">Destaques</a></li>
-                        <li><a href="#catalog">Catálogo</a></li>
-                        <li><a href="#about">Sobre Nós</a></li>
-                        <li><a href="#contact">Contato</a></li>
+                        <li><a href="#home" (click)="onNavClick($event, 'home')">Início</a></li>
+                        <li><a href="#features" (click)="onNavClick($event, 'features')">Destaques</a></li>
+                        <li><a href="#catalog" (click)="onNavClick($event, 'catalog')">Catálogo</a></li>
+                        <li><a href="#about" (click)="onNavClick($event, 'about')">Sobre Nós</a></li>
+                        <li><a href="#faq" (click)="onNavClick($event, 'faq')">Dúvidas</a></li>
+                        <li><a href="#contact" (click)="onNavClick($event, 'contact')">Contato</a></li>
                     </ul>
                 </nav>
             </div>

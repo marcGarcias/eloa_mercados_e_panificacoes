@@ -13,8 +13,8 @@
                 {{ (banner?.descricao && banner!.descricao!.trim()) ? banner!.descricao : 'Produzidos diariamente com ingredientes selecionados. Pães, bolos, doces, salgados e produtos de mercado — tudo em um só lugar para você e sua família.' }}
             </p>
             <div class="hero-btns">
-                <a class="btn" href="#catalog">Ver Catálogo</a>
-                <a class="btn btn-outline" href="#about">Conheça a Eloa</a>
+                <a class="btn" href="#catalog" (click)="onNavClick($event, 'catalog')">Ver Catálogo</a>
+                <a class="btn btn-outline" href="#about" (click)="onNavClick($event, 'about')">Conheça a Eloa</a>
             </div>
             <div class="search">
                 <input id="search" type="text" placeholder="Buscar pão, bolo, salgado..." aria-label="Buscar pão, bolo, salgado no catálogo">

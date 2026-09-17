@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SiteData } from '../../models/content.model';
 import { formatWhatsappLink } from '../../core/utils/formatters.util';
+import { smoothScrollToSection } from '../../core/utils/navigation.util';
 
 @Component({
   selector: 'app-header',
@@ -15,5 +16,9 @@ export class HeaderComponent {
 
   get whatsappLink(): string {
     return formatWhatsappLink(this.dados?.whatsapp);
+  }
+
+  onNavClick(event: Event, targetId: string): void {
+    smoothScrollToSection(event, targetId);
   }
 }

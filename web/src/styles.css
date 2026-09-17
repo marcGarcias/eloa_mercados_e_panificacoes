@@ -22,6 +22,21 @@
   --font-title: 'Lora', serif;
   --font-logo: 'Imperial Script', cursive;
   --font-body: 'Poppins', sans-serif;
+
+  /* Compensação precisa do cabeçalho sticky */
+  --header-height: 60px;
+}
+
+@media (min-width: 744px) {
+  :root {
+    --header-height: 86px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --header-height: 98px;
+  }
 }
 
 * {
@@ -32,6 +47,26 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Alvos de rolagem dos atalhos com alinhamento preciso na base do header */
+#home {
+  scroll-margin-top: 0;
+}
+
+#features,
+#catalog,
+#about,
+#faq,
+#contact,
+#stats,
+#parceria,
+.features-placeholder,
+.catalog-placeholder,
+.about-placeholder,
+.faq-placeholder,
+.footer-placeholder {
+  scroll-margin-top: var(--header-height);
 }
 
 body {

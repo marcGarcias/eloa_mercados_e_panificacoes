@@ -221,19 +221,26 @@ public class SessionRedisRepository implements SessionRepository {
         }
 
         try {
+            var valueOps = redisTemplate.opsForValue();
             String refreshKey = REFRESH_PREFIX + tokenHash;
-            String sessionId = redisTemplate.opsForValue().get(refreshKey);
+            String sessionId = valueOps.get(refreshKey);
 
             if (sessionId != null && !sessionId.isBlank()) {
-                String sessionKey = SESSION_PREFIX + sessionId;
                 String sessionTokenKey = SESSION_TOKEN_PREFIX + sessionId;
-                String userCode = redisTemplate.opsForValue().get(sessionKey);
+                String currentActiveTokenHash = valueOps.get(sessionTokenKey);
 
-                redisTemplate.delete(sessionTokenKey);
-                redisTemplate.delete(sessionKey);
+                // Só destrói a sessão se o token sendo revogado for o token ATUAL da sessão!
+                // Se já foi rotacionado (session_token aponta para outro hash), apenas descarta a chave antiga.
+                if (currentActiveTokenHash == null || currentActiveTokenHash.equals(tokenHash)) {
+                    String sessionKey = SESSION_PREFIX + sessionId;
+                    String userCode = valueOps.get(sessionKey);
 
-                if (userCode != null && !userCode.isBlank()) {
-                    redisTemplate.opsForZSet().remove(USER_SESSIONS_PREFIX + userCode, sessionId);
+                    redisTemplate.delete(sessionTokenKey);
+                    redisTemplate.delete(sessionKey);
+
+                    if (userCode != null && !userCode.isBlank()) {
+                        redisTemplate.opsForZSet().remove(USER_SESSIONS_PREFIX + userCode, sessionId);
+                    }
                 }
             }
 

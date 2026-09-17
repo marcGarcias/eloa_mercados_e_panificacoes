@@ -1,7 +1,7 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap, catchError, of, map, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, map, switchMap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, UserRole } from '../models/user.model';
 
@@ -20,7 +20,7 @@ export interface BootstrapUserResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService implements OnDestroy {
+export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private readonly apiUrl = (environment?.apiUrl ?? '') + '/api/auth';
@@ -33,16 +33,8 @@ export class AuthService implements OnDestroy {
   currentUser$ = this.currentUserSubject.asObservable();
 
   private authInitialized = false;
-  private pingIntervalId: any = null;
-  private readonly PING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutos
 
-  constructor() {
-
-  }
-
-  ngOnDestroy(): void {
-    this.stopPingTimer();
-  }
+  constructor() {}
 
   get currentUser(): User | null {
     return this.currentUserSubject.value;
@@ -54,7 +46,6 @@ export class AuthService implements OnDestroy {
         if (response.accessToken) {
           this.setToken(response.accessToken);
           this.authInitialized = true; // Evita refresh redundante no guard
-          this.startPingTimer();
           return this.loadCurrentUser().pipe(
             map(user => {
               if (!user) {
@@ -75,8 +66,6 @@ export class AuthService implements OnDestroy {
   }
 
   logout(): void {
-    this.stopPingTimer();
-
     // Chama o backend para invalidar a sessão e o cookie no Redis
     this.http.post(`${this.apiUrl}/logout`, {}).pipe(
       catchError(() => of(null)) // Ignora erro de rede no logout
@@ -104,11 +93,13 @@ export class AuthService implements OnDestroy {
   loadCurrentUser(): Observable<User | null> {
     return this.http.get<User>(`${this.apiUrl}/me`).pipe(
       tap(user => this.currentUserSubject.next(user)),
-      catchError(() => {
-        this.currentUserSubject.next(null);
-        this.accessToken = null;
-        this.loggedInSubject.next(false);
-        this.stopPingTimer();
+      catchError((error: unknown) => {
+        // Apenas limpa a autenticação se for erro explícito de autenticação (401/403)
+        if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
+          this.currentUserSubject.next(null);
+          this.accessToken = null;
+          this.loggedInSubject.next(false);
+        }
         return of(null);
       })
     );
@@ -120,7 +111,8 @@ export class AuthService implements OnDestroy {
     }
 
     return this.silentRefresh().pipe(
-      tap(() => this.authInitialized = true)
+      tap(() => this.authInitialized = true),
+      catchError(() => of(false))
     );
   }
 
@@ -129,7 +121,6 @@ export class AuthService implements OnDestroy {
       switchMap(response => {
         if (response.accessToken) {
           this.setToken(response.accessToken);
-          this.startPingTimer();
           return this.loadCurrentUser().pipe(
             map(() => true),
             catchError(() => of(true))
@@ -137,53 +128,19 @@ export class AuthService implements OnDestroy {
         }
         return of(false);
       }),
-      catchError(() => {
-        this.accessToken = null;
-        this.loggedInSubject.next(false);
-        this.currentUserSubject.next(null);
-        this.stopPingTimer();
-        return of(false);
-      })
-    );
-  }
-
-  pingSession(): Observable<boolean> {
-    if (!this.isLoggedIn()) {
-      this.stopPingTimer();
-      return of(false);
-    }
-
-    return this.http.get(`${this.apiUrl}/ping`, { observe: 'response' }).pipe(
-      map(res => res.status === 204 || res.status === 200),
       catchError((error: unknown) => {
-        if (error instanceof HttpErrorResponse) {
-          // Sessão revogada / inválida no servidor
-          if (error.status === 401) {
-            this.logout();
-            this.router.navigate(['/login-cms']);
-            return of(false);
-          }
-          // Erros de infraestrutura temporários (500, timeout) -> mantém usuário logado
-          console.warn('[AuthService] Falha temporária no ping de sessão:', error.message);
-          return of(true);
+        // Só limpa a sessão e credenciais se o refresh for explicitamente 401 ou 403
+        if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
+          this.accessToken = null;
+          this.loggedInSubject.next(false);
+          this.currentUserSubject.next(null);
+          return of(false);
         }
-        return of(true);
+        // Para oscilações temporárias de rede (status 0) ou erro 5xx do servidor:
+        // NÃO limpa as credenciais! Propaga o erro para não deslogar injustamente.
+        return throwError(() => error);
       })
     );
-  }
-
-  startPingTimer(): void {
-    this.stopPingTimer();
-    this.pingIntervalId = setInterval(() => {
-      this.pingSession().subscribe();
-    }, this.PING_INTERVAL_MS);
-  }
-
-  stopPingTimer(): void {
-    if (this.pingIntervalId) {
-      clearInterval(this.pingIntervalId);
-      this.pingIntervalId = null;
-    }
   }
 
   private setToken(token: string): void {

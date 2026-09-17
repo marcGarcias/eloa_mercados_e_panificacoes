@@ -156,6 +156,7 @@ class SessionRedisRepositoryTest {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
         when(valueOperations.get("refresh_token:hash123")).thenReturn("sess-1");
+        when(valueOperations.get("session_token:sess-1")).thenReturn("hash123");
         when(valueOperations.get("session:sess-1")).thenReturn("0001");
 
         sessionRedisRepository.revokeRefreshToken("hash123");
@@ -164,5 +165,21 @@ class SessionRedisRepositoryTest {
         verify(redisTemplate).delete("session:sess-1");
         verify(zSetOperations).remove("user_sessions:0001", "sess-1");
         verify(redisTemplate).delete("refresh_token:hash123");
+    }
+
+    @Test
+    @DisplayName("Should preserve session and only delete old token key when revoking rotated token")
+    void shouldPreserveSessionWhenRevokingOldRotatedRefreshToken() {
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get("refresh_token:old-hash")).thenReturn("sess-1");
+        // Sessão já aponta para o novo hash rotacionado
+        when(valueOperations.get("session_token:sess-1")).thenReturn("new-hash");
+
+        sessionRedisRepository.revokeRefreshToken("old-hash");
+
+        // Apenas o hash antigo deve ser deletado, a sessão deve ser preservada!
+        verify(redisTemplate).delete("refresh_token:old-hash");
+        verify(redisTemplate, never()).delete("session:sess-1");
+        verify(redisTemplate, never()).delete("session_token:sess-1");
     }
 }

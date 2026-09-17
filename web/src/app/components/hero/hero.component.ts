@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentBanner } from '../../models/content.model';
+import { smoothScrollToSection } from '../../core/utils/navigation.util';
 
 @Component({
   selector: 'app-hero',
@@ -11,5 +12,9 @@ import { ContentBanner } from '../../models/content.model';
 })
 export class HeroComponent {
   @Input() banner?: ContentBanner | null;
+
+  onNavClick(event: Event, targetId: string): void {
+    smoothScrollToSection(event, targetId);
+  }
 }
 

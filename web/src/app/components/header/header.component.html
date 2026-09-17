@@ -1,7 +1,7 @@
 <header>
     <div class="container nav">
         <div class="nav-top">
-            <a href="#home" class="logo" aria-label="Eloá Mercados e Panificações - Início">
+            <a href="#home" (click)="onNavClick($event, 'home')" class="logo" aria-label="Eloá Mercados e Panificações - Início">
                 <div>
                     Eloa
                     <span>MERCADOS &amp; PANIFICAÇÕES</span>
@@ -10,12 +10,12 @@
         </div>
 
         <nav class="menu" aria-label="Navegação principal">
-            <a href="#home">Início</a>
-            <a href="#features">Diferenciais</a>
-            <a href="#catalog">Catálogo</a>
-            <a href="#about">Sobre</a>
-            <a href="#faq">Dúvidas</a>
-            <a href="#contact">Contato</a>
+            <a href="#home" (click)="onNavClick($event, 'home')">Início</a>
+            <a href="#features" (click)="onNavClick($event, 'features')">Diferenciais</a>
+            <a href="#catalog" (click)="onNavClick($event, 'catalog')">Catálogo</a>
+            <a href="#about" (click)="onNavClick($event, 'about')">Sobre</a>
+            <a href="#faq" (click)="onNavClick($event, 'faq')">Dúvidas</a>
+            <a href="#contact" (click)="onNavClick($event, 'contact')">Contato</a>
         </nav>
 
         <a class="btn" [href]="whatsappLink" target="_blank" rel="noopener noreferrer" aria-label="Fazer Pedido via WhatsApp (abre em nova aba)">

@@ -4,11 +4,17 @@ import java.util.Optional;
 
 public interface SessionRepository {
 
-    void createSession(String sessionId, String userCode, long ttlSeconds);
+    void createSession(String sessionId, String userCode, String tokenHash, long ttlSeconds);
+
+    default void createSession(String sessionId, String userCode, long ttlSeconds) {
+        createSession(sessionId, userCode, null, ttlSeconds);
+    }
 
     boolean isSessionActive(String sessionId);
 
     Optional<String> findUserCodeBySessionId(String sessionId);
+
+    Optional<String> findTokenHashBySessionId(String sessionId);
 
     void revokeSession(String sessionId, String userCode);
 
@@ -19,5 +25,4 @@ public interface SessionRepository {
     Optional<String> findSessionIdByRefreshTokenHash(String tokenHash);
 
     void revokeRefreshToken(String tokenHash);
-
 }

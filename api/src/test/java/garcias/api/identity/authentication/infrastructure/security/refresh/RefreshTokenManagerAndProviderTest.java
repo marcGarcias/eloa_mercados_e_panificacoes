@@ -47,7 +47,7 @@ class RefreshTokenManagerAndProviderTest {
         String token = refreshTokenManager.generate("1001", "sess-1001");
 
         assertThat(token).isNotBlank();
-        verify(sessionRepository).createSession(eq("sess-1001"), eq("1001"), eq(604800L));
+        verify(sessionRepository).createSession(eq("sess-1001"), eq("1001"), anyString(), eq(604800L));
         verify(sessionRepository).linkRefreshToken(anyString(), eq("sess-1001"), eq(604800L));
     }
 

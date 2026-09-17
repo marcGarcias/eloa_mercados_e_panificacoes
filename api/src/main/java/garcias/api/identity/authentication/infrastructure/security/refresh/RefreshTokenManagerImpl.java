@@ -46,7 +46,7 @@ public class RefreshTokenManagerImpl implements RefreshTokenManager {
         String tokenHash = hash(token);
 
         long expiration = jwtProperties.getRefreshTokenExpiration();
-        sessionRepository.createSession(targetSessionId, userCode, expiration);
+        sessionRepository.createSession(targetSessionId, userCode, tokenHash, expiration);
         sessionRepository.linkRefreshToken(tokenHash, targetSessionId, expiration);
 
         return token;

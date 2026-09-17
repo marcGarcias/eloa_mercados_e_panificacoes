@@ -9,6 +9,7 @@ import garcias.api.identity.authentication.application.usecases.BootstrapUserUse
 import garcias.api.identity.authentication.application.usecases.LoginUseCase;
 import garcias.api.identity.authentication.application.usecases.LogoutUseCase;
 import garcias.api.identity.authentication.application.usecases.RefreshTokenUseCase;
+import garcias.api.identity.authentication.application.security.AccessTokenManager;
 import garcias.api.identity.authentication.domain.exceptions.MissingRefreshTokenException;
 import garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator;
 import garcias.api.identity.authentication.infrastructure.security.jwt.JwtProperties;
@@ -86,11 +87,13 @@ class AuthControllersTest {
         private LogoutUseCase logoutUseCase;
         @Mock
         private CsrfOriginValidator csrfOriginValidator;
+        @Mock
+        private AccessTokenManager accessTokenManager;
 
         @Test
         @DisplayName("Deve efetuar logout invalidando o token no use case quando refresh_token presente")
         void shouldLogoutWithToken() {
-            LogoutController controller = new LogoutController(logoutUseCase, csrfOriginValidator);
+            LogoutController controller = new LogoutController(logoutUseCase, csrfOriginValidator, accessTokenManager);
             ReflectionTestUtils.setField(controller, "cookieSecure", true);
             ReflectionTestUtils.setField(controller, "cookieSameSite", "None");
 
@@ -110,9 +113,31 @@ class AuthControllersTest {
         }
 
         @Test
-        @DisplayName("Deve limpar cookie sem chamar use case quando refresh_token for nulo ou em branco")
+        @DisplayName("Deve efetuar logout via Authorization Bearer quando refresh_token ausente")
+        void shouldLogoutWithBearerTokenWhenCookieAbsent() {
+            LogoutController controller = new LogoutController(logoutUseCase, csrfOriginValidator, accessTokenManager);
+            ReflectionTestUtils.setField(controller, "cookieSecure", false);
+            ReflectionTestUtils.setField(controller, "cookieSameSite", "Lax");
+
+            MockHttpServletRequest request = new MockHttpServletRequest();
+            request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer access.token.jwt");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            when(accessTokenManager.extractSessionId("access.token.jwt")).thenReturn("sess-123");
+            when(accessTokenManager.extractUserCode("access.token.jwt")).thenReturn("0001");
+
+            ResponseEntity<Void> res = controller.logout(null, request, response);
+
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            verify(csrfOriginValidator).validate(request);
+            verify(logoutUseCase).executeBySessionId("sess-123", "0001");
+            verify(logoutUseCase, never()).executeByToken(any());
+        }
+
+        @Test
+        @DisplayName("Deve limpar cookie sem chamar use case quando refresh_token e Authorization forem nulos")
         void shouldLogoutWithoutToken() {
-            LogoutController controller = new LogoutController(logoutUseCase, csrfOriginValidator);
+            LogoutController controller = new LogoutController(logoutUseCase, csrfOriginValidator, accessTokenManager);
             ReflectionTestUtils.setField(controller, "cookieSecure", false);
             ReflectionTestUtils.setField(controller, "cookieSameSite", "Lax");
 
@@ -124,6 +149,7 @@ class AuthControllersTest {
             assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
             verify(csrfOriginValidator).validate(request);
             verify(logoutUseCase, never()).executeByToken(any());
+            verify(logoutUseCase, never()).executeBySessionId(any(), any());
         }
     }
 

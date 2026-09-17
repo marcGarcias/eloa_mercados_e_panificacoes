@@ -25,6 +25,7 @@ public class LogoutController {
 
     private final LogoutUseCase logoutUseCase;
     private final garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator;
+    private final garcias.api.identity.authentication.application.security.AccessTokenManager accessTokenManager;
 
     @Value("${cookie.secure}")
     private boolean cookieSecure;
@@ -32,12 +33,22 @@ public class LogoutController {
     @Value("${cookie.same-site}")
     private String cookieSameSite;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    public LogoutController(
+            LogoutUseCase logoutUseCase,
+            garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator,
+            garcias.api.identity.authentication.application.security.AccessTokenManager accessTokenManager
+    ) {
+        this.logoutUseCase = logoutUseCase;
+        this.csrfOriginValidator = csrfOriginValidator;
+        this.accessTokenManager = accessTokenManager;
+    }
+
     public LogoutController(
             LogoutUseCase logoutUseCase,
             garcias.api.identity.authentication.infrastructure.security.csrf.CsrfOriginValidator csrfOriginValidator
     ) {
-        this.logoutUseCase = logoutUseCase;
-        this.csrfOriginValidator = csrfOriginValidator;
+        this(logoutUseCase, csrfOriginValidator, null);
     }
 
     @Operation(
@@ -67,6 +78,26 @@ public class LogoutController {
 
         if (refreshToken != null && !refreshToken.isBlank()) {
             logoutUseCase.executeByToken(refreshToken);
+        } else if (accessTokenManager != null) {
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                try {
+                    String sessionId = accessTokenManager.extractSessionId(token);
+                    String userCode = accessTokenManager.extractUserCode(token);
+                    if (sessionId != null && !sessionId.isBlank()) {
+                        logoutUseCase.executeBySessionId(sessionId, userCode);
+                    }
+                } catch (io.jsonwebtoken.ExpiredJwtException eje) {
+                    String sessionId = eje.getClaims().get("sessionId", String.class);
+                    String userCode = eje.getClaims().getSubject();
+                    if (sessionId != null && !sessionId.isBlank()) {
+                        logoutUseCase.executeBySessionId(sessionId, userCode);
+                    }
+                } catch (Exception ignored) {
+                    // Fail-safe: malformed or invalid token
+                }
+            }
         }
 
         ResponseCookie clearAuthPathCookie = ResponseCookie

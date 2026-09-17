@@ -215,62 +215,40 @@ describe('AuthService', () => {
 
       expect(status).toBe(true);
     });
-  });
 
-  describe('pingSession()', () => {
-    it('deve retornar true e manter sessão ativa em resposta 204 do ping', () => {
-      (service as any).setToken('valid-token');
+    it('deve limpar credenciais e retornar false quando o refresh retornar 401', () => {
+      (service as any).setToken('old-token');
+      (service as any).currentUserSubject.next(createMockUser());
 
-      let pingResult: boolean | undefined;
-      service.pingSession().subscribe(res => (pingResult = res));
+      let status: boolean | undefined;
+      service.silentRefresh().subscribe(res => (status = res));
 
-      const req = httpMock.expectOne('/api/auth/ping');
-      expect(req.request.method).toBe('GET');
-      req.flush(null, { status: 204, statusText: 'No Content' });
+      const req = httpMock.expectOne('/api/auth/refresh');
+      req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
 
-      expect(pingResult).toBe(true);
-      expect(service.isLoggedIn()).toBe(true);
-    });
-
-    it('deve executar logout e redirecionar para /login-cms quando o ping retornar 401 (sessão revogada)', () => {
-      (service as any).setToken('revoked-token');
-
-      let pingResult: boolean | undefined;
-      service.pingSession().subscribe(res => (pingResult = res));
-
-      const req = httpMock.expectOne('/api/auth/ping');
-      req.flush('Sessão revogada', { status: 401, statusText: 'Unauthorized' });
-
-      // O logout chama /api/auth/logout
-      const reqLogout = httpMock.expectOne('/api/auth/logout');
-      reqLogout.flush(null, { status: 204, statusText: 'No Content' });
-
-      expect(pingResult).toBe(false);
+      expect(status).toBe(false);
       expect(service.isLoggedIn()).toBe(false);
       expect(service.getToken()).toBeNull();
+      expect(service.currentUser).toBeNull();
     });
 
-    it('não deve deslogar quando o ping retornar 500 ou erro de rede (resiliência)', () => {
-      (service as any).setToken('active-token');
+    it('deve propagar erro sem limpar credenciais quando o refresh falhar por erro de rede ou 500', () => {
+      (service as any).setToken('valid-token');
+      const user = createMockUser();
+      (service as any).currentUserSubject.next(user);
 
-      let pingResult: boolean | undefined;
-      service.pingSession().subscribe(res => (pingResult = res));
+      let errorCaught: any;
+      service.silentRefresh().subscribe({
+        error: (err) => (errorCaught = err)
+      });
 
-      const req = httpMock.expectOne('/api/auth/ping');
-      req.flush('Internal Server Error', { status: 500, statusText: 'Server Error' });
+      const req = httpMock.expectOne('/api/auth/refresh');
+      req.flush('Server Error', { status: 500, statusText: 'Internal Server Error' });
 
-      expect(pingResult).toBe(true);
+      expect(errorCaught).toBeDefined();
       expect(service.isLoggedIn()).toBe(true);
-      expect(service.getToken()).toBe('active-token');
-      httpMock.expectNone('/api/auth/logout');
-    });
-
-    it('deve parar o timer e retornar false se pingSession for chamado deslogado', () => {
-      let pingResult: boolean | undefined;
-      service.pingSession().subscribe(res => (pingResult = res));
-
-      expect(pingResult).toBe(false);
-      httpMock.expectNone('/api/auth/ping');
+      expect(service.getToken()).toBe('valid-token');
+      expect(service.currentUser).toEqual(user);
     });
   });
 });

@@ -50,8 +50,6 @@ public class RefreshTokenService implements RefreshTokenUseCase {
             throw new InvalidCredentialsException();
         }
 
-        refreshTokenManager.revoke(refreshToken);
-
         String accessToken = accessTokenManager.generate(
                 user.userCode(),
                 user.role(),
@@ -63,6 +61,8 @@ public class RefreshTokenService implements RefreshTokenUseCase {
                 user.userCode(),
                 sessionId
         );
+
+        refreshTokenManager.revoke(refreshToken);
 
         return new LoginResult(
                 accessToken,

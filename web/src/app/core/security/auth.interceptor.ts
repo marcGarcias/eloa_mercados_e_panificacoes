@@ -47,8 +47,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
         pathname.startsWith('/api/auth/login') ||
         pathname.startsWith('/api/auth/refresh') ||
         pathname.startsWith('/api/auth/logout') ||
-        pathname.startsWith('/api/auth/bootstrap') ||
-        pathname.startsWith('/api/auth/ping');
+        pathname.startsWith('/api/auth/bootstrap');
 
       // Se for 401 e não for rota de autenticação
       if (error.status === 401 && !isAuthRoute) {

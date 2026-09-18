@@ -72,9 +72,7 @@ public class RefreshTokenManagerImpl implements RefreshTokenManager {
     @Override
     public void revoke(String refreshToken) {
         String tokenHash = hash(refreshToken);
-        Optional<String> sessionIdOpt = sessionRepository.findSessionIdByRefreshTokenHash(tokenHash);
         sessionRepository.revokeRefreshToken(tokenHash);
-        sessionIdOpt.ifPresent(sessionId -> sessionRepository.revokeSession(sessionId, null));
     }
 
     private String hash(String token) {

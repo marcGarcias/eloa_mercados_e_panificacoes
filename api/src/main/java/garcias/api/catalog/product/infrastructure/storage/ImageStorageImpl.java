@@ -20,6 +20,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -35,13 +36,17 @@ public class ImageStorageImpl implements ImageStorage {
 
     private final Path root;
 
-    public ImageStorageImpl() {
-        this.root = Paths.get("uploads/products").toAbsolutePath().normalize();
+    public ImageStorageImpl(@org.springframework.beans.factory.annotation.Value("${app.storage.upload-dir:uploads/products}") String uploadDirProperty) {
+        this.root = Paths.get(uploadDirProperty).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.root);
         } catch (IOException e) {
             throw new ImageStorageException("Não foi possível criar o diretório de uploads", e);
         }
+    }
+
+    public ImageStorageImpl() {
+        this("uploads/products");
     }
 
     @Override
@@ -171,10 +176,7 @@ public class ImageStorageImpl implements ImageStorage {
                 return;
             }
 
-            Path normalizedRoot = root.normalize().toAbsolutePath();
             String rawName = filename.replaceFirst("-(lg|md|sm)\\.webp$", "").replaceFirst("\\.webp$", "");
-
-            // Remove o arquivo base e todas as variantes correspondentes
             String[] variants = new String[] {
                     rawName + ".webp",
                     rawName + "-lg.webp",
@@ -182,10 +184,20 @@ public class ImageStorageImpl implements ImageStorage {
                     rawName + "-sm.webp"
             };
 
-            for (String variant : variants) {
-                Path variantFile = normalizedRoot.resolve(variant).normalize().toAbsolutePath();
-                if (variantFile.startsWith(normalizedRoot) && Files.exists(variantFile)) {
-                    Files.deleteIfExists(variantFile.toRealPath());
+            List<Path> searchRoots = List.of(
+                    root.normalize().toAbsolutePath(),
+                    Paths.get("uploads/products").toAbsolutePath().normalize(),
+                    Paths.get("api/uploads/products").toAbsolutePath().normalize(),
+                    Paths.get("../uploads/products").toAbsolutePath().normalize()
+            );
+
+            for (Path currentRoot : searchRoots) {
+                if (!Files.exists(currentRoot)) continue;
+                for (String variant : variants) {
+                    Path variantFile = currentRoot.resolve(variant).normalize().toAbsolutePath();
+                    if (variantFile.startsWith(currentRoot) && Files.exists(variantFile)) {
+                        Files.deleteIfExists(variantFile.toRealPath());
+                    }
                 }
             }
         } catch (IOException exception) {
@@ -199,35 +211,17 @@ public class ImageStorageImpl implements ImageStorage {
             throw new ImageNotFoundException();
         }
 
+        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+            throw new ImageNotFoundException();
+        }
+
         try {
-            Path normalizedRoot = root.normalize().toAbsolutePath();
-            Path file = root.resolve(filename).normalize().toAbsolutePath();
-
-            if (!file.startsWith(normalizedRoot)) {
+            Path file = findImageFile(filename);
+            if (file == null) {
                 throw new ImageNotFoundException();
-            }
-
-            // Fallback gracioso: se a variante específica solicitada não existir, tenta o arquivo base ou variante lg
-            if (!Files.exists(file)) {
-                String rawName = filename.replaceFirst("-(lg|md|sm)\\.webp$", "").replaceFirst("\\.webp$", "");
-                Path fallbackBase = root.resolve(rawName + ".webp").normalize().toAbsolutePath();
-                Path fallbackLg = root.resolve(rawName + "-lg.webp").normalize().toAbsolutePath();
-
-                if (fallbackBase.startsWith(normalizedRoot) && Files.exists(fallbackBase)) {
-                    file = fallbackBase;
-                } else if (fallbackLg.startsWith(normalizedRoot) && Files.exists(fallbackLg)) {
-                    file = fallbackLg;
-                } else {
-                    throw new ImageNotFoundException();
-                }
             }
 
             Path realFile = file.toRealPath();
-            Path realRoot = normalizedRoot.toRealPath();
-            if (!realFile.startsWith(realRoot)) {
-                throw new ImageNotFoundException();
-            }
-
             if (!Files.isRegularFile(realFile) || !Files.isReadable(realFile)) {
                 throw new ImageNotFoundException();
             }
@@ -239,5 +233,35 @@ public class ImageStorageImpl implements ImageStorage {
         } catch (IOException exception) {
             throw new ImageStorageException("Não foi possível carregar a imagem.", exception);
         }
+    }
+
+    private Path findImageFile(String filename) {
+        List<Path> searchRoots = List.of(
+                root.normalize().toAbsolutePath(),
+                Paths.get("uploads/products").toAbsolutePath().normalize(),
+                Paths.get("api/uploads/products").toAbsolutePath().normalize(),
+                Paths.get("../uploads/products").toAbsolutePath().normalize()
+        );
+
+        String rawName = filename.replaceFirst("-(lg|md|sm)\\.webp$", "").replaceFirst("\\.webp$", "");
+        List<String> candidateNames = List.of(
+                filename,
+                rawName + ".webp",
+                rawName + "-lg.webp",
+                rawName + "-md.webp",
+                rawName + "-sm.webp"
+        );
+
+        for (Path searchRoot : searchRoots) {
+            if (!Files.exists(searchRoot)) continue;
+            for (String candidate : candidateNames) {
+                Path candidatePath = searchRoot.resolve(candidate).normalize().toAbsolutePath();
+                if (candidatePath.startsWith(searchRoot) && Files.exists(candidatePath) && Files.isRegularFile(candidatePath)) {
+                    return candidatePath;
+                }
+            }
+        }
+
+        return null;
     }
 }

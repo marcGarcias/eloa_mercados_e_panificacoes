@@ -65,14 +65,11 @@ class RefreshTokenManagerAndProviderTest {
     }
 
     @Test
-    @DisplayName("RefreshTokenManagerImpl deve revogar token deletando seu hash e sessão")
+    @DisplayName("RefreshTokenManagerImpl deve revogar token delegando para o repositório de sessão")
     void managerShouldRevokeToken() {
-        when(sessionRepository.findSessionIdByRefreshTokenHash(anyString())).thenReturn(Optional.of("sess-1001"));
-
         refreshTokenManager.revoke("some-refresh-token");
 
         verify(sessionRepository).revokeRefreshToken(anyString());
-        verify(sessionRepository).revokeSession("sess-1001", null);
     }
 
     @Test

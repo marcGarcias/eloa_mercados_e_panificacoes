@@ -1,0 +1,63 @@
+{
+  "name": "Eloá Admin - Painel de Controle",
+  "short_name": "Eloá Admin",
+  "description": "Painel de Gestão e Catálogo da Eloá Mercados e Panificações",
+  "start_url": "/login-cms",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FBF7F2",
+  "theme_color": "#24412A",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Catálogo de Produtos",
+      "short_name": "Catálogo",
+      "description": "Gerenciar produtos e categorias",
+      "url": "/admin/catalog",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Editar Conteúdo",
+      "short_name": "Conteúdo",
+      "description": "Gerenciar informações da loja",
+      "url": "/admin/content",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

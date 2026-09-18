@@ -1,7 +1,7 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap, catchError, of, map, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, map, switchMap, throwError, finalize, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User, UserRole } from '../models/user.model';
 
@@ -33,6 +33,7 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   private authInitialized = false;
+  private checkAuthStatus$: Observable<boolean> | null = null;
 
   constructor() {}
 
@@ -71,6 +72,7 @@ export class AuthService {
       catchError(() => of(null)) // Ignora erro de rede no logout
     ).subscribe(() => {
       this.accessToken = null;
+      this.authInitialized = true;
       this.loggedInSubject.next(false);
       this.currentUserSubject.next(null);
     });
@@ -110,10 +112,26 @@ export class AuthService {
       return of(this.isLoggedIn());
     }
 
-    return this.silentRefresh().pipe(
-      tap(() => this.authInitialized = true),
-      catchError(() => of(false))
+    if (this.checkAuthStatus$) {
+      return this.checkAuthStatus$;
+    }
+
+    this.checkAuthStatus$ = this.silentRefresh().pipe(
+      map(success => {
+        this.authInitialized = true;
+        return success && this.isLoggedIn();
+      }),
+      catchError(() => {
+        this.authInitialized = true;
+        return of(false);
+      }),
+      finalize(() => {
+        this.checkAuthStatus$ = null;
+      }),
+      shareReplay(1)
     );
+
+    return this.checkAuthStatus$;
   }
 
   silentRefresh(): Observable<boolean> {

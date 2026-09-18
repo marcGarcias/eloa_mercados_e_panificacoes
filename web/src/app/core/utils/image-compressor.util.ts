@@ -98,7 +98,7 @@ export async function compressAndConvertToWebp(
     // Timeout de segurança para garantir resolução mesmo em ambientes lentos ou sem render loop
     const timeoutId = setTimeout(() => {
       resolve(createFallbackResult());
-    }, 200);
+    }, 10000);
 
     reader.onerror = () => {
       clearTimeout(timeoutId);

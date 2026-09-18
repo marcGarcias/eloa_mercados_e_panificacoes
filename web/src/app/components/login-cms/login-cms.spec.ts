@@ -9,13 +9,14 @@ import { of, throwError } from 'rxjs';
 describe('LoginCms Component', () => {
   let component: LoginCms;
   let fixture: ComponentFixture<LoginCms>;
-  let mockAuthService: { login: ReturnType<typeof vi.fn> };
+  let mockAuthService: { login: ReturnType<typeof vi.fn>; checkAuthStatus: ReturnType<typeof vi.fn> };
   let mockToastService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     mockAuthService = {
-      login: vi.fn()
+      login: vi.fn(),
+      checkAuthStatus: vi.fn().mockReturnValue(of(false))
     };
     mockToastService = {
       success: vi.fn(),
@@ -36,6 +37,12 @@ describe('LoginCms Component', () => {
 
     fixture = TestBed.createComponent(LoginCms);
     component = fixture.componentInstance;
+  });
+
+  it('deve redirecionar para /admin no ngOnInit se o usuário já estiver autenticado', () => {
+    mockAuthService.checkAuthStatus.mockReturnValue(of(true));
+    fixture.detectChanges();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/admin']);
   });
 
   it('deve inicializar o formulário vazio e inválido', () => {

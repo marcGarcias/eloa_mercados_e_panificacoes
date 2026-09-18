@@ -12,7 +12,7 @@ import { finalize, Subscription } from 'rxjs';
   templateUrl: './login-cms.html',
   styleUrl: './login-cms.css',
 })
-export class LoginCms implements OnDestroy {
+export class LoginCms implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -28,6 +28,16 @@ export class LoginCms implements OnDestroy {
     userCode: ['', [Validators.required]],
     password: ['', [Validators.required]]
   });
+
+  ngOnInit(): void {
+    this.subs.add(
+      this.authService.checkAuthStatus().subscribe(isAuth => {
+        if (isAuth) {
+          this.router.navigate(['/admin']);
+        }
+      })
+    );
+  }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();

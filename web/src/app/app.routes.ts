@@ -25,6 +25,14 @@ export const routes: Routes = [
     },
     {
         path: 'login-cms',
+        canActivate: [
+            (route, state) => {
+                const injector = inject(EnvironmentInjector);
+                return import('./core/security/guest.guard').then(m =>
+                    runInInjectionContext(injector, () => m.guestGuard(route, state))
+                );
+            }
+        ],
         loadComponent: () => import('./components/login-cms/login-cms').then(m => m.LoginCms)
     }
 ];
